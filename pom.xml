@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.sumixkids</groupId>
+    <artifactId>sumixkids</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <!-- Información básica del proyecto y versión de Java -->
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Propiedades para despliegue en Tomcat -->
+        <tomcat.url>http://localhost:8080/manager/text</tomcat.url>
+        <tomcat.path>/sumixkids</tomcat.path>
+        <!-- Debe coincidir con el <server><id> del settings.xml -->
+        <tomcat.serverId>TomcatServer</tomcat.serverId>
+    </properties>
+
+    <!-- Bibliotecas que el proyecto necesita -->
+    <dependencies>
+    <!-- Librería de Servlets (el servidor Tomcat la proporciona en tiempo de ejecución) -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+    <!-- Soporte de páginas JSP (también la aporta el servidor) -->
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>javax.servlet.jsp-api</artifactId>
+            <version>2.3.3</version>
+            <scope>provided</scope>
+        </dependency>
+
+    <!-- Conjunto de etiquetas reutilizables (JSTL) para simplificar las páginas -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+    <!-- Conector para hablar con la base de datos MySQL -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+        </dependency>
+
+    <!-- Librería para cifrar contraseñas de forma segura -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>sumixkids</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <!-- Ajustes de compilación y empaquetado del archivo WAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin para enviar (subir) la aplicación al servidor Tomcat de forma automática -->
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <!-- URL del Tomcat Manager (texto) -->
+                    <url>${tomcat.url}</url>
+                    <!-- Toma usuario/clave del settings.xml: <servers><server id="TomcatServer"> -->
+                    <server>${tomcat.serverId}</server>
+                    <!-- Contexto de la aplicación -->
+                    <path>${tomcat.path}</path>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

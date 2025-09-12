@@ -1,0 +1,44 @@
+#############################################
+# Archivo .gitignore (qué NO se sube a Git) #
+# Explicación breve en español.             #
+#############################################
+
+# Archivos compilados de Java (no se versionan)
+*.class
+
+# Archivos de log (generados automáticamente)
+*.log
+
+# Archivos específicos del IDE BlueJ
+*.ctxt
+
+# Carpeta temporal de herramientas móviles antiguas
+.mtj.tmp/
+
+# Paquetes generados (se pueden recrear)
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Configuraciones y metadatos de distintos IDEs/editores
+.classpath
+.project
+.settings
+.idea
+*.iml
+*.iws
+.vscode/
+
+# Carpeta de construcción (build) principal de Maven
+/target/
+
+# Archivos que crea NetBeans al construir
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+.nb-gradle/

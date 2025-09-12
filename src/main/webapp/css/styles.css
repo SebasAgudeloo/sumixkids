@@ -1,0 +1,38 @@
+/* ==============================
+	Estilos visuales de SumixKids
+	Explicación sencilla:
+	- Fondo con degradado de colores vivos.
+	- Sombras suaves para que el texto resalte.
+	- Ajustes de formularios y tarjetas para una apariencia moderna.
+	============================== */
+body.bg-gradient-primary {
+	background: linear-gradient(135deg, #2563eb 0%, #9333ea 50%, #f59e0b 100%);
+	background-attachment: fixed;
+}
+
+/* Sombra ligera detrás de textos grandes */
+.drop-shadow { text-shadow: 0 4px 14px rgba(0,0,0,.35); }
+
+/* Bordes redondeados y resaltado al enfocar campos */
+.card { border-radius: 1rem; }
+.form-control:focus, .form-select:focus { box-shadow: 0 0 0 .2rem rgba(99,102,241,.25); }
+
+/* Separación leve entre letras del logo */
+.navbar-brand { letter-spacing: .5px; }
+
+/* Tamaño reducido para el pie de página */
+footer { font-size: .8rem; }
+
+/* Botón para mostrar/ocultar contraseña */
+.toggle-pass { font-size: .7rem; }
+
+@media (prefers-reduced-motion: reduce) {
+	/* Si el usuario prefiere menos animaciones se desactivan transiciones */
+	* { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Alertas redondeadas */
+.alert { border-radius: .75rem; }
+
+/* Preparado para un futuro modo oscuro (desactivado) */
+/* .dark-mode { background:#0f172a; color:#e2e8f0; } */
