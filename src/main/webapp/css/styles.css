@@ -17,8 +17,7 @@ body.bg-gradient-primary {
 .card { border-radius: 1rem; }
 .form-control:focus, .form-select:focus { box-shadow: 0 0 0 .2rem rgba(99,102,241,.25); }
 
-/* Separación leve entre letras del logo */
-.navbar-brand { letter-spacing: .5px; }
+
 
 /* Tamaño reducido para el pie de página */
 footer { font-size: .8rem; }

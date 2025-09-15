@@ -13,7 +13,10 @@
 <%-- Barra de navegación principal --%>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/">SumixKids</a>
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="${pageContext.request.contextPath}/">
+            <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="Logo SumixKids" style="height: 36px; width: auto; margin-right: 8px;"/>
+            SumixKids
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample" aria-controls="navbarsExample" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>

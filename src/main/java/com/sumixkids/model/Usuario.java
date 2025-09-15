@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 public class Usuario {
 	private Integer id;
 	private String username;
+	private String nombres;
+	private String apellidos;
 	private String passwordHash;
 	private String email;
 	private Integer rolId;
@@ -20,11 +22,13 @@ public class Usuario {
 
 	public Usuario() {}
 
-	public Usuario(Integer id, String username, String passwordHash, String email, Integer rolId,
+	public Usuario(Integer id, String username, String nombres, String apellidos, String passwordHash, String email, Integer rolId,
 				   LocalDateTime fechaRegistro, LocalDateTime ultimaConexion,
 				   Integer intentosFallidos, Boolean bloqueado, String autenticacion2fa) {
 		this.id = id;
 		this.username = username;
+		this.nombres = nombres;
+		this.apellidos = apellidos;
 		this.passwordHash = passwordHash;
 		this.email = email;
 		this.rolId = rolId;
@@ -34,6 +38,13 @@ public class Usuario {
 		this.bloqueado = bloqueado;
 		this.autenticacion2fa = autenticacion2fa;
 	}
+	/** Nombres reales del usuario. */
+	public String getNombres() { return nombres; }
+	public void setNombres(String nombres) { this.nombres = nombres; }
+
+	/** Apellidos reales del usuario. */
+	public String getApellidos() { return apellidos; }
+	public void setApellidos(String apellidos) { this.apellidos = apellidos; }
 
     /** Identificador interno (número). */
 	public Integer getId() { return id; }

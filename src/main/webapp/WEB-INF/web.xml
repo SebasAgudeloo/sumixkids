@@ -88,6 +88,7 @@
 		<url-pattern>/bienvenida</url-pattern>
 	</servlet-mapping>
 
+
 	<servlet>
 		<servlet-name>LogoutServlet</servlet-name>
 		<servlet-class>com.sumixkids.web.LogoutServlet</servlet-class>
@@ -96,6 +97,17 @@
 	<servlet-mapping>
 		<servlet-name>LogoutServlet</servlet-name>
 		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>EliminarUsuarioServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.EliminarUsuarioServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EliminarUsuarioServlet</servlet-name>
+		<url-pattern>/eliminarUsuario</url-pattern>
 	</servlet-mapping>
 
 	<!-- (Se pueden agregar más servlets en el futuro) -->
@@ -110,5 +122,6 @@
 	<listener>
 		<listener-class>com.sumixkids.config.BootstrapListener</listener-class>
 	</listener>
+
 
 </web-app>

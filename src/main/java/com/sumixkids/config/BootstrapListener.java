@@ -1,4 +1,8 @@
+
 package com.sumixkids.config;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -7,6 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import com.sumixkids.model.RoleType;
+import java.util.Properties;
+import java.util.TimeZone;
 
 /**
  * Se ejecuta automáticamente cuando la aplicación web inicia en el servidor.
@@ -16,16 +22,27 @@ import com.sumixkids.model.RoleType;
 @WebListener
 public class BootstrapListener implements ServletContextListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(BootstrapListener.class);
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        // Forzar zona horaria global desde config.properties
+        try {
+            Properties props = new Properties();
+            props.load(BootstrapListener.class.getClassLoader().getResourceAsStream("config.properties"));
+            String tz = props.getProperty("app.timezone", "America/Bogota");
+            TimeZone.setDefault(TimeZone.getTimeZone(tz));
+            logger.info("Zona horaria global configurada: {}", tz);
+        } catch (Exception e) {
+            logger.error("No se pudo configurar zona horaria", e);
+        }
         try {
             // Recorremos todos los roles definidos en el enum y los creamos si faltan.
             for (RoleType rt : RoleType.values()) {
                 ensureRole(rt.dbName());
             }
         } catch (Exception e) {
-            // Si algo falla sólo lo mostramos por consola para no detener el arranque.
-            System.err.println("[BootstrapListener] Problema creando roles iniciales: " + e.getMessage());
+            logger.error("Problema creando roles iniciales", e);
         }
     }
 
@@ -40,5 +57,10 @@ public class BootstrapListener implements ServletContextListener {
             ps.setString(1, roleName);
             ps.executeUpdate(); // No necesitamos revisar resultado.
         }
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        // No cleanup needed
     }
 }

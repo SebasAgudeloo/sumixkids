@@ -14,7 +14,10 @@
 <%-- Barra de navegación --%>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/">SumixKids</a>
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="${pageContext.request.contextPath}/">
+            <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="Logo SumixKids" style="height: 36px; width: auto; margin-right: 8px;"/>
+            SumixKids
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample" aria-controls="navbarsExample" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -45,28 +48,29 @@
                         <%-- Formulario de registro --%>
                         <form method="post" action="${pageContext.request.contextPath}/registro" class="needs-validation" novalidate>
                             <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-semibold">Nombres <span class="text-danger">*</span></label>
+                                    <input type="text" name="nombres" class="form-control" required value="${nombres != null ? nombres : (param.nombres != null ? param.nombres : '')}" />
+                                    <div class="invalid-feedback">Ingresa tus nombres.</div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-semibold">Apellidos <span class="text-danger">*</span></label>
+                                    <input type="text" name="apellidos" class="form-control" required value="${apellidos != null ? apellidos : (param.apellidos != null ? param.apellidos : '')}" />
+                                    <div class="invalid-feedback">Ingresa tus apellidos.</div>
+                                </div>
                                 <div class="col-12">
-                                    <label class="form-label fw-semibold">Usuario</label>
-                                    <input type="text" name="username" class="form-control" required />
+                                    <label class="form-label fw-semibold">Usuario <span class="text-danger">*</span></label>
+                                    <input type="text" name="username" class="form-control" required value="${username != null ? username : (param.username != null ? param.username : '')}" />
                                     <div class="invalid-feedback">Ingresa un usuario.</div>
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label fw-semibold">Correo</label>
-                                    <input type="email" name="email" class="form-control" required />
+                                    <label class="form-label fw-semibold">Correo <span class="text-danger">*</span></label>
+                                    <input type="email" name="email" class="form-control" required value="${email != null ? email : (param.email != null ? param.email : '')}" />
                                     <div class="invalid-feedback">Correo inválido.</div>
                                 </div>
+                                <!-- El rol se asigna automáticamente como estudiante. -->
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Rol</label>
-                                    <select name="role" class="form-select" required>
-                                        <option value="student" selected>Estudiante</option>
-                                        <option value="parents">Padre/Madre</option>
-                                        <option value="docent">Profesor</option>
-                                    </select>
-                                    <div class="invalid-feedback">Selecciona un rol.</div>
-                                </div>
-                                <div class="col-md-6"></div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Contraseña</label>
+                                    <label class="form-label fw-semibold">Contraseña <span class="text-danger">*</span></label>
                                     <div class="position-relative">
                                         <input type="password" name="password" class="form-control password-field" minlength="6" required />
                                         <button class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 toggle-pass" type="button">Ver</button>
@@ -74,7 +78,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Confirmar contraseña</label>
+                                    <label class="form-label fw-semibold">Confirmar contraseña <span class="text-danger">*</span></label>
                                     <div class="position-relative">
                                         <input type="password" name="confirm" class="form-control password-field" minlength="6" required />
                                         <button class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 toggle-pass" type="button">Ver</button>
@@ -113,6 +117,13 @@
     // Validation
     (() => { const forms = document.querySelectorAll('.needs-validation');
         Array.from(forms).forEach(form => { form.addEventListener('submit', evt => { if (!form.checkValidity()) { evt.preventDefault(); evt.stopPropagation(); } form.classList.add('was-validated'); }, false); }); })();
+</script>
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.alert-danger, .alert-success').forEach(alert => {
+            alert.style.display = 'none';
+        });
+    }, 3000);
 </script>
 </body>
 </html>

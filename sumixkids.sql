@@ -24,39 +24,6 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `sumixkids` /*!40100 DEFAULT CHARACTER 
 USE `sumixkids`;
 
 --
--- Table structure for table `asignaciones_docente`
---
-
-DROP TABLE IF EXISTS `asignaciones_docente`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `asignaciones_docente` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `docente_id` int(11) NOT NULL,
-  `estudiante_id` int(11) NOT NULL,
-  `nivel_especifico_id` int(11) DEFAULT NULL,
-  `ejercicios_personalizados_json` text DEFAULT NULL,
-  `fecha_asignacion` datetime DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `docente_id` (`docente_id`),
-  KEY `estudiante_id` (`estudiante_id`),
-  KEY `nivel_especifico_id` (`nivel_especifico_id`),
-  CONSTRAINT `asignaciones_docente_ibfk_1` FOREIGN KEY (`docente_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `asignaciones_docente_ibfk_2` FOREIGN KEY (`estudiante_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `asignaciones_docente_ibfk_3` FOREIGN KEY (`nivel_especifico_id`) REFERENCES `niveles_dificultad` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `asignaciones_docente`
---
-
-LOCK TABLES `asignaciones_docente` WRITE;
-/*!40000 ALTER TABLE `asignaciones_docente` DISABLE KEYS */;
-/*!40000 ALTER TABLE `asignaciones_docente` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `cargas_masivas`
 --
 
@@ -86,38 +53,6 @@ LOCK TABLES `cargas_masivas` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `configuracion_padre`
---
-
-DROP TABLE IF EXISTS `configuracion_padre`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `configuracion_padre` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `padre_id` int(11) NOT NULL,
-  `estudiante_id` int(11) NOT NULL,
-  `tiempo_limite_diario_min` int(11) DEFAULT NULL,
-  `inicio_pausa` time DEFAULT NULL,
-  `fin_pausa` time DEFAULT NULL,
-  `activo` tinyint(1) DEFAULT 1,
-  PRIMARY KEY (`id`),
-  KEY `padre_id` (`padre_id`),
-  KEY `estudiante_id` (`estudiante_id`),
-  CONSTRAINT `configuracion_padre_ibfk_1` FOREIGN KEY (`padre_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `configuracion_padre_ibfk_2` FOREIGN KEY (`estudiante_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `configuracion_padre`
---
-
-LOCK TABLES `configuracion_padre` WRITE;
-/*!40000 ALTER TABLE `configuracion_padre` DISABLE KEYS */;
-/*!40000 ALTER TABLE `configuracion_padre` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `configuracion_sistema`
 --
 
@@ -141,33 +76,6 @@ LOCK TABLES `configuracion_sistema` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `ejercicios`
---
-
-DROP TABLE IF EXISTS `ejercicios`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `ejercicios` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tipo_operacion` varchar(20) NOT NULL,
-  `nivel_dificultad` int(11) NOT NULL,
-  `num1` int(11) NOT NULL,
-  `num2` int(11) NOT NULL,
-  `respuesta_correcta` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `ejercicios`
---
-
-LOCK TABLES `ejercicios` WRITE;
-/*!40000 ALTER TABLE `ejercicios` DISABLE KEYS */;
-/*!40000 ALTER TABLE `ejercicios` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `log_acceso`
 --
 
@@ -183,7 +91,7 @@ CREATE TABLE `log_acceso` (
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   CONSTRAINT `log_acceso_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -192,6 +100,7 @@ CREATE TABLE `log_acceso` (
 
 LOCK TABLES `log_acceso` WRITE;
 /*!40000 ALTER TABLE `log_acceso` DISABLE KEYS */;
+INSERT INTO `log_acceso` VALUES (1,1,'2025-09-14 22:20:45',1,'0:0:0:0:0:0:0:1'),(2,4,'2025-09-14 22:22:34',1,'0:0:0:0:0:0:0:1');
 /*!40000 ALTER TABLE `log_acceso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -228,145 +137,62 @@ LOCK TABLES `log_auditoria` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `niveles_dificultad`
+-- Table structure for table `mantenimiento_programado`
 --
 
-DROP TABLE IF EXISTS `niveles_dificultad`;
+DROP TABLE IF EXISTS `mantenimiento_programado`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `niveles_dificultad` (
+CREATE TABLE `mantenimiento_programado` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  `rango_num1_min` int(11) DEFAULT NULL,
-  `rango_num1_max` int(11) DEFAULT NULL,
-  `rango_num2_min` int(11) DEFAULT NULL,
-  `rango_num2_max` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `niveles_dificultad`
---
-
-LOCK TABLES `niveles_dificultad` WRITE;
-/*!40000 ALTER TABLE `niveles_dificultad` DISABLE KEYS */;
-/*!40000 ALTER TABLE `niveles_dificultad` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `progreso_estudiante`
---
-
-DROP TABLE IF EXISTS `progreso_estudiante`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `progreso_estudiante` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `estudiante_id` int(11) NOT NULL,
-  `nivel_actual` int(11) DEFAULT NULL,
-  `ejercicios_resueltos_correctos` int(11) DEFAULT 0,
+  `titulo` varchar(255) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `fecha_inicio` datetime NOT NULL,
+  `fecha_fin` datetime NOT NULL,
+  `creado_por` int(11) NOT NULL,
+  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `estudiante_id` (`estudiante_id`),
-  KEY `nivel_actual` (`nivel_actual`),
-  CONSTRAINT `progreso_estudiante_ibfk_1` FOREIGN KEY (`estudiante_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `progreso_estudiante_ibfk_2` FOREIGN KEY (`nivel_actual`) REFERENCES `niveles_dificultad` (`id`)
+  KEY `creado_por` (`creado_por`),
+  CONSTRAINT `mantenimiento_programado_ibfk_1` FOREIGN KEY (`creado_por`) REFERENCES `usuarios` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `progreso_estudiante`
+-- Dumping data for table `mantenimiento_programado`
 --
 
-LOCK TABLES `progreso_estudiante` WRITE;
-/*!40000 ALTER TABLE `progreso_estudiante` DISABLE KEYS */;
-/*!40000 ALTER TABLE `progreso_estudiante` ENABLE KEYS */;
+LOCK TABLES `mantenimiento_programado` WRITE;
+/*!40000 ALTER TABLE `mantenimiento_programado` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mantenimiento_programado` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `recompensas`
+-- Table structure for table `password_resets_codes`
 --
 
-DROP TABLE IF EXISTS `recompensas`;
+DROP TABLE IF EXISTS `password_resets_codes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `recompensas` (
+CREATE TABLE `password_resets_codes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  `descripcion` varchar(255) DEFAULT NULL,
-  `imagen_url` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `recompensas`
---
-
-LOCK TABLES `recompensas` WRITE;
-/*!40000 ALTER TABLE `recompensas` DISABLE KEYS */;
-/*!40000 ALTER TABLE `recompensas` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `recompensas_obtenidas`
---
-
-DROP TABLE IF EXISTS `recompensas_obtenidas`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `recompensas_obtenidas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `estudiante_id` int(11) NOT NULL,
-  `recompensa_id` int(11) NOT NULL,
-  `fecha_obtencion` datetime DEFAULT current_timestamp(),
+  `usuario_id` int(11) NOT NULL,
+  `code` varchar(10) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `estudiante_id` (`estudiante_id`),
-  KEY `recompensa_id` (`recompensa_id`),
-  CONSTRAINT `recompensas_obtenidas_ibfk_1` FOREIGN KEY (`estudiante_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `recompensas_obtenidas_ibfk_2` FOREIGN KEY (`recompensa_id`) REFERENCES `recompensas` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `usuario_id` (`usuario_id`),
+  CONSTRAINT `fk_password_resets_user` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `recompensas_obtenidas`
+-- Dumping data for table `password_resets_codes`
 --
 
-LOCK TABLES `recompensas_obtenidas` WRITE;
-/*!40000 ALTER TABLE `recompensas_obtenidas` DISABLE KEYS */;
-/*!40000 ALTER TABLE `recompensas_obtenidas` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `respuestas_estudiante`
---
-
-DROP TABLE IF EXISTS `respuestas_estudiante`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `respuestas_estudiante` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `estudiante_id` int(11) NOT NULL,
-  `ejercicio_id` int(11) NOT NULL,
-  `respuesta_dada` int(11) NOT NULL,
-  `es_correcta` tinyint(1) DEFAULT NULL,
-  `fecha_respuesta` datetime DEFAULT current_timestamp(),
-  `tiempo_empleado` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `estudiante_id` (`estudiante_id`),
-  KEY `ejercicio_id` (`ejercicio_id`),
-  CONSTRAINT `respuestas_estudiante_ibfk_1` FOREIGN KEY (`estudiante_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `respuestas_estudiante_ibfk_2` FOREIGN KEY (`ejercicio_id`) REFERENCES `ejercicios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `respuestas_estudiante`
---
-
-LOCK TABLES `respuestas_estudiante` WRITE;
-/*!40000 ALTER TABLE `respuestas_estudiante` DISABLE KEYS */;
-/*!40000 ALTER TABLE `respuestas_estudiante` ENABLE KEYS */;
+LOCK TABLES `password_resets_codes` WRITE;
+/*!40000 ALTER TABLE `password_resets_codes` DISABLE KEYS */;
+INSERT INTO `password_resets_codes` VALUES (1,1,'wnVW8w','2025-09-14 20:20:46',0),(3,1,'VFnSlA','2025-09-14 20:23:26',0);
+/*!40000 ALTER TABLE `password_resets_codes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -381,7 +207,7 @@ CREATE TABLE `roles` (
   `nombre_rol` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `nombre_rol` (`nombre_rol`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=362 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -390,6 +216,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
+INSERT INTO `roles` VALUES (1,'admin'),(2,'docent'),(4,'parents'),(3,'student');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -422,6 +249,66 @@ LOCK TABLES `sesiones_activas` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `two_factor_codes`
+--
+
+DROP TABLE IF EXISTS `two_factor_codes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `two_factor_codes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `usuario_id` int(11) NOT NULL,
+  `code` varchar(10) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `usuario_id` (`usuario_id`),
+  CONSTRAINT `two_factor_codes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `two_factor_codes`
+--
+
+LOCK TABLES `two_factor_codes` WRITE;
+/*!40000 ALTER TABLE `two_factor_codes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `two_factor_codes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `usuario_roles`
+--
+
+DROP TABLE IF EXISTS `usuario_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `usuario_roles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `usuario_id` int(11) NOT NULL,
+  `rol_id` int(11) NOT NULL,
+  `asignado_por` int(11) DEFAULT NULL,
+  `fecha_asignacion` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `usuario_id` (`usuario_id`),
+  KEY `rol_id` (`rol_id`),
+  KEY `asignado_por` (`asignado_por`),
+  CONSTRAINT `usuario_roles_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `usuario_roles_ibfk_2` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`),
+  CONSTRAINT `usuario_roles_ibfk_3` FOREIGN KEY (`asignado_por`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `usuario_roles`
+--
+
+LOCK TABLES `usuario_roles` WRITE;
+/*!40000 ALTER TABLE `usuario_roles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `usuario_roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `usuarios`
 --
 
@@ -433,6 +320,8 @@ CREATE TABLE `usuarios` (
   `username` varchar(50) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
   `email` varchar(100) NOT NULL,
+  `nombres` varchar(100) NOT NULL,
+  `apellidos` varchar(100) NOT NULL,
   `rol_id` int(11) NOT NULL,
   `fecha_registro` datetime DEFAULT current_timestamp(),
   `ultima_conexion` datetime DEFAULT NULL,
@@ -444,7 +333,7 @@ CREATE TABLE `usuarios` (
   UNIQUE KEY `email` (`email`),
   KEY `rol_id` (`rol_id`),
   CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -453,6 +342,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
+INSERT INTO `usuarios` VALUES (1,'sebasagudelo','$2a$10$utiqSrtrshAIu1ACHO4rJOQPUQhgaDEtvLdB8lxJzg2bCNqJFEy8e','agudelosebastian726@gmail.com','Sebastian Steven','Agudelo Oquendo',1,'2025-09-11 19:37:21','2025-09-14 22:20:45',0,0,NULL),(2,'lumela','$2a$10$FoOzAmBZrWoypAePSmw/gewRrka5Mhya.Alj0NqDUUz.E3Qdfcu1y','lanbrrr153@gmail.com','Luis Eduardo','Mercado Laza',1,'2025-09-12 20:44:10','2025-09-12 21:20:27',0,0,NULL),(4,'glorialora','$2a$10$NA4qc4raaDgbg1UhoYvhpOwwCPE.geFdNNtaLr22QzrEdoJtzpCHi','sebasagu312@gmail.com','Gloria Amparo','Lora Patiño',2,'2025-09-14 21:25:07','2025-09-14 22:22:34',0,0,NULL),(5,'deisypaola','$2a$10$hcIiiseXyHlOvPy1g1Uu6ehePnnbdlvEnXsv1YD0zuyj70zMkmIl6','sebplay169@gmail.com','Deisy Paola','Restrepo Gomez',4,'2025-09-14 21:26:26',NULL,0,0,NULL);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -465,4 +355,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-09-11 11:43:04
+-- Dump completed on 2025-09-14 23:13:11
