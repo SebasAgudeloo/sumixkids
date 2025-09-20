@@ -33,9 +33,15 @@ public class LoginServlet extends HttpServlet {
 	private final UsuarioDAO usuarioDAO = new UsuarioDAO();
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// Sólo mostramos la página de login.
-		req.getRequestDispatcher("/login.jsp").forward(req, resp);
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
+	        throws ServletException, IOException {
+	    
+	    String timeout = req.getParameter("timeout");
+	    if ("true".equals(timeout)) {
+	        req.setAttribute("mensaje", "Su sesión ha expirado por inactividad");
+	    }
+	    
+	    req.getRequestDispatcher("/login.jsp").forward(req, resp);
 	}
 
 	@Override
@@ -53,12 +59,13 @@ public class LoginServlet extends HttpServlet {
 
 		try {
 			Usuario u = usuarioDAO.findByUsernameOrEmail(username); // Buscamos por nombre o correo.
-			int maxIntentos = 3;
+			int maxIntentos = 3; // Número máximo de intentos permitidos
 			if (u == null) {
 				req.setAttribute("error", "Usuario o contraseña incorrectos");
 				req.getRequestDispatcher("/login.jsp").forward(req, resp);
 				return;
 			}
+			// Si la cuenta ya está bloqueada
 			if (Boolean.TRUE.equals(u.getBloqueado())) {
 				req.setAttribute("error", "Cuenta bloqueada por múltiples intentos fallidos");
 				req.getRequestDispatcher("/login.jsp").forward(req, resp);
@@ -96,6 +103,7 @@ public class LoginServlet extends HttpServlet {
 				String mailPass2 = props2.getProperty("mail.smtp.pass");
 				EmailService emailService2 = new EmailService(mailUser2, mailPass2);
 				try {
+					// Construir mensaje con el código
 					String mensaje = "Hola " + u.getUsername() + ",\n\n" +
 						"Hemos detectado un intento de inicio de sesión en tu cuenta de SumixKids.\n" +
 						"Para continuar, por favor ingresa el siguiente código de verificación en la pantalla de autenticación de dos factores (2FA):\n\n" +

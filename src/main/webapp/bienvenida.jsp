@@ -172,5 +172,6 @@ setTimeout(function() {
     if (alertaError) alertaError.style.display = 'none';
 }, 3000);
 </script>
+<script src="${pageContext.request.contextPath}/js/session-timeout.js"></script>
 </body>
 </html>
