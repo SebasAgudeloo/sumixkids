@@ -100,7 +100,6 @@ CREATE TABLE `log_acceso` (
 
 LOCK TABLES `log_acceso` WRITE;
 /*!40000 ALTER TABLE `log_acceso` DISABLE KEYS */;
-INSERT INTO `log_acceso` VALUES (1,1,'2025-09-14 22:20:45',1,'0:0:0:0:0:0:0:1'),(2,4,'2025-09-14 22:22:34',1,'0:0:0:0:0:0:0:1');
 /*!40000 ALTER TABLE `log_acceso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -112,19 +111,24 @@ DROP TABLE IF EXISTS `log_auditoria`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `log_auditoria` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `nombre_usuario` varchar(50) NOT NULL,
   `accion` varchar(100) NOT NULL,
-  `detalles` text DEFAULT NULL,
+  `tabla_afectada` varchar(50) DEFAULT NULL,
+  `valor_anterior` text DEFAULT NULL,
+  `valor_nuevo` text DEFAULT NULL,
+  `descripcion` text DEFAULT NULL,
+  `estado` varchar(20) DEFAULT NULL,
   `fecha_hora` datetime DEFAULT current_timestamp(),
-  `ip_address` varchar(45) DEFAULT NULL,
+  `ip_usuario` varchar(45) DEFAULT NULL,
   `aprobado_por_admin_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
+  KEY `usuario_id` (`id_usuario`),
   KEY `aprobado_por_admin_id` (`aprobado_por_admin_id`),
-  CONSTRAINT `log_auditoria_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `log_auditoria_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`),
   CONSTRAINT `log_auditoria_ibfk_2` FOREIGN KEY (`aprobado_por_admin_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -133,6 +137,7 @@ CREATE TABLE `log_auditoria` (
 
 LOCK TABLES `log_auditoria` WRITE;
 /*!40000 ALTER TABLE `log_auditoria` DISABLE KEYS */;
+INSERT INTO `log_auditoria` VALUES (1,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 6 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-16 22:50:47','0:0:0:0:0:0:0:1',2),(3,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 8 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-17 08:31:17','0:0:0:0:0:0:0:1',2),(4,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 9 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-17 08:36:34','0:0:0:0:0:0:0:1',2),(5,2,'lumela','ELIMINACION_FALLIDA','usuarios','ID: 4 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-17 08:55:08','0:0:0:0:0:0:0:1',2),(9,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 10 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-18 00:35:43','0:0:0:0:0:0:0:1',2),(10,2,'lumela','ELIMINACION_FALLIDA','usuarios','ID: 11 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-18 10:29:01','0:0:0:0:0:0:0:1',2);
 /*!40000 ALTER TABLE `log_auditoria` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -182,7 +187,7 @@ CREATE TABLE `password_resets_codes` (
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   CONSTRAINT `fk_password_resets_user` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -191,7 +196,6 @@ CREATE TABLE `password_resets_codes` (
 
 LOCK TABLES `password_resets_codes` WRITE;
 /*!40000 ALTER TABLE `password_resets_codes` DISABLE KEYS */;
-INSERT INTO `password_resets_codes` VALUES (1,1,'wnVW8w','2025-09-14 20:20:46',0),(3,1,'VFnSlA','2025-09-14 20:23:26',0);
 /*!40000 ALTER TABLE `password_resets_codes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -207,7 +211,7 @@ CREATE TABLE `roles` (
   `nombre_rol` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `nombre_rol` (`nombre_rol`)
-) ENGINE=InnoDB AUTO_INCREMENT=362 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=618 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -264,7 +268,7 @@ CREATE TABLE `two_factor_codes` (
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   CONSTRAINT `two_factor_codes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,7 +337,7 @@ CREATE TABLE `usuarios` (
   UNIQUE KEY `email` (`email`),
   KEY `rol_id` (`rol_id`),
   CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -342,7 +346,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'sebasagudelo','$2a$10$utiqSrtrshAIu1ACHO4rJOQPUQhgaDEtvLdB8lxJzg2bCNqJFEy8e','agudelosebastian726@gmail.com','Sebastian Steven','Agudelo Oquendo',1,'2025-09-11 19:37:21','2025-09-14 22:20:45',0,0,NULL),(2,'lumela','$2a$10$FoOzAmBZrWoypAePSmw/gewRrka5Mhya.Alj0NqDUUz.E3Qdfcu1y','lanbrrr153@gmail.com','Luis Eduardo','Mercado Laza',1,'2025-09-12 20:44:10','2025-09-12 21:20:27',0,0,NULL),(4,'glorialora','$2a$10$NA4qc4raaDgbg1UhoYvhpOwwCPE.geFdNNtaLr22QzrEdoJtzpCHi','sebasagu312@gmail.com','Gloria Amparo','Lora Patiño',2,'2025-09-14 21:25:07','2025-09-14 22:22:34',0,0,NULL),(5,'deisypaola','$2a$10$hcIiiseXyHlOvPy1g1Uu6ehePnnbdlvEnXsv1YD0zuyj70zMkmIl6','sebplay169@gmail.com','Deisy Paola','Restrepo Gomez',4,'2025-09-14 21:26:26',NULL,0,0,NULL);
+INSERT INTO `usuarios` VALUES (1,'sebasagudelo','$2a$10$utiqSrtrshAIu1ACHO4rJOQPUQhgaDEtvLdB8lxJzg2bCNqJFEy8e','agudelosebastian726@gmail.com','Sebastian Steven','Agudelo Oquendo',1,'2025-09-11 19:37:21','2025-09-18 10:23:46',0,0,NULL),(2,'lumela','$2a$10$pXgY28V/M0JsnynCQ9Zlhum/Enat5GHDsPp/8XhKrEC5zHKCfBTzq','lanbrrr153@gmail.com','Luis Eduardo','Mercado Laza',1,'2025-09-12 20:44:10','2025-09-18 10:28:28',0,0,NULL),(4,'glorialora','$2a$10$NA4qc4raaDgbg1UhoYvhpOwwCPE.geFdNNtaLr22QzrEdoJtzpCHi','sebasagu312@gmail.com','Gloria Amparo','Lora Patiño',3,'2025-09-14 21:25:07','2025-09-14 22:22:34',0,0,NULL);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -355,4 +359,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-09-14 23:13:11
+-- Dump completed on 2025-09-19 23:08:35
