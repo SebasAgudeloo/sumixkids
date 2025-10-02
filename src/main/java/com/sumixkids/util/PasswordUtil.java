@@ -36,19 +36,13 @@ public class PasswordUtil {
 
 	/**
 	 * Verifica si la contraseña cumple con las políticas de seguridad:
-	 * - Mínimo 8 caracteres
-	 * - Al menos una mayúscula, una minúscula, un número y un carácter especial
+	 * - Mínimo 5 letras
+	 * - Mínimo 2 números
+	 * - Mínimo 1 carácter especial
+	 * - Máximo 20 caracteres
 	 */
 	public static boolean isStrong(String password) {
-		if (password == null || password.length() < 8) return false;
-		boolean hasUpper = false, hasLower = false, hasDigit = false, hasSpecial = false;
-		for (char c : password.toCharArray()) {
-			if (Character.isUpperCase(c)) hasUpper = true;
-			else if (Character.isLowerCase(c)) hasLower = true;
-			else if (Character.isDigit(c)) hasDigit = true;
-			else hasSpecial = true;
-		}
-		return hasUpper && hasLower && hasDigit && hasSpecial;
+		return ValidacionUtil.esPasswordValida(password);
 	}
 
 	/** Genera un texto cifrado seguro a partir de la contraseña original. */

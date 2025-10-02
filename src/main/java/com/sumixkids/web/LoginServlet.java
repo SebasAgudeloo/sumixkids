@@ -12,7 +12,6 @@ import com.sumixkids.dao.TwoFactorCodeDAO;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +24,6 @@ import java.sql.SQLException;
  * GET: muestra el formulario.
  * POST: revisa usuario/clave y crea la sesión si todo está bien.
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginServlet.class);
@@ -104,15 +102,33 @@ public class LoginServlet extends HttpServlet {
 				EmailService emailService2 = new EmailService(mailUser2, mailPass2);
 				try {
 					// Construir mensaje con el código
-					String mensaje = "Hola " + u.getUsername() + ",\n\n" +
-						"Hemos detectado un intento de inicio de sesión en tu cuenta de SumixKids.\n" +
-						"Para continuar, por favor ingresa el siguiente código de verificación en la pantalla de autenticación de dos factores (2FA):\n\n" +
-						"Código de verificación: " + code + "\n\n" +
-						"Este código es válido por 15 minutos y solo puede usarse una vez.\n" +
-						"Si tú no solicitaste este acceso, te recomendamos cambiar tu contraseña inmediatamente o contactar al soporte.\n\n" +
-						"Gracias por confiar en SumixKids.\n\n" +
-						"Atentamente,\nEl equipo de SumixKids";
-					emailService2.sendEmail(u.getEmail(), "Código de verificación 2FA", mensaje);
+					String fechaHora = EmailService.getCurrentFormattedDateTime();
+					String ipAddress = req.getRemoteAddr();
+					String forwarded = req.getHeader("X-Forwarded-For");
+					if (forwarded != null && !forwarded.isEmpty()) {
+						ipAddress = forwarded.split(",")[0].trim();
+					}
+					
+					String mensaje = EmailService.getEmailHeader() +
+						"<h2 style='color: #2196F3; margin-bottom: 20px;'>¡Hola " + u.getNombres() + " " + u.getApellidos() + "! 👋</h2>" +
+						"<div style='background-color: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>" +
+						"<p style='font-size: 16px; line-height: 1.6; color: #333; margin-bottom: 15px;'>Hemos detectado un intento de inicio de sesión en tu cuenta de <strong>SumixKids</strong>. 🔐</p>" +
+						"<p style='font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 20px;'>Fecha y hora: <strong>" + fechaHora + "</strong></p>" +
+						"<p style='font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 20px;'>IP de acceso: <strong>" + ipAddress + "</strong></p>" +
+						"<p style='font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 20px;'>Para continuar, por favor ingresa el siguiente código de verificación en la pantalla de autenticación de dos factores (2FA):</p>" +
+						"<div style='background-color: #E3F2FD; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #2196F3; margin: 20px 0;'>" +
+						"<p style='margin: 0 0 10px 0; color: #0D47A1; font-weight: bold; font-size: 14px;'>Código de verificación 2FA:</p>" +
+						"<p style='font-size: 32px; font-weight: bold; color: #2196F3; margin: 10px 0; letter-spacing: 3px; font-family: monospace;'>" + code + "</p>" +
+						"<p style='margin: 10px 0 0 0; color: #0D47A1; font-size: 12px;'>⏰ Válido por 15 minutos - Solo se puede usar una vez</p>" +
+						"</div>" +
+						"<div style='background-color: #FFEBEE; padding: 15px; border-radius: 8px; border-left: 4px solid #F44336; margin: 20px 0;'>" +
+						"<p style='margin: 0; color: #C62828; font-weight: bold;'>⚠️ Importante:</p>" +
+						"<p style='margin: 10px 0 0 0; color: #C62828; font-size: 14px;'>Si tú no solicitaste este acceso, te recomendamos cambiar tu contraseña inmediatamente o contactar al soporte.</p>" +
+						"</div>" +
+						"</div>" +
+						EmailService.getEmailFooter() +
+						EmailService.getEmailCloser();
+					emailService2.sendHtmlEmail(u.getEmail(), "🔐 Código de verificación 2FA - SumixKids", mensaje);
 				} catch (Exception ex) {
 					logger.error("No se pudo enviar el código 2FA a {}", u.getEmail(), ex);
 					req.setAttribute("error", "No se pudo enviar el código 2FA a tu correo. Intenta de nuevo más tarde.");
@@ -140,13 +156,45 @@ public class LoginServlet extends HttpServlet {
 						   String mailUser3 = props3.getProperty("mail.smtp.user");
 						   String mailPass3 = props3.getProperty("mail.smtp.pass");
 						   EmailService emailService3 = new EmailService(mailUser3, mailPass3);
-						   String asunto = "Alerta de seguridad: Cuenta bloqueada";
-						   String mensaje = "Hola " + u.getNombres() + ",\n\n" +
-							   "Tu cuenta ha sido bloqueada automáticamente por superar el número máximo de intentos fallidos de inicio de sesión permitidos.\n" +
-							   "Si no reconoces estos intentos, te recomendamos restablecer tu contraseña y contactar al soporte.\n\n" +
-							   "Fecha y hora del bloqueo: " + java.time.LocalDateTime.now() + "\n" +
-							   "Saludos,\nEl equipo de SumixKids";
-						   emailService3.sendEmail(u.getEmail(), asunto, mensaje);
+						   String asunto = "🚨 Alerta de seguridad: Cuenta bloqueada - SumixKids";
+						   
+						   String fechaHora = EmailService.getCurrentFormattedDateTime();
+						   String ipAddress = req.getRemoteAddr();
+						   String forwarded = req.getHeader("X-Forwarded-For");
+						   if (forwarded != null && !forwarded.isEmpty()) {
+							   ipAddress = forwarded.split(",")[0].trim();
+						   }
+						   
+						   String mensaje = EmailService.getEmailHeader() +
+							   "<h2 style='color: #F44336; margin-bottom: 20px;'>¡Hola " + u.getNombres() + " " + u.getApellidos() + "! 👋</h2>" +
+							   "<div style='background-color: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>" +
+							   "<div style='background-color: #FFEBEE; padding: 20px; border-radius: 8px; border: 2px solid #F44336; margin-bottom: 20px;'>" +
+							   "<h3 style='color: #C62828; margin: 0 0 15px 0; text-align: center;'>🚨 ALERTA DE SEGURIDAD</h3>" +
+							   "<p style='font-size: 16px; line-height: 1.6; color: #C62828; margin-bottom: 15px; text-align: center; font-weight: bold;'>Tu cuenta ha sido bloqueada automáticamente</p>" +
+							   "</div>" +
+							   "<p style='font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 15px;'>Tu cuenta de <strong>SumixKids</strong> ha sido bloqueada por superar el número máximo de intentos fallidos de inicio de sesión permitidos.</p>" +
+							   "<div style='background-color: #FFF3E0; padding: 15px; border-radius: 8px; margin: 20px 0;'>" +
+							   "<p style='margin: 0 0 10px 0; color: #E65100; font-weight: bold;'>📊 Detalles del bloqueo:</p>" +
+							   "<ul style='margin: 0; color: #E65100;'>" +
+							   "<li><strong>Fecha y hora:</strong> " + fechaHora + "</li>" +
+							   "<li><strong>IP de último intento:</strong> " + ipAddress + "</li>" +
+							   "<li><strong>Motivo:</strong> Múltiples intentos fallidos consecutivos</li>" +
+							   "</ul>" +
+							   "</div>" +
+							   "<div style='background-color: #E8F5E8; padding: 15px; border-radius: 8px; border-left: 4px solid #4CAF50; margin: 20px 0;'>" +
+							   "<p style='margin: 0; color: #2E7D32; font-weight: bold;'>💡 ¿Qué puedes hacer?</p>" +
+							   "<ul style='margin: 10px 0 0 0; color: #2E7D32;'>" +
+							   "<li>Utiliza la opción de 'Recuperar contraseña' en la página de login</li>" +
+							   "<li>Contacta con un docente encargado o administrador</li>" +
+							   "<li>Espera un tiempo antes de intentar nuevamente</li>" +
+							   "</ul>" +
+							   "</div>" +
+							   "<p style='font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 15px;'>Si no reconoces estos intentos, te recomendamos restablecer tu contraseña inmediatamente.</p>" +
+							   "</div>" +
+							   EmailService.getErrorEmailFooter() +
+							   EmailService.getEmailCloser();
+						   
+						   emailService3.sendHtmlEmail(u.getEmail(), asunto, mensaje);
 					   } catch (Exception e) {
 						   logger.warn("No se pudo enviar correo de alerta de bloqueo de cuenta", e);
 					   }

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://sumixkids.com/functions" prefix="util" %>
 <%-- Página de registro: crea una cuenta nueva --%>
 <!DOCTYPE html>
 <html lang="es">
@@ -37,11 +38,26 @@
             <div class="col-12 col-md-9 col-lg-7 col-xl-6">
                 <div class="card shadow-lg border-0 rounded-4">
                     <div class="card-body p-4 p-md-5">
-                        <h1 class="h3 mb-4 text-center fw-bold text-primary">Crear cuenta</h1>
+                        <h1 class="h3 mb-4 text-center fw-bold text-primary">
+                            <c:choose>
+                                <c:when test="${sessionScope.usuario != null && sessionScope.usuario.rolId == 1}">
+                                    <i class="fas fa-user-plus me-2"></i>Registrar Usuario
+                                </c:when>
+                                <c:otherwise>
+                                    Crear cuenta
+                                </c:otherwise>
+                            </c:choose>
+                        </h1>
                         <%-- Mensajes de error de validación --%>
                         <c:if test="${not empty error}">
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                ${error}
+                                <i class="fas fa-exclamation-triangle me-2"></i>${error}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </c:if>
+                        <c:if test="${not empty success}">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>${success}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         </c:if>
@@ -49,52 +65,139 @@
                         <form id="registroForm" method="post" action="${pageContext.request.contextPath}/registro">
                             <div class="form-group">
                                 <label for="nombres">Nombres:</label>
-                                <input type="text" class="form-control" id="nombres" name="nombres" 
-                                       value="${nombres}" required 
-                                       placeholder="Ingrese sus nombres (solo letras)">
+                                <input type="text" class="form-control ${errorNombres ? 'is-invalid' : ''}" id="nombres" name="nombres" 
+                                       value="${nombres}" required maxlength="30"
+                                       placeholder="Ingrese sus nombres (solo letras, máx. 30 caracteres)">
+                                <c:if test="${errorNombres}">
+                                    <div class="invalid-feedback">El nombre solo puede contener letras y espacios (máximo 30 caracteres)</div>
+                                </c:if>
                             </div>
                             
                             <div class="form-group">
                                 <label for="apellidos">Apellidos:</label>
-                                <input type="text" class="form-control" id="apellidos" name="apellidos" 
-                                       value="${apellidos}" required 
-                                       placeholder="Ingrese sus apellidos (solo letras)">
+                                <input type="text" class="form-control ${errorApellidos ? 'is-invalid' : ''}" id="apellidos" name="apellidos" 
+                                       value="${apellidos}" required maxlength="30"
+                                       placeholder="Ingrese sus apellidos (solo letras, máx. 30 caracteres)">
+                                <c:if test="${errorApellidos}">
+                                    <div class="invalid-feedback">El apellido solo puede contener letras y espacios (máximo 30 caracteres)</div>
+                                </c:if>
                             </div>
                             
                             <div class="form-group">
                                 <label for="username">Usuario:</label>
-                                <input type="text" class="form-control" id="username" name="username" 
-                                       value="${username}" required 
-                                       placeholder="Mínimo 4 caracteres y 2 números">
+                                <input type="text" class="form-control ${errorUsername ? 'is-invalid' : ''}" id="username" name="username" 
+                                       value="${username}" required maxlength="15" minlength="5"
+                                       placeholder="Entre 5 y 15 caracteres, sin espacios">
+                                <c:if test="${errorUsername}">
+                                    <div class="invalid-feedback">El usuario debe tener entre 5 y 15 caracteres sin espacios</div>
+                                </c:if>
                             </div>
                             
                             <div class="form-group">
                                 <label for="email">Correo electrónico:</label>
-                                <input type="email" class="form-control" id="email" name="email" 
+                                <input type="email" class="form-control ${errorEmail ? 'is-invalid' : ''}" id="email" name="email" 
                                        value="${email}" required 
                                        placeholder="ejemplo@gmail.com">
+                                <c:if test="${errorEmail}">
+                                    <div class="invalid-feedback">El correo electrónico debe tener un formato válido</div>
+                                </c:if>
                             </div>
                             
-                            <!-- El rol se asigna automáticamente como estudiante. -->
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Contraseña <span class="text-danger">*</span></label>
-                                <div class="position-relative">
-                                    <input type="password" name="password" class="form-control password-field" minlength="6" required />
-                                    <button class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 toggle-pass" type="button">Ver</button>
-                                    <div class="invalid-feedback">Mínimo 6 caracteres.</div>
+                            <%-- Selector de rol solo para administradores --%>
+                            <c:if test="${sessionScope.usuario != null && sessionScope.usuario.rolId == 1}">
+                                <div class="form-group">
+                                    <label for="rolId" class="form-label fw-semibold">
+                                        <i class="fas fa-user-tag me-1"></i>Rol <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select ${errorRolId ? 'is-invalid' : ''}" id="rolId" name="rolId" required>
+                                        <option value="">Seleccionar rol...</option>
+                                        <option value="1" ${rolId == '1' ? 'selected' : ''}>👑 Administrador</option>
+                                        <option value="2" ${rolId == '2' ? 'selected' : ''}>👨‍🏫 Docente</option>
+                                        <option value="3" ${rolId == '3' ? 'selected' : ''}>🎓 Estudiante</option>
+                                        <option value="4" ${rolId == '4' ? 'selected' : ''}>👨‍👩‍👧‍👦 Padre</option>
+                                    </select>
+                                    <c:if test="${errorRolId}">
+                                        <div class="invalid-feedback">Debe seleccionar un rol válido</div>
+                                    </c:if>
                                 </div>
+                            </c:if>
+                            
+                            <%-- Campo de grado (solo visible cuando el rol es Estudiante) --%>
+                            <div class="form-group" id="gradoContainer" style="display: none;">
+                                <label for="grado" class="form-label fw-semibold">
+                                    <i class="fas fa-graduation-cap me-1"></i>Grado <span class="text-danger" id="gradoRequired">*</span>
+                                </label>
+                                <select class="form-select ${errorGrado ? 'is-invalid' : ''}" id="grado" name="grado">
+                                    <option value="">Seleccionar grado...</option>
+                                    <option value="3" ${grado == '3' || grado == '3°' ? 'selected' : ''}>3°</option>
+                                    <option value="4" ${grado == '4' || grado == '4°' ? 'selected' : ''}>4°</option>
+                                    <option value="5" ${grado == '5' || grado == '5°' ? 'selected' : ''}>5°</option>
+                                </select>
+                                <c:if test="${errorGrado}">
+                                    <div class="invalid-feedback">El grado debe ser 3°, 4° o 5°</div>
+                                </c:if>
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>El grado es obligatorio para estudiantes
+                                </small>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Confirmar contraseña <span class="text-danger">*</span></label>
-                                <div class="position-relative">
-                                    <input type="password" name="confirm" class="form-control password-field" minlength="6" required />
-                                    <button class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 toggle-pass" type="button">Ver</button>
-                                    <div class="invalid-feedback">Repite la contraseña.</div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Contraseña <span class="text-danger">*</span></label>
+                                    <div class="position-relative">
+                                        <input type="password" name="password" id="passwordInput" class="form-control password-field ${errorPassword ? 'is-invalid' : ''}" 
+                                               maxlength="20" required 
+                                               placeholder="Crea tu contraseña" />
+                                        <button class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 toggle-pass" type="button" style="z-index: 10;">Ver</button>
+                                        <c:if test="${errorPassword}">
+                                            <div class="invalid-feedback">La contraseña no cumple los requisitos</div>
+                                        </c:if>
+                                    </div>
+                                    
+                                    <!-- Validación visual en tiempo real -->
+                                    <div class="mt-2">
+                                        <div class="password-requirement d-flex align-items-center mb-1" id="req-letters-reg">
+                                            <span class="requirement-icon me-2">❌</span>
+                                            <small>Mínimo 5 letras</small>
+                                        </div>
+                                        <div class="password-requirement d-flex align-items-center mb-1" id="req-numbers-reg">
+                                            <span class="requirement-icon me-2">❌</span>
+                                            <small>Mínimo 2 números</small>
+                                        </div>
+                                        <div class="password-requirement d-flex align-items-center mb-1" id="req-special-reg">
+                                            <span class="requirement-icon me-2">❌</span>
+                                            <small>Mínimo 1 carácter especial (!@#$%^&*)</small>
+                                        </div>
+                                        <div class="password-requirement d-flex align-items-center mb-1" id="req-length-reg">
+                                            <span class="requirement-icon me-2">❌</span>
+                                            <small>Máximo 20 caracteres</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Confirmar contraseña <span class="text-danger">*</span></label>
+                                    <div class="position-relative">
+                                        <input type="password" name="confirm" class="form-control password-field" maxlength="20" required 
+                                               placeholder="Repite la contraseña" />
+                                        <button class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 toggle-pass" type="button" style="z-index: 10;">Ver</button>
+                                        <div class="invalid-feedback">Repite la contraseña.</div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="d-grid gap-2 mt-4">
-                                <button class="btn btn-success btn-lg shadow-sm" type="submit">Registrarme</button>
-                                <a class="btn btn-outline-secondary" href="${pageContext.request.contextPath}/login">Volver a iniciar sesión</a>
+                                <c:choose>
+                                    <c:when test="${sessionScope.usuario != null && sessionScope.usuario.rolId == 1}">
+                                        <button class="btn btn-success btn-lg shadow-sm fw-bold" type="submit">
+                                            <i class="fas fa-user-plus me-2"></i>Registrar Usuario
+                                        </button>
+                                        <a class="btn btn-outline-secondary" href="${pageContext.request.contextPath}/usuarios">
+                                            <i class="fas fa-arrow-left me-2"></i>Volver a Gestión de Usuarios
+                                        </a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button class="btn btn-success btn-lg shadow-sm" type="submit">Registrarme</button>
+                                        <a class="btn btn-outline-secondary" href="${pageContext.request.contextPath}/login">Volver a iniciar sesión</a>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </form>
                     </div>
@@ -110,31 +213,111 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    // Toggle pass
-    document.querySelectorAll('.toggle-pass').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const input = btn.closest('.position-relative').querySelector('.password-field');
-            const show = input.type === 'password';
-            input.type = show ? 'text' : 'password';
-            btn.textContent = show ? 'Ocultar' : 'Ver';
-        });
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Mostrar/ocultar campo de grado según el rol seleccionado
+const rolSelect = document.getElementById('rolId');
+const gradoContainer = document.getElementById('gradoContainer');
+const gradoSelect = document.getElementById('grado');
+
+if (rolSelect) {
+    // Verificar estado inicial
+    checkRolAndShowGrado();
+    
+    // Escuchar cambios en el selector de rol
+    rolSelect.addEventListener('change', checkRolAndShowGrado);
+}
+
+function checkRolAndShowGrado() {
+    if (rolSelect && gradoContainer) {
+        const selectedRol = rolSelect.value;
+        
+        if (selectedRol === '3') { // Estudiante
+            gradoContainer.style.display = 'block';
+            gradoSelect.setAttribute('required', 'required');
+        } else {
+            gradoContainer.style.display = 'none';
+            gradoSelect.removeAttribute('required');
+            gradoSelect.value = ''; // Limpiar selección
+        }
+    }
+}
+
+// Para registro público (sin admin), mostrar siempre el grado
+if (!rolSelect && gradoContainer) {
+    gradoContainer.style.display = 'block';
+}
+
+// Toggle pass
+document.querySelectorAll('.toggle-pass').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const input = btn.closest('.position-relative').querySelector('.password-field');
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.textContent = show ? 'Ocultar' : 'Ver';
     });
-    // Validation
-    (() => { const forms = document.querySelectorAll('.needs-validation');
-        Array.from(forms).forEach(form => { form.addEventListener('submit', evt => { if (!form.checkValidity()) { evt.preventDefault(); evt.stopPropagation(); } form.classList.add('was-validated'); }, false); }); })();
-</script>
-<script>
-    setTimeout(() => {
-        document.querySelectorAll('.alert-danger, .alert-success').forEach(alert => {
-            alert.style.display = 'none';
-        });
-    }, 3000);
-</script>
-<script>
+});
+
+// Validation
+(() => { const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => { form.addEventListener('submit', evt => { if (!form.checkValidity()) { evt.preventDefault(); evt.stopPropagation(); } form.classList.add('was-validated'); }, false); }); })();
+
+// Auto-hide alerts
+setTimeout(() => {
+    document.querySelectorAll('.alert-danger, .alert-success').forEach(alert => {
+        alert.style.display = 'none';
+    });
+}, 3000);
+
+// Validación visual en tiempo real de la contraseña
+const passwordInput = document.getElementById('passwordInput');
+if (passwordInput) {
+    passwordInput.addEventListener('input', function() {
+        validatePasswordVisual(this.value);
+    });
+}
+
+function validatePasswordVisual(password) {
+    // Contar letras
+    const letters = (password.match(/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/g) || []).length;
+    updateRequirementReg('req-letters-reg', letters >= 5);
+    
+    // Contar números
+    const numbers = (password.match(/[0-9]/g) || []).length;
+    updateRequirementReg('req-numbers-reg', numbers >= 2);
+    
+    // Verificar caracteres especiales
+    const specialChars = (password.match(/[!@#$%^&*]/g) || []).length;
+    updateRequirementReg('req-special-reg', specialChars >= 1);
+    
+    // Verificar longitud máxima
+    const validLength = password.length <= 20;
+    updateRequirementReg('req-length-reg', validLength);
+}
+
+function updateRequirementReg(elementId, isValid) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        const icon = element.querySelector('.requirement-icon');
+        const text = element.querySelector('small');
+        
+        if (isValid) {
+            icon.textContent = '✅';
+            icon.style.color = '#28a745';
+            text.style.color = '#28a745';
+            text.style.fontWeight = 'bold';
+        } else {
+            icon.textContent = '❌';
+            icon.style.color = '#dc3545';
+            text.style.color = '#dc3545';
+            text.style.fontWeight = 'normal';
+        }
+    }
+}
+
 // Expresiones regulares para validación
 const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{2,50}$/;
-const regexUsuario = /^(?=.*[0-9].*[0-9])[a-zA-Z0-9]{4,20}$/;
+const regexUsuario = /^[^\s]{5,15}$/;
 const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 // Validación en tiempo real
@@ -156,7 +339,7 @@ document.getElementById('apellidos').addEventListener('input', function() {
 
 document.getElementById('username').addEventListener('input', function() {
     if (!regexUsuario.test(this.value)) {
-        mostrarError(this, 'El usuario debe contener al menos 2 números y entre 4-20 caracteres');
+        mostrarError(this, 'El usuario debe tener entre 5 y 15 caracteres sin espacios');
     } else {
         limpiarError(this);
     }
@@ -192,7 +375,7 @@ document.getElementById('registroForm').addEventListener('submit', function(e) {
     // Validar usuario
     const username = document.getElementById('username');
     if (!regexUsuario.test(username.value)) {
-        mostrarError(username, 'El usuario debe contener al menos 2 números y entre 4-20 caracteres');
+        mostrarError(username, 'El usuario debe tener entre 5 y 15 caracteres sin espacios');
         isValid = false;
     }
 

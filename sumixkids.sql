@@ -76,6 +76,37 @@ LOCK TABLES `configuracion_sistema` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `dispositivos_reconocidos`
+--
+
+DROP TABLE IF EXISTS `dispositivos_reconocidos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dispositivos_reconocidos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `usuario_id` int(11) NOT NULL,
+  `device_id` varchar(64) NOT NULL,
+  `user_agent` varchar(255) DEFAULT NULL,
+  `fecha_ultimo_2fa` datetime NOT NULL,
+  `contador_2fa` int(11) DEFAULT 1,
+  `fecha_registro` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `usuario_id` (`usuario_id`,`device_id`),
+  CONSTRAINT `dispositivos_reconocidos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dispositivos_reconocidos`
+--
+
+LOCK TABLES `dispositivos_reconocidos` WRITE;
+/*!40000 ALTER TABLE `dispositivos_reconocidos` DISABLE KEYS */;
+INSERT INTO `dispositivos_reconocidos` VALUES (1,25,'3615a70d-aa1b-432f-9ff2-8f4a4b6075f1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-09-28 20:19:23',1,'2025-09-28 20:19:23'),(2,25,'fe5f69a1-614e-4cb1-9eac-4ab237d12ec2','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-09-28 20:33:17',1,'2025-09-28 20:33:17'),(3,25,'654321f7-c9f2-4c91-93bd-e63ea47c3e21','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-09-28 20:42:56',1,'2025-09-28 20:42:56'),(4,1,'654321f7-c9f2-4c91-93bd-e63ea47c3e21','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-09-28 20:43:23',1,'2025-09-28 20:43:23'),(5,25,'8cfc2ee5-cef8-40b8-98ab-5311b5659018','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-09-28 20:49:45',1,'2025-09-28 20:49:45');
+/*!40000 ALTER TABLE `dispositivos_reconocidos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `log_acceso`
 --
 
@@ -128,7 +159,7 @@ CREATE TABLE `log_auditoria` (
   KEY `aprobado_por_admin_id` (`aprobado_por_admin_id`),
   CONSTRAINT `log_auditoria_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`),
   CONSTRAINT `log_auditoria_ibfk_2` FOREIGN KEY (`aprobado_por_admin_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -137,7 +168,7 @@ CREATE TABLE `log_auditoria` (
 
 LOCK TABLES `log_auditoria` WRITE;
 /*!40000 ALTER TABLE `log_auditoria` DISABLE KEYS */;
-INSERT INTO `log_auditoria` VALUES (1,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 6 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-16 22:50:47','0:0:0:0:0:0:0:1',2),(3,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 8 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-17 08:31:17','0:0:0:0:0:0:0:1',2),(4,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 9 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-17 08:36:34','0:0:0:0:0:0:0:1',2),(5,2,'lumela','ELIMINACION_FALLIDA','usuarios','ID: 4 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-17 08:55:08','0:0:0:0:0:0:0:1',2),(9,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 10 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-18 00:35:43','0:0:0:0:0:0:0:1',2),(10,2,'lumela','ELIMINACION_FALLIDA','usuarios','ID: 11 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-18 10:29:01','0:0:0:0:0:0:0:1',2);
+INSERT INTO `log_auditoria` VALUES (1,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 6 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-16 22:50:47','0:0:0:0:0:0:0:1',2),(3,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 8 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-17 08:31:17','0:0:0:0:0:0:0:1',2),(4,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 9 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-17 08:36:34','0:0:0:0:0:0:0:1',2),(5,2,'lumela','ELIMINACION_FALLIDA','usuarios','ID: 4 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-17 08:55:08','0:0:0:0:0:0:0:1',2),(9,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 10 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-18 00:35:43','0:0:0:0:0:0:0:1',2),(10,2,'lumela','ELIMINACION_FALLIDA','usuarios','ID: 11 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-18 10:29:01','0:0:0:0:0:0:0:1',2),(13,1,'sebasagudelo','ELIMINACION_FALLIDA','usuarios','ID: 12 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-28 14:26:22','0:0:0:0:0:0:0:1',1),(14,1,'sebasagudelo','ELIMINACION_FALLIDA','usuarios','ID: 12 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-28 14:33:34','0:0:0:0:0:0:0:1',1),(15,1,'sebasagudelo','ELIMINACION_FALLIDA','usuarios','ID: 12 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-28 14:35:24','0:0:0:0:0:0:0:1',1),(16,1,'sebasagudelo','ELIMINACION_FALLIDA','usuarios','ID: 12 - Intento fallido',NULL,'Contraseña de administrador incorrecta','FALLIDO','2025-09-28 14:45:22','0:0:0:0:0:0:0:1',1),(17,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 12 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-28 14:45:37','0:0:0:0:0:0:0:1',1),(18,1,'sebasagudelo','ERROR_ELIMINACION','usuarios','ID: 13 - Error en eliminación',NULL,'Error: Cannot delete or update a parent row: a foreign key constraint fails (`sumixkids`.`dispositivos_reconocidos`, CONSTRAINT `dispositivos_reconocidos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`))','ERROR','2025-09-28 14:48:59','0:0:0:0:0:0:0:1',1),(19,1,'sebasagudelo','ERROR_ELIMINACION','usuarios','ID: 13 - Error en eliminación',NULL,'Error: Cannot delete or update a parent row: a foreign key constraint fails (`sumixkids`.`dispositivos_reconocidos`, CONSTRAINT `dispositivos_reconocidos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`))','ERROR','2025-09-28 14:49:38','0:0:0:0:0:0:0:1',1),(22,1,'sebasagudelo','ELIMINACION_FALLIDA','usuarios','ID: 15 - Intento fallido',NULL,'Contraseña de administrador incorrecta','FALLIDO','2025-09-28 15:20:50','0:0:0:0:0:0:0:1',1),(23,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 15 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-28 15:20:58','0:0:0:0:0:0:0:1',1),(24,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 16 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-28 15:40:49','0:0:0:0:0:0:0:1',1),(27,1,'sebasagudelo','LIMPIAR_REGISTROS','multiple','ID: 17 - Limpieza de registros tipo: todos',NULL,'Registros limpiados exitosamente para usuario: karen12','EXITOSO','2025-09-28 17:25:40','0:0:0:0:0:0:0:1',1),(28,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 17 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-28 17:25:56','0:0:0:0:0:0:0:1',1),(29,1,'sebasagudelo','ERROR_ELIMINACION','usuarios','ID: 21 - Error en eliminación',NULL,'Error: El usuario tiene registros dependientes que deben eliminarse primero:\\n- 1 código(s) de recuperación de contraseña\\nUse los botones de limpieza para eliminar estos registros antes de eliminar el usuario.','ERROR','2025-09-28 17:28:29','0:0:0:0:0:0:0:1',1),(41,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 24 - Usuario: juancuellar',NULL,'Preparando eliminación de usuario','INICIADO','2025-09-28 17:56:44','0:0:0:0:0:0:0:1',1),(43,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 13 - Usuario: sebas',NULL,'Preparando eliminación de usuario','INICIADO','2025-09-28 18:44:55','127.0.0.1',1),(44,1,'sebasagudelo','ERROR_ELIMINACION','usuarios','ID: 1 - Error eliminando usuario ID: 13',NULL,'Error: El usuario tiene registros dependientes que deben eliminarse primero:\\n- 1 registro(s) de auditoría\\nUse los botones de limpieza para eliminar estos registros antes de eliminar el usuario.','ERROR','2025-09-28 18:44:55','127.0.0.1',1),(45,1,'sebasagudelo','LIMPIAR_REGISTROS','multiple','ID: 13 - Limpieza de registros tipo: todos',NULL,'Registros limpiados exitosamente para usuario: sebas','EXITOSO','2025-09-28 18:45:01','127.0.0.1',1),(47,1,'sebasagudelo','ERROR_ELIMINACION','usuarios','ID: 1 - Error eliminando usuario ID: 13',NULL,'Error: Cannot delete or update a parent row: a foreign key constraint fails (`sumixkids`.`dispositivos_reconocidos`, CONSTRAINT `dispositivos_reconocidos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`))','ERROR','2025-09-28 18:45:11','127.0.0.1',1),(48,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 13 - Usuario: sebas',NULL,'Preparando eliminación de usuario','INICIADO','2025-09-28 18:56:12','0:0:0:0:0:0:0:1',1),(49,1,'sebasagudelo','ELIMINAR_USUARIO_EXITOSO','usuarios','ID: 1 - Usuario eliminado: sebas',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-28 18:56:15','0:0:0:0:0:0:0:1',1),(51,25,'sebasoquendo','ERROR_ELIMINACION','usuarios','ID: 25 - Error eliminando usuario ID: 25',NULL,'Error: Cannot delete or update a parent row: a foreign key constraint fails (`sumixkids`.`log_auditoria`, CONSTRAINT `log_auditoria_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`))','ERROR','2025-09-28 18:58:49','0:0:0:0:0:0:0:1',25),(52,25,'sebasoquendo','ELIMINAR_USUARIO','usuarios','ID: 25 - Usuario: sebasoquendo',NULL,'Preparando eliminación de usuario','INICIADO','2025-09-28 19:22:07','0:0:0:0:0:0:0:1',25),(53,25,'sebasoquendo','ERROR_ELIMINACION','usuarios','ID: 25 - Error eliminando usuario ID: 25',NULL,'Error: El usuario tiene registros dependientes que deben eliminarse primero:\\n- 2 registro(s) de auditoría\\nUse los botones de limpieza para eliminar estos registros antes de eliminar el usuario.','ERROR','2025-09-28 19:22:07','0:0:0:0:0:0:0:1',25);
 /*!40000 ALTER TABLE `log_auditoria` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -187,7 +218,7 @@ CREATE TABLE `password_resets_codes` (
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   CONSTRAINT `fk_password_resets_user` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -211,7 +242,7 @@ CREATE TABLE `roles` (
   `nombre_rol` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `nombre_rol` (`nombre_rol`)
-) ENGINE=InnoDB AUTO_INCREMENT=618 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1246 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -268,7 +299,7 @@ CREATE TABLE `two_factor_codes` (
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   CONSTRAINT `two_factor_codes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=162 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -326,6 +357,7 @@ CREATE TABLE `usuarios` (
   `email` varchar(100) NOT NULL,
   `nombres` varchar(100) NOT NULL,
   `apellidos` varchar(100) NOT NULL,
+  `grado` varchar(10) NOT NULL,
   `rol_id` int(11) NOT NULL,
   `fecha_registro` datetime DEFAULT current_timestamp(),
   `ultima_conexion` datetime DEFAULT NULL,
@@ -337,7 +369,7 @@ CREATE TABLE `usuarios` (
   UNIQUE KEY `email` (`email`),
   KEY `rol_id` (`rol_id`),
   CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -346,7 +378,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'sebasagudelo','$2a$10$utiqSrtrshAIu1ACHO4rJOQPUQhgaDEtvLdB8lxJzg2bCNqJFEy8e','agudelosebastian726@gmail.com','Sebastian Steven','Agudelo Oquendo',1,'2025-09-11 19:37:21','2025-09-18 10:23:46',0,0,NULL),(2,'lumela','$2a$10$pXgY28V/M0JsnynCQ9Zlhum/Enat5GHDsPp/8XhKrEC5zHKCfBTzq','lanbrrr153@gmail.com','Luis Eduardo','Mercado Laza',1,'2025-09-12 20:44:10','2025-09-18 10:28:28',0,0,NULL),(4,'glorialora','$2a$10$NA4qc4raaDgbg1UhoYvhpOwwCPE.geFdNNtaLr22QzrEdoJtzpCHi','sebasagu312@gmail.com','Gloria Amparo','Lora Patiño',3,'2025-09-14 21:25:07','2025-09-14 22:22:34',0,0,NULL);
+INSERT INTO `usuarios` VALUES (1,'sebasagudelo','$2a$10$utiqSrtrshAIu1ACHO4rJOQPUQhgaDEtvLdB8lxJzg2bCNqJFEy8e','agudelosebastian726@gmail.com','Sebastian Steven','Agudelo Oquendo','',1,'2025-09-11 19:37:21','2025-09-29 22:28:31',0,0,NULL),(2,'lumela','$2a$10$pXgY28V/M0JsnynCQ9Zlhum/Enat5GHDsPp/8XhKrEC5zHKCfBTzq','lanbrrr153@gmail.com','Luis Eduardo','Mercado Laza','',1,'2025-09-12 20:44:10','2025-09-18 10:28:28',0,0,NULL),(25,'sebasoquendo','$2a$10$8xz4Qzscw39CvK91zq5cJuwYz.OLVaBNh/NDBUttwmnwVcu4l5SJO','sebasagu312@gmail.com','Sebastian Steven','Oquendo','5',3,'2025-09-28 18:56:51','2025-09-28 21:12:02',0,0,NULL);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -359,4 +391,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-09-19 23:08:35
+-- Dump completed on 2025-09-29 22:39:57

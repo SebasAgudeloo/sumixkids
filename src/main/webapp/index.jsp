@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://sumixkids.com/functions" prefix="util" %>
 <%-- Página de inicio pública (landing) --%>
 <!DOCTYPE html>
 <html lang="es">
@@ -33,8 +34,8 @@
     <div class="container">
         <div class="row justify-content-center text-center">
             <div class="col-lg-8">
-                <h1 class="display-5 fw-bold text-white drop-shadow mb-4">Bienvenido a <span class="text-warning">SumixKids</span></h1>
-                <p class="lead text-white-50 mb-4">Plataforma educativa ligera para estudiantes, padres y docentes.</p>
+                <h1 class="display-5 fw-bold text-white-contrast drop-shadow mb-4">Bienvenido a <span class="text-warning">SumixKids</span></h1>
+                <p class="lead text-white-contrast mb-4">Plataforma educativa ligera para estudiantes, padres y docentes.</p>
                 <div class="d-flex flex-wrap justify-content-center gap-3">
                     <a class="btn btn-lg btn-light shadow-sm px-4" href="${pageContext.request.contextPath}/login">Iniciar sesión</a>
                     <a class="btn btn-lg btn-outline-light shadow-sm px-4" href="${pageContext.request.contextPath}/registro">Crear cuenta</a>

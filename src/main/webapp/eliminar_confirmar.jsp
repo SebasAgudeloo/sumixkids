@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://sumixkids.com/functions" prefix="util" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -111,7 +112,7 @@
             </div>
         </c:if>
 
-        <form id="deleteForm" method="POST" action="${pageContext.request.contextPath}/eliminarUsuario" onsubmit="return confirmarEliminacion(event)">
+        <form id="deleteForm" method="POST" action="${pageContext.request.contextPath}/eliminar_usuario" onsubmit="return confirmarEliminacion(event)">
             <input type="hidden" name="userId" value="${param.userId}">
             
             <div class="form-group">

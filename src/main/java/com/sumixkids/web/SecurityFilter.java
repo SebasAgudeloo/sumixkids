@@ -21,7 +21,7 @@ public class SecurityFilter implements Filter {
 
     // Rutas solo para admin
     private static final String[] ADMIN_PATHS = {
-        "/bienvenida", "/CambiarRolUsuarioServlet", "/EliminarUsuarioServlet"
+        "/bienvenida", "/CambiarRolUsuarioServlet", "/EliminarUsuarioServlet", "/admin/"
     };
 
     @Override

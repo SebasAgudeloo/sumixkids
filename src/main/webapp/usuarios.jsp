@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://sumixkids.com/functions" prefix="util" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -56,7 +57,7 @@
                                        <i class="bi bi-pencil"></i> Editar
                                     </a>
                                     <button class="btn btn-sm btn-danger" 
-                                            onclick="confirmarEliminacion(${usuario.id})">
+                                            onclick="confirmarEliminacion('${usuario.id}')">
                                             <i class="bi bi-trash"></i> Eliminar
                                     </button>
                                 </div>
@@ -72,7 +73,7 @@
     <script>
         function confirmarEliminacion(userId) {
             if (confirm('¿Está seguro que desea eliminar este usuario?')) {
-                window.location.href = '${pageContext.request.contextPath}/eliminarUsuario?id=' + userId;
+                window.location.href = '${pageContext.request.contextPath}/eliminar_usuario?id=' + userId;
             }
         }
     </script>

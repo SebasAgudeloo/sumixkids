@@ -19,7 +19,13 @@ public class LogAuditoriaDAO {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setTimestamp(1, Timestamp.valueOf(log.getFechaHora()));
+            // Si no tiene fecha, usar la fecha actual
+            LocalDateTime fechaHora = log.getFechaHora();
+            if (fechaHora == null) {
+                fechaHora = LocalDateTime.now();
+            }
+            stmt.setTimestamp(1, Timestamp.valueOf(fechaHora));
+            
             stmt.setInt(2, log.getIdUsuario());
             stmt.setString(3, log.getNombreUsuario());
             stmt.setString(4, log.getIpUsuario());
@@ -43,35 +49,83 @@ public class LogAuditoriaDAO {
     // Recupera registros de log_auditoria
     public List<LogAuditoria> buscarLogs(String filtro, LocalDateTime desde, 
                                         LocalDateTime hasta, Integer idUsuario) throws SQLException {
-        String sql = "SELECT * FROM log_auditoria ORDER BY fecha_hora DESC";
-        List<LogAuditoria> logs = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT id, id_usuario, nombre_usuario, accion, " +
+            "tabla_afectada, valor_anterior, valor_nuevo, descripcion, estado, " +
+            "fecha_hora, ip_usuario, aprobado_por_admin_id FROM log_auditoria WHERE 1=1");
+        List<Object> parametros = new ArrayList<>();
         
-        System.out.println("Debug: Ejecutando consulta SQL: " + sql); // Debug
-        
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            
-            while (rs.next()) {
-                LogAuditoria log = new LogAuditoria();
-                log.setId(rs.getLong("id"));
-                log.setFechaHora(rs.getTimestamp("fecha_hora").toLocalDateTime());
-                log.setIdUsuario(rs.getInt("id_usuario"));
-                log.setNombreUsuario(rs.getString("nombre_usuario"));
-                log.setIpUsuario(rs.getString("ip_usuario"));
-                log.setAccion(rs.getString("accion"));
-                log.setTablaAfectada(rs.getString("tabla_afectada"));
-                log.setValorAnterior(rs.getString("valor_anterior"));
-                log.setValorNuevo(rs.getString("valor_nuevo"));
-                log.setDescripcion(rs.getString("descripcion"));
-                log.setEstado(rs.getString("estado"));
-                log.setAprobadoPorAdminId(rs.getInt("aprobado_por_admin_id"));
-                
-                logs.add(log);
-            }
+        // Agregar filtros si existen
+        if (desde != null) {
+            sql.append(" AND fecha_hora >= ?");
+            parametros.add(Timestamp.valueOf(desde));
+        }
+        if (hasta != null) {
+            sql.append(" AND fecha_hora <= ?");
+            parametros.add(Timestamp.valueOf(hasta));
+        }
+        if (idUsuario != null) {
+            sql.append(" AND id_usuario = ?");
+            parametros.add(idUsuario);
+        }
+        if (filtro != null && !filtro.trim().isEmpty()) {
+            sql.append(" AND (nombre_usuario LIKE ? OR accion LIKE ? OR descripcion LIKE ?)");
+            String filtroParam = "%" + filtro + "%";
+            parametros.add(filtroParam);
+            parametros.add(filtroParam);
+            parametros.add(filtroParam);
         }
         
-        System.out.println("Debug: Registros encontrados: " + logs.size()); // Debug
+        sql.append(" ORDER BY fecha_hora DESC LIMIT 1000"); // Limitar resultados
+        
+        List<LogAuditoria> logs = new ArrayList<>();
+        
+        System.out.println("Debug: Ejecutando consulta SQL: " + sql.toString());
+        System.out.println("Debug: Parámetros: " + parametros);
+        
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            
+            // Establecer parámetros
+            for (int i = 0; i < parametros.size(); i++) {
+                stmt.setObject(i + 1, parametros.get(i));
+            }
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    LogAuditoria log = new LogAuditoria();
+                    log.setId(rs.getLong("id"));
+                    log.setIdUsuario(rs.getInt("id_usuario"));
+                    log.setNombreUsuario(rs.getString("nombre_usuario"));
+                    log.setAccion(rs.getString("accion"));
+                    log.setTablaAfectada(rs.getString("tabla_afectada"));
+                    log.setValorAnterior(rs.getString("valor_anterior"));
+                    log.setValorNuevo(rs.getString("valor_nuevo"));
+                    log.setDescripcion(rs.getString("descripcion"));
+                    log.setEstado(rs.getString("estado"));
+                    log.setFechaHora(rs.getTimestamp("fecha_hora").toLocalDateTime());
+                    log.setIpUsuario(rs.getString("ip_usuario"));
+                    
+                    // Manejar aprobado_por_admin_id que puede ser NULL
+                    int adminId = rs.getInt("aprobado_por_admin_id");
+                    if (!rs.wasNull()) {
+                        log.setAprobadoPorAdminId(adminId);
+                    }
+                    
+                    logs.add(log);
+                    
+                    System.out.println("Debug: Log agregado - ID: " + log.getId() + 
+                                     ", Usuario: " + log.getNombreUsuario() + 
+                                     ", Acción: " + log.getAccion() +
+                                     ", Fecha: " + log.getFechaHora());
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error ejecutando consulta: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        
+        System.out.println("Debug: Registros encontrados: " + logs.size());
         return logs;
     }
 

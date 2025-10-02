@@ -13,6 +13,7 @@ public class Usuario {
 	private String apellidos;
 	private String passwordHash;
 	private String email;
+	private String grado;
 	private Integer rolId;
 	private LocalDateTime fechaRegistro;
 	private LocalDateTime ultimaConexion;
@@ -22,7 +23,7 @@ public class Usuario {
 
 	public Usuario() {}
 
-	public Usuario(Integer id, String username, String nombres, String apellidos, String passwordHash, String email, Integer rolId,
+	public Usuario(Integer id, String username, String nombres, String apellidos, String passwordHash, String email, String grado, Integer rolId,
 				   LocalDateTime fechaRegistro, LocalDateTime ultimaConexion,
 				   Integer intentosFallidos, Boolean bloqueado, String autenticacion2fa) {
 		this.id = id;
@@ -31,6 +32,7 @@ public class Usuario {
 		this.apellidos = apellidos;
 		this.passwordHash = passwordHash;
 		this.email = email;
+		this.grado = grado;
 		this.rolId = rolId;
 		this.fechaRegistro = fechaRegistro;
 		this.ultimaConexion = ultimaConexion;
@@ -61,6 +63,10 @@ public class Usuario {
     /** Correo de contacto y también puede servir para iniciar sesión. */
 	public String getEmail() { return email; }
 	public void setEmail(String email) { this.email = email; }
+
+    /** Grado escolar del estudiante (3°, 4°, 5°). */
+	public String getGrado() { return grado; }
+	public void setGrado(String grado) { this.grado = grado; }
 
     /** Número que señala el rol (se conecta con la tabla roles). */
 	public Integer getRolId() { return rolId; }

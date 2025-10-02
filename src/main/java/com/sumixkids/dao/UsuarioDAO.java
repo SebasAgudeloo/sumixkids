@@ -257,9 +257,9 @@ public class UsuarioDAO {
      * Crea un nuevo usuario.
      */
     public int createUser(Usuario u) throws SQLException {
-        String sql = "INSERT INTO usuarios (username, nombres, apellidos, password_hash, email, " +
+        String sql = "INSERT INTO usuarios (username, nombres, apellidos, password_hash, email, grado, " +
                     "rol_id, fecha_registro, intentos_fallidos, bloqueado, autenticacion_2fa) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, ?)";
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?)";
         try (Connection cn = DatabaseManager.getConnection();
              PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, u.getUsername());
@@ -267,13 +267,14 @@ public class UsuarioDAO {
             ps.setString(3, u.getApellidos());
             ps.setString(4, u.getPasswordHash());
             ps.setString(5, u.getEmail());
+            ps.setString(6, u.getGrado() != null ? u.getGrado() : "");
             int rolId = (u.getRolId() != null) ? u.getRolId() : 
                        resolveRolIdByName(cn, RoleType.STUDENT.dbName());
-            ps.setInt(6, rolId);
-            ps.setTimestamp(7, Timestamp.valueOf(u.getFechaRegistro() != null ? 
+            ps.setInt(7, rolId);
+            ps.setTimestamp(8, Timestamp.valueOf(u.getFechaRegistro() != null ? 
                           u.getFechaRegistro() : 
                           ZonedDateTime.now(ZoneId.of("America/Bogota")).toLocalDateTime()));
-            ps.setString(8, u.getAutenticacion2fa());
+            ps.setString(9, u.getAutenticacion2fa());
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) return keys.getInt(1);
@@ -307,6 +308,42 @@ public class UsuarioDAO {
             ps.setString(1, newHash);
             ps.setInt(2, userId);
             ps.executeUpdate();
+        }
+    }
+    
+    /**
+     * Actualiza los datos completos de un usuario
+     */
+    public boolean updateUser(Usuario usuario) throws SQLException {
+        String sql = "UPDATE usuarios SET nombres = ?, apellidos = ?, email = ?, " +
+                     "password_hash = ?, rol_id = ?, grado = ? WHERE id = ?";
+        try (Connection cn = DatabaseManager.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, usuario.getNombres());
+            ps.setString(2, usuario.getApellidos());
+            ps.setString(3, usuario.getEmail());
+            ps.setString(4, usuario.getPasswordHash());
+            ps.setInt(5, usuario.getRolId());
+            ps.setString(6, usuario.getGrado());
+            ps.setInt(7, usuario.getId());
+            
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+        }
+    }
+
+    /**
+     * Cambia el estado (bloqueado/desbloqueado) de un usuario
+     */
+    public boolean cambiarEstadoUsuario(int userId, boolean bloquear) throws SQLException {
+        String sql = "UPDATE usuarios SET bloqueado = ? WHERE id = ?";
+        try (Connection cn = DatabaseManager.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setBoolean(1, bloquear);
+            ps.setInt(2, userId);
+            
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
         }
     }
 
@@ -369,6 +406,34 @@ public class UsuarioDAO {
     }
 
     /**
+     * Obtiene el total de usuarios por rol.
+     */
+    public int getCountByRol(int rolId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM usuarios WHERE rol_id = ?";
+        try (Connection cn = DatabaseManager.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, rolId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+    
+    /**
+     * Obtiene el total de usuarios.
+     */
+    public int getTotalUsers() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM usuarios";
+        try (Connection cn = DatabaseManager.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        }
+        return 0;
+    }
+
+    /**
      * Mapea un ResultSet a un objeto Usuario.
      */
     private static Usuario map(ResultSet rs) throws SQLException {
@@ -379,6 +444,7 @@ public class UsuarioDAO {
         u.setApellidos(rs.getString("apellidos"));
         u.setPasswordHash(rs.getString("password_hash"));
         u.setEmail(rs.getString("email"));
+        u.setGrado(rs.getString("grado"));
         u.setRolId(rs.getInt("rol_id"));
         Timestamp fr = rs.getTimestamp("fecha_registro");
         u.setFechaRegistro(fr != null ? fr.toLocalDateTime() : null);
@@ -388,5 +454,68 @@ public class UsuarioDAO {
         u.setBloqueado(rs.getBoolean("bloqueado"));
         u.setAutenticacion2fa(rs.getString("autenticacion_2fa"));
         return u;
+    }
+    
+    /**
+     * Obtiene estadísticas de usuarios por rol
+     */
+    public java.util.Map<String, Object> getEstadisticasPorRol() throws SQLException {
+        java.util.Map<String, Object> estadisticas = new java.util.HashMap<>();
+        
+        String sql = "SELECT " +
+                    "SUM(CASE WHEN rol_id = 1 THEN 1 ELSE 0 END) as administradores, " +
+                    "SUM(CASE WHEN rol_id = 2 THEN 1 ELSE 0 END) as docentes, " +
+                    "SUM(CASE WHEN rol_id = 3 THEN 1 ELSE 0 END) as estudiantes, " +
+                    "SUM(CASE WHEN rol_id = 4 THEN 1 ELSE 0 END) as padres " +
+                    "FROM usuarios";
+        
+        try (Connection cn = DatabaseManager.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            if (rs.next()) {
+                estadisticas.put("administradores", rs.getInt("administradores"));
+                estadisticas.put("docentes", rs.getInt("docentes"));
+                estadisticas.put("estudiantes", rs.getInt("estudiantes"));
+                estadisticas.put("padres", rs.getInt("padres"));
+            }
+        }
+        
+        return estadisticas;
+    }
+    
+    /**
+     * Verifica si existe un usuario con el username dado.
+     */
+    public boolean existeUsuario(String username) throws SQLException {
+        String sql = "SELECT 1 FROM usuarios WHERE username = ? LIMIT 1";
+        try (Connection cn = DatabaseManager.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+    
+    /**
+     * Verifica si existe un email en la base de datos.
+     */
+    public boolean existeEmail(String email) throws SQLException {
+        String sql = "SELECT 1 FROM usuarios WHERE email = ? LIMIT 1";
+        try (Connection cn = DatabaseManager.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+    
+    /**
+     * Crea un nuevo usuario (alternativa a createUser con nombre más descriptivo).
+     */
+    public void crearUsuario(Usuario u) throws SQLException {
+        createUser(u);
     }
 }

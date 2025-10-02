@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://sumixkids.com/functions" prefix="util" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -24,25 +25,48 @@
             <div class="col-12 col-sm-10 col-md-7 col-lg-5">
                 <div class="card shadow-lg border-0 rounded-4">
                     <div class="card-body p-4 p-md-5">
-                        <h1 class="h4 mb-4 text-center fw-bold text-primary">Recuperar contraseña</h1>
+                        <h1 class="h4 mb-4 text-center fw-bold text-primary">
+                            <i class="fas fa-envelope me-2"></i>Recuperar contraseña
+                        </h1>
+                        <p class="text-muted text-center mb-4">
+                            <i class="fas fa-info-circle me-1"></i>Ingresa tu correo electrónico y te enviaremos un código para restablecer tu contraseña
+                        </p>
                         <c:if test="${not empty error}">
-                            <div class="alert alert-danger">${error}</div>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>${error}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                         </c:if>
                         <c:if test="${not empty mensaje}">
-                            <div class="alert alert-success">${mensaje}</div>
-                        </c:if>
-                        <form method="post" action="${pageContext.request.contextPath}/recuperar">
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Correo electrónico <span class="text-danger">*</span></label>
-                                <input type="email" name="correo" class="form-control" placeholder="Ingresa tu correo" required />
-                                <div class="invalid-feedback">Campo obligatorio.</div>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>${mensaje}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
-                            <div class="d-grid mb-2">
-                                <button type="submit" class="btn btn-primary">Enviar código</button>
+                        </c:if>
+                        <form id="recuperarForm" method="post" action="${pageContext.request.contextPath}/recuperar">
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-at me-1"></i>Correo electrónico <span class="text-danger">*</span>
+                                </label>
+                                <input type="email" name="correo" id="correo" class="form-control ${errorCorreo ? 'is-invalid' : ''}" 
+                                       placeholder="ejemplo@gmail.com" value="${correo}" required />
+                                <div class="form-text">
+                                    <i class="fas fa-shield-alt me-1"></i>Recibirás un código de 6 dígitos para restablecer tu contraseña
+                                </div>
+                                <c:if test="${errorCorreo}">
+                                    <div class="invalid-feedback">Ingresa un correo electrónico válido</div>
+                                </c:if>
+                            </div>
+                            <div class="d-grid gap-2 mb-3">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane me-2"></i>Enviar código
+                                </button>
                             </div>
                         </form>
-                        <div class="text-center mt-3">
-                            <a href="${pageContext.request.contextPath}/login">Volver a iniciar sesión</a>
+                        <div class="text-center mt-4">
+                            <a href="${pageContext.request.contextPath}/login" class="text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i>Volver a iniciar sesión
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -50,12 +74,50 @@
         </div>
     </div>
 </main>
+
+<footer class="py-3 bg-dark mt-auto text-center text-white-50 small">
+    © <span id="year"></span> SumixKids · Todos los derechos reservados
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script>
-    setTimeout(() => {
-        document.querySelectorAll('.alert-danger, .alert-success').forEach(alert => {
-            alert.style.display = 'none';
-        });
-    }, 3000);
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Auto-hide alerts después de 4 segundos
+setTimeout(() => {
+    document.querySelectorAll('.alert-danger, .alert-success').forEach(alert => {
+        alert.style.display = 'none';
+    });
+}, 4000);
+
+// Validación del formulario
+document.getElementById('recuperarForm').addEventListener('submit', function(e) {
+    const correo = document.getElementById('correo');
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    
+    if (!emailPattern.test(correo.value)) {
+        e.preventDefault();
+        correo.classList.add('is-invalid');
+        
+        let errorDiv = correo.parentElement.querySelector('.custom-error-message');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'custom-error-message text-danger mt-1 small';
+            correo.parentElement.appendChild(errorDiv);
+        }
+        errorDiv.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i>Por favor, ingresa un correo electrónico válido';
+    }
+});
+
+// Limpiar error al escribir
+document.getElementById('correo').addEventListener('input', function() {
+    this.classList.remove('is-invalid');
+    const errorDiv = this.parentElement.querySelector('.custom-error-message');
+    if (errorDiv) {
+        errorDiv.remove();
+    }
+});
 </script>
 </body>
 </html>
