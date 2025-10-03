@@ -8,24 +8,35 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Iniciar sesión · SumixKids</title>
+        <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css" />
 </head>
 <body class="bg-gradient-primary d-flex flex-column min-vh-100">
 <%-- Barra superior de navegación (logo y enlaces principales) --%>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark shadow-lg" style="background: rgba(37, 99, 235, 0.95); backdrop-filter: blur(10px);">
     <div class="container">
         <a class="navbar-brand fw-bold d-flex align-items-center" href="${pageContext.request.contextPath}/">
-            <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="Logo SumixKids" style="height: 36px; width: auto; margin-right: 8px;"/>
+            <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="Logo SumixKids" 
+                 style="height: 40px; width: auto; margin-right: 12px; border-radius: 8px;"/>
             SumixKids
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample" aria-controls="navbarsExample" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarsExample">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link active" href="${pageContext.request.contextPath}/login">Iniciar sesión</a></li>
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/registro">Registro</a></li>
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white fw-semibold px-3 active" href="${pageContext.request.contextPath}/login">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white fw-semibold px-3" href="${pageContext.request.contextPath}/registro">
+                        <i class="bi bi-person-plus me-1"></i>Registro
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
@@ -88,8 +99,26 @@
         </div>
     </div>
 </main>
-<footer class="py-3 bg-dark mt-auto text-center text-white-50 small">
-    © <span id="year"></span> SumixKids · Todos los derechos reservados
+
+<%-- Footer --%>
+<footer class="py-4 mt-auto" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-2 mb-md-0">
+                    <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="SumixKids" 
+                         style="height: 24px; margin-right: 8px;">
+                    <span class="text-white fw-semibold">SumixKids</span>
+                </div>
+                <p class="text-white-50 small mb-0">Software educativo para la práctica de sumas</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <p class="text-white-50 small mb-1">
+                    © <span id="year"></span> SumixKids · Todos los derechos reservados
+                </p>
+            </div>
+        </div>
+    </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
@@ -110,7 +139,7 @@
             alert.classList.add('fade');
             setTimeout(() => alert.style.display = 'none', 300);
         });
-    }, 3000);
+    }, 10000);
     // Bootstrap validation
     (() => { const forms = document.querySelectorAll('.needs-validation');
         Array.from(forms).forEach(form => { form.addEventListener('submit', evt => { if (!form.checkValidity()) { evt.preventDefault(); evt.stopPropagation(); } form.classList.add('was-validated'); }, false); }); })();

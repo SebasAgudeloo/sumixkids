@@ -47,9 +47,9 @@ public class RestablecerServlet extends HttpServlet {
             return;
         }
         
-        // Validar formato de código (6 dígitos)
-        if (!codigo.matches("^[0-9]{6}$")) {
-            request.setAttribute("error", "❌ El código debe tener 6 dígitos numéricos");
+        // Validar formato de código alfabético para recuperación de contraseña (6 letras)
+        if (!codigo.matches("^[A-Za-z]{6}$")) {
+            request.setAttribute("error", "❌ El código debe tener 6 letras (solo letras, sin números)");
             request.setAttribute("errorCodigo", true);
             request.getRequestDispatcher("restablecer.jsp").forward(request, response);
             return;

@@ -8,24 +8,35 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Registro · SumixKids</title>
+        <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css" />
 </head>
 <body class="bg-gradient-primary d-flex flex-column min-vh-100">
 <%-- Barra de navegación --%>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark shadow-lg" style="background: rgba(37, 99, 235, 0.95); backdrop-filter: blur(10px);">
     <div class="container">
         <a class="navbar-brand fw-bold d-flex align-items-center" href="${pageContext.request.contextPath}/">
-            <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="Logo SumixKids" style="height: 36px; width: auto; margin-right: 8px;"/>
-            SumixKids
+            <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="Logo SumixKids" 
+                 style="height: 40px; width: auto; margin-right: 12px; border-radius: 8px;"/>
+            <span class="text-white-contrast">SumixKids</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample" aria-controls="navbarsExample" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarsExample">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/login">Iniciar sesión</a></li>
-                <li class="nav-item"><a class="nav-link active" href="${pageContext.request.contextPath}/registro">Registro</a></li>
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white fw-semibold px-3" href="${pageContext.request.contextPath}/login">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white fw-semibold px-3 active" href="${pageContext.request.contextPath}/registro">
+                        <i class="bi bi-person-plus me-1"></i>Registro
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
@@ -48,6 +59,27 @@
                                 </c:otherwise>
                             </c:choose>
                         </h1>
+                        
+                        <%-- Mensaje informativo para registro público --%>
+                        <c:if test="${sessionScope.usuario == null}">
+                            <div class="alert alert-info border-0 shadow-sm mb-4" role="alert">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-info-circle text-info me-3 mt-1" style="font-size: 1.2rem;"></i>
+                                    <div>
+                                        <h6 class="alert-heading mb-2">📝 Guía de Registro</h6>
+                                        <p class="mb-2"><strong>🎓 Si eres estudiante:</strong> Regístrate normalmente.</p>
+                                        <p class="mb-2"><strong>👨‍🏫 Si eres docente:</strong> Regístrate como estudiante y contacta al administrador para que te asigne el rol de docente.</p>
+                                        <p class="mb-0"><strong>👨‍👩‍👧‍👦 Si eres padre/madre:</strong> Regístrate como estudiante y solicita al docente de tu hijo(a) que te asigne el rol de padre.</p>
+                                        <hr class="my-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-shield-alt me-1"></i>
+                                            Esto evita registros incorrectos y mantiene la seguridad del sistema.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:if>
+                        
                         <%-- Mensajes de error de validación --%>
                         <c:if test="${not empty error}">
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -140,49 +172,60 @@
                                     <i class="fas fa-info-circle me-1"></i>El grado es obligatorio para estudiantes
                                 </small>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Contraseña <span class="text-danger">*</span></label>
-                                    <div class="position-relative">
-                                        <input type="password" name="password" id="passwordInput" class="form-control password-field ${errorPassword ? 'is-invalid' : ''}" 
-                                               maxlength="20" required 
-                                               placeholder="Crea tu contraseña" />
-                                        <button class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 toggle-pass" type="button" style="z-index: 10;">Ver</button>
-                                        <c:if test="${errorPassword}">
-                                            <div class="invalid-feedback">La contraseña no cumple los requisitos</div>
-                                        </c:if>
-                                    </div>
-                                    
-                                    <!-- Validación visual en tiempo real -->
-                                    <div class="mt-2">
-                                        <div class="password-requirement d-flex align-items-center mb-1" id="req-letters-reg">
-                                            <span class="requirement-icon me-2">❌</span>
-                                            <small>Mínimo 5 letras</small>
-                                        </div>
-                                        <div class="password-requirement d-flex align-items-center mb-1" id="req-numbers-reg">
-                                            <span class="requirement-icon me-2">❌</span>
-                                            <small>Mínimo 2 números</small>
-                                        </div>
-                                        <div class="password-requirement d-flex align-items-center mb-1" id="req-special-reg">
-                                            <span class="requirement-icon me-2">❌</span>
-                                            <small>Mínimo 1 carácter especial (!@#$%^&*)</small>
-                                        </div>
-                                        <div class="password-requirement d-flex align-items-center mb-1" id="req-length-reg">
-                                            <span class="requirement-icon me-2">❌</span>
-                                            <small>Máximo 20 caracteres</small>
-                                        </div>
-                                    </div>
+                            
+                            <%-- Campo de contraseña --%>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Contraseña <span class="text-danger">*</span></label>
+                                <div class="position-relative">
+                                    <input type="password" name="password" id="passwordInput" class="form-control password-field ${errorPassword ? 'is-invalid' : ''}" 
+                                           maxlength="20" required 
+                                           placeholder="Crea tu contraseña" />
+                                    <button class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 toggle-pass" type="button" style="z-index: 10;">Ver</button>
+                                    <c:if test="${errorPassword}">
+                                        <div class="invalid-feedback">La contraseña no cumple los requisitos</div>
+                                    </c:if>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Confirmar contraseña <span class="text-danger">*</span></label>
-                                    <div class="position-relative">
-                                        <input type="password" name="confirm" class="form-control password-field" maxlength="20" required 
-                                               placeholder="Repite la contraseña" />
-                                        <button class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 toggle-pass" type="button" style="z-index: 10;">Ver</button>
-                                        <div class="invalid-feedback">Repite la contraseña.</div>
+                            </div>
+                            
+                            <%-- Requisitos de contraseña en el centro --%>
+                            <div class="mb-3">
+                                <div class="border rounded p-3 bg-light">
+                                    <small class="fw-bold text-muted d-block mb-2">
+                                        <i class="fas fa-shield-alt me-1"></i>Requisitos de contraseña:
+                                    </small>
+                                    <div class="password-requirement d-flex align-items-center mb-1" id="req-letters-reg">
+                                        <span class="requirement-icon me-2">❌</span>
+                                        <small>Mínimo 5 letras</small>
+                                    </div>
+                                    <div class="password-requirement d-flex align-items-center mb-1" id="req-numbers-reg">
+                                        <span class="requirement-icon me-2">❌</span>
+                                        <small>Mínimo 2 números</small>
+                                    </div>
+                                    <div class="password-requirement d-flex align-items-center mb-1" id="req-special-reg">
+                                        <span class="requirement-icon me-2">❌</span>
+                                        <small>Mínimo 1 carácter especial (!@#$%^&*)</small>
+                                    </div>
+                                    <div class="password-requirement d-flex align-items-center mb-1" id="req-length-reg">
+                                        <span class="requirement-icon me-2">❌</span>
+                                        <small>Máximo 20 caracteres</small>
                                     </div>
                                 </div>
                             </div>
+                            
+                            <%-- Campo de confirmar contraseña --%>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Confirmar contraseña <span class="text-danger">*</span></label>
+                                <div class="position-relative">
+                                    <input type="password" name="confirm" class="form-control password-field" maxlength="20" required 
+                                           placeholder="Repite la contraseña" />
+                                    <button class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 toggle-pass" type="button" style="z-index: 10;">Ver</button>
+                                    <div class="invalid-feedback">Repite la contraseña.</div>
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>Asegúrate de que ambas contraseñas coincidan
+                                </div>
+                            </div>
+                            
                             <div class="d-grid gap-2 mt-4">
                                 <c:choose>
                                     <c:when test="${sessionScope.usuario != null && sessionScope.usuario.rolId == 1}">
@@ -207,8 +250,25 @@
     </div>
 </main>
 
-<footer class="py-3 bg-dark mt-auto text-center text-white-50 small">
-    © <span id="year"></span> SumixKids · Todos los derechos reservados
+<%-- Footer --%>
+<footer class="py-4 mt-auto" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-2 mb-md-0">
+                    <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="SumixKids" 
+                         style="height: 24px; margin-right: 8px;">
+                    <span class="text-white fw-semibold">SumixKids</span>
+                </div>
+                <p class="text-white-50 small mb-0">Software educativo para la práctica de sumas</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <p class="text-white-50 small mb-1">
+                    © <span id="year"></span> SumixKids · Todos los derechos reservados
+                </p>
+            </div>
+        </div>
+    </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
@@ -267,7 +327,7 @@ setTimeout(() => {
     document.querySelectorAll('.alert-danger, .alert-success').forEach(alert => {
         alert.style.display = 'none';
     });
-}, 3000);
+}, 10000);
 
 // Validación visual en tiempo real de la contraseña
 const passwordInput = document.getElementById('passwordInput');

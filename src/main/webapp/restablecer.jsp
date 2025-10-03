@@ -7,6 +7,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Restablecer contraseña · SumixKids</title>
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css" />
 </head>
@@ -48,7 +49,7 @@
                                 <input type="text" name="usuario_correo" id="usuario_correo" class="form-control ${errorUsuarioCorreo ? 'is-invalid' : ''}" 
                                        placeholder="Ingresa tu usuario o correo" value="${usuario_correo}" required />
                                 <div class="form-text">
-                                    <i class="fas fa-info-circle me-1"></i>Puedes ingresar tu usuario o tu correo electrónico
+                                    <i class="fas fa-info-circle me-1"></i>Debes ingresar tu usuario o tu correo electrónico
                                 </div>
                                 <c:if test="${errorUsuarioCorreo}">
                                     <div class="invalid-feedback">Este campo es obligatorio</div>
@@ -60,13 +61,13 @@
                                     <i class="fas fa-lock me-1"></i>Código enviado <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" name="codigo" id="codigo" class="form-control ${errorCodigo ? 'is-invalid' : ''}" 
-                                       placeholder="Código recibido por correo" value="${codigo}" required 
-                                       maxlength="6" pattern="[0-9]{6}" />
+                                       placeholder="ABCDEF" value="${codigo}" required 
+                                       maxlength="6" pattern="[A-Za-z]{6}" style="text-transform: uppercase;" />
                                 <div class="form-text">
-                                    <i class="fas fa-envelope me-1"></i>Ingresa el código de 6 dígitos que recibiste por correo
+                                    <i class="fas fa-envelope me-1"></i>Ingresa el código de <b>6 letras</b> que recibiste por correo
                                 </div>
                                 <c:if test="${errorCodigo}">
-                                    <div class="invalid-feedback">El código debe tener 6 dígitos numéricos</div>
+                                    <div class="invalid-feedback">El código debe tener <b>6 letras</b> (solo letras, sin números)</div>
                                 </c:if>
                             </div>
                             
@@ -121,7 +122,7 @@
                                     </button>
                                 </div>
                                 <div class="form-text">
-                                    <i class="fas fa-info-circle me-1"></i>Asegúrate de que ambas contraseñas coincidan
+                                    <i class="fas fa-info-circle me-1"></i>Asegúrate de que <b>ambas contraseñas</b> coincidan
                                 </div>
                             </div>
                             
@@ -141,8 +142,25 @@
     </div>
 </main>
 
-<footer class="py-3 bg-dark mt-auto text-center text-white-50 small">
-    © <span id="year"></span> SumixKids · Todos los derechos reservados
+<%-- Footer --%>
+<footer class="py-4 mt-auto" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-2 mb-md-0">
+                    <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="SumixKids" 
+                         style="height: 24px; margin-right: 8px;">
+                    <span class="text-white fw-semibold">SumixKids</span>
+                </div>
+                <p class="text-white-50 small mb-0">Software educativo para la práctica de sumas</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <p class="text-white-50 small mb-1">
+                    © <span id="year"></span> SumixKids · Todos los derechos reservados
+                </p>
+            </div>
+        </div>
+    </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
@@ -162,12 +180,12 @@ document.querySelectorAll('.toggle-pass').forEach(btn => {
     });
 });
 
-// Auto-hide alerts después de 4 segundos
+// Auto-hide alerts después de 10 segundos
 setTimeout(() => {
     document.querySelectorAll('.alert-danger, .alert-success').forEach(alert => {
         alert.style.display = 'none';
     });
-}, 4000);
+}, 10000);
 
 // Validación visual en tiempo real de la contraseña
 const passwordInput = document.getElementById('nueva1');
@@ -229,11 +247,11 @@ document.getElementById('restablecerForm').addEventListener('submit', function(e
         limpiarError(usuarioCorreo);
     }
     
-    // Validar código (6 dígitos)
+    // Validar código (6 letras)
     const codigo = document.getElementById('codigo');
-    const codigoPattern = /^[0-9]{6}$/;
+    const codigoPattern = /^[A-Za-z]{6}$/;
     if (!codigoPattern.test(codigo.value)) {
-        mostrarError(codigo, 'El código debe tener 6 dígitos numéricos');
+        mostrarError(codigo, 'El código debe tener 6 letras (solo letras, sin números)');
         isValid = false;
     } else {
         limpiarError(codigo);
@@ -263,9 +281,10 @@ document.getElementById('restablecerForm').addEventListener('submit', function(e
     }
 });
 
-// Validación en tiempo real del código (solo números)
+// Validación en tiempo real del código (solo letras)
 document.getElementById('codigo').addEventListener('input', function() {
-    this.value = this.value.replace(/[^0-9]/g, '');
+    // Convertir a mayúsculas y permitir solo letras
+    this.value = this.value.replace(/[^A-Za-z]/g, '').toUpperCase();
     if (this.value.length > 6) {
         this.value = this.value.substring(0, 6);
     }

@@ -138,6 +138,17 @@
 		<url-pattern>/eliminar_usuario</url-pattern>
 	</servlet-mapping>
 
+	<!-- Rutas adicionales para eliminación de usuarios -->
+	<servlet-mapping>
+		<servlet-name>EliminarUsuarioServlet</servlet-name>
+		<url-pattern>/usuario_eliminar</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>EliminarUsuarioServlet</servlet-name>
+		<url-pattern>/admin_eliminar</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>EditarUsuarioServlet</servlet-name>
 		<servlet-class>com.sumixkids.web.EditarUsuarioServlet</servlet-class>
@@ -206,6 +217,16 @@
 	<servlet-mapping>
 		<servlet-name>CambiarRolUsuarioServlet</servlet-name>
 		<url-pattern>/cambiar_rol_usuario</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>RegistrosAsociadosServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.RegistrosAsociadosServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RegistrosAsociadosServlet</servlet-name>
+		<url-pattern>/registros_asociados</url-pattern>
 	</servlet-mapping>
 
 	<!-- (Se pueden agregar más servlets en el futuro) -->

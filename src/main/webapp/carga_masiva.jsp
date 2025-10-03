@@ -7,6 +7,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Carga Masiva · SumixKids</title>
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css" />
@@ -407,8 +408,25 @@
     </div>
 </main>
 
-<footer class="py-3 bg-dark mt-auto text-center text-white-50 small">
-    © <span id="year"></span> SumixKids · Todos los derechos reservados
+<%-- Footer --%>
+<footer class="py-4 mt-auto" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-2 mb-md-0">
+                    <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="SumixKids" 
+                         style="height: 24px; margin-right: 8px;">
+                    <span class="text-white fw-semibold">SumixKids</span>
+                </div>
+                <p class="text-white-50 small mb-0">Software educativo para la práctica de sumas</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <p class="text-white-50 small mb-1">
+                    © <span id="year"></span> SumixKids · Todos los derechos reservados
+                </p>
+            </div>
+        </div>
+    </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

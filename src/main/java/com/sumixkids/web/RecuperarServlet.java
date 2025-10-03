@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.util.Base64;
 
 public class RecuperarServlet extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(RecuperarServlet.class);
@@ -117,9 +116,15 @@ public class RecuperarServlet extends HttpServlet {
     }
 
     private String generarCodigo() {
+        // Generar código alfabético de 6 letras para recuperación de contraseña
         SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[4];
-        random.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        String letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        StringBuilder codigo = new StringBuilder();
+        
+        for (int i = 0; i < 6; i++) {
+            codigo.append(letras.charAt(random.nextInt(letras.length())));
+        }
+        
+        return codigo.toString();
     }
 }

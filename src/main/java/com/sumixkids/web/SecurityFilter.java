@@ -21,7 +21,13 @@ public class SecurityFilter implements Filter {
 
     // Rutas solo para admin
     private static final String[] ADMIN_PATHS = {
-        "/bienvenida", "/CambiarRolUsuarioServlet", "/EliminarUsuarioServlet", "/admin/"
+        "/usuarios", "/admin/", "/auditoria", "/carga_masiva"
+    };
+
+    // Rutas que requieren autenticación pero no rol específico
+    private static final String[] AUTHENTICATED_PATHS = {
+        "/bienvenida", "/registros_asociados", "/eliminar_usuario", "/eliminar_confirmar.jsp",
+        "/usuario_eliminar", "/admin_eliminar", "/logout", "/editar_usuario", "/cambiar_estado"
     };
 
     @Override
@@ -35,9 +41,12 @@ public class SecurityFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
         String path = req.getRequestURI().substring(req.getContextPath().length());
 
+        System.out.println("[SecurityFilter] Procesando path: " + path);
+
         // Permitir recursos estáticos y rutas públicas
         for (String pub : PUBLIC_PATHS) {
             if (path.startsWith(pub)) {
+                System.out.println("[SecurityFilter] Ruta pública permitida: " + path);
                 chain.doFilter(request, response);
                 return;
             }
@@ -48,21 +57,37 @@ public class SecurityFilter implements Filter {
 
         // Si no está autenticado, redirigir a login
         if (usuario == null) {
+            System.out.println("[SecurityFilter] Usuario no autenticado, redirigiendo");
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
+        }
+
+        System.out.println("[SecurityFilter] Usuario: " + usuario.getNombres() + ", Rol ID: " + usuario.getRolId());
+
+        // Verificar rutas autenticadas (cualquier usuario logueado puede acceder)
+        for (String auth : AUTHENTICATED_PATHS) {
+            if (path.startsWith(auth)) {
+                System.out.println("[SecurityFilter] Ruta autenticada permitida: " + path);
+                chain.doFilter(request, response);
+                return;
+            }
         }
 
         // Si es ruta de admin, verificar rol
         for (String admin : ADMIN_PATHS) {
             if (path.startsWith(admin)) {
                 if (usuario.getRolId() == null || usuario.getRolId() != 1) {
+                    System.out.println("[SecurityFilter] Acceso denegado a admin para usuario: " + usuario.getNombres());
                     resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Acceso denegado: solo para administradores");
                     return;
                 }
+                System.out.println("[SecurityFilter] Acceso admin permitido");
+                break;
             }
         }
 
         // Si pasa todos los filtros, continuar
+        System.out.println("[SecurityFilter] Permitiendo acceso a: " + path);
         chain.doFilter(request, response);
     }
 

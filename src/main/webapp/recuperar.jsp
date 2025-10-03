@@ -7,6 +7,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Recuperar contraseña · SumixKids</title>
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css" />
 </head>
@@ -29,7 +30,7 @@
                             <i class="fas fa-envelope me-2"></i>Recuperar contraseña
                         </h1>
                         <p class="text-muted text-center mb-4">
-                            <i class="fas fa-info-circle me-1"></i>Ingresa tu correo electrónico y te enviaremos un código para restablecer tu contraseña
+                            <i class="fas fa-info-circle me-1"></i>Ingresa tu correo electrónico y te enviaremos un <b>código</b> para restablecer tu contraseña
                         </p>
                         <c:if test="${not empty error}">
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -51,7 +52,7 @@
                                 <input type="email" name="correo" id="correo" class="form-control ${errorCorreo ? 'is-invalid' : ''}" 
                                        placeholder="ejemplo@gmail.com" value="${correo}" required />
                                 <div class="form-text">
-                                    <i class="fas fa-shield-alt me-1"></i>Recibirás un código de 6 dígitos para restablecer tu contraseña
+                                    <i class="fas fa-shield-alt me-1"></i>Recibirás un código de <b>6 dígitos numéricos</b> para restablecer tu contraseña
                                 </div>
                                 <c:if test="${errorCorreo}">
                                     <div class="invalid-feedback">Ingresa un correo electrónico válido</div>
@@ -75,8 +76,25 @@
     </div>
 </main>
 
-<footer class="py-3 bg-dark mt-auto text-center text-white-50 small">
-    © <span id="year"></span> SumixKids · Todos los derechos reservados
+<%-- Footer --%>
+<footer class="py-4 mt-auto" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-2 mb-md-0">
+                    <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="SumixKids" 
+                         style="height: 24px; margin-right: 8px;">
+                    <span class="text-white fw-semibold">SumixKids</span>
+                </div>
+                <p class="text-white-50 small mb-0">Software educativo para la práctica de sumas</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <p class="text-white-50 small mb-1">
+                    © <span id="year"></span> SumixKids · Todos los derechos reservados
+                </p>
+            </div>
+        </div>
+    </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
@@ -84,12 +102,12 @@
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Auto-hide alerts después de 4 segundos
+// Auto-hide alerts después de 10 segundos
 setTimeout(() => {
     document.querySelectorAll('.alert-danger, .alert-success').forEach(alert => {
         alert.style.display = 'none';
     });
-}, 4000);
+}, 10000);
 
 // Validación del formulario
 document.getElementById('recuperarForm').addEventListener('submit', function(e) {
