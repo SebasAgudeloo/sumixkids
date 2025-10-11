@@ -23,12 +23,31 @@
 
     <!-- Bibliotecas que el proyecto necesita -->
     <dependencies>
+        <!-- SLF4J API para logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.13</version>
+        </dependency>
+        <!-- Logback como implementación de SLF4J -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.4.14</version>
+        </dependency>
     <!-- Librería de Servlets (el servidor Tomcat la proporciona en tiempo de ejecución) -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>4.0.1</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- JavaMail API para envío de correos (SMTP Gmail) -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.1</version>
         </dependency>
 
     <!-- Soporte de páginas JSP (también la aporta el servidor) -->
@@ -58,6 +77,21 @@
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
+        </dependency>
+
+    <!-- Dependencia para trabajar con servlets (manejo de peticiones/respuestas HTTP en aplicaciones web Java) -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+    <!-- Dependencia para manipular archivos de Excel (XLSX y XLS) con Apache POI -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.3</version>
         </dependency>
 
     </dependencies>

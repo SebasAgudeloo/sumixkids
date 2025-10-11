@@ -1,5 +1,8 @@
 package com.sumixkids.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -16,6 +19,8 @@ import java.util.Properties;
  * 2) Si no existe esa configuración, usa los datos guardados en el archivo config.properties.
  */
 public class DatabaseManager {
+
+	private static final Logger logger = LoggerFactory.getLogger(DatabaseManager.class);
 
 	private static final String JNDI_NAME = "java:comp/env/jdbc/sumixkidsDS";
 	private static DataSource dataSource;
@@ -50,8 +55,8 @@ public class DatabaseManager {
 				return dataSource.getConnection();
 			} catch (SQLException e) {
 				// Si el JNDI está mal configurado, hacemos fallback a DriverManager usando config.properties
-				System.err.println("[DatabaseManager] Error obteniendo conexión JNDI (jdbc/sumixkidsDS): " + e.getMessage());
-				System.err.println("[DatabaseManager] Usando fallback DriverManager con config.properties");
+				logger.error("Error obteniendo conexión JNDI (jdbc/sumixkidsDS)", e);
+				logger.warn("Usando fallback DriverManager con config.properties");
 			}
 		}
 

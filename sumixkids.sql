@@ -24,39 +24,6 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `sumixkids` /*!40100 DEFAULT CHARACTER 
 USE `sumixkids`;
 
 --
--- Table structure for table `asignaciones_docente`
---
-
-DROP TABLE IF EXISTS `asignaciones_docente`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `asignaciones_docente` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `docente_id` int(11) NOT NULL,
-  `estudiante_id` int(11) NOT NULL,
-  `nivel_especifico_id` int(11) DEFAULT NULL,
-  `ejercicios_personalizados_json` text DEFAULT NULL,
-  `fecha_asignacion` datetime DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `docente_id` (`docente_id`),
-  KEY `estudiante_id` (`estudiante_id`),
-  KEY `nivel_especifico_id` (`nivel_especifico_id`),
-  CONSTRAINT `asignaciones_docente_ibfk_1` FOREIGN KEY (`docente_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `asignaciones_docente_ibfk_2` FOREIGN KEY (`estudiante_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `asignaciones_docente_ibfk_3` FOREIGN KEY (`nivel_especifico_id`) REFERENCES `niveles_dificultad` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `asignaciones_docente`
---
-
-LOCK TABLES `asignaciones_docente` WRITE;
-/*!40000 ALTER TABLE `asignaciones_docente` DISABLE KEYS */;
-/*!40000 ALTER TABLE `asignaciones_docente` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `cargas_masivas`
 --
 
@@ -86,38 +53,6 @@ LOCK TABLES `cargas_masivas` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `configuracion_padre`
---
-
-DROP TABLE IF EXISTS `configuracion_padre`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `configuracion_padre` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `padre_id` int(11) NOT NULL,
-  `estudiante_id` int(11) NOT NULL,
-  `tiempo_limite_diario_min` int(11) DEFAULT NULL,
-  `inicio_pausa` time DEFAULT NULL,
-  `fin_pausa` time DEFAULT NULL,
-  `activo` tinyint(1) DEFAULT 1,
-  PRIMARY KEY (`id`),
-  KEY `padre_id` (`padre_id`),
-  KEY `estudiante_id` (`estudiante_id`),
-  CONSTRAINT `configuracion_padre_ibfk_1` FOREIGN KEY (`padre_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `configuracion_padre_ibfk_2` FOREIGN KEY (`estudiante_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `configuracion_padre`
---
-
-LOCK TABLES `configuracion_padre` WRITE;
-/*!40000 ALTER TABLE `configuracion_padre` DISABLE KEYS */;
-/*!40000 ALTER TABLE `configuracion_padre` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `configuracion_sistema`
 --
 
@@ -141,30 +76,34 @@ LOCK TABLES `configuracion_sistema` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `ejercicios`
+-- Table structure for table `dispositivos_reconocidos`
 --
 
-DROP TABLE IF EXISTS `ejercicios`;
+DROP TABLE IF EXISTS `dispositivos_reconocidos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `ejercicios` (
+CREATE TABLE `dispositivos_reconocidos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tipo_operacion` varchar(20) NOT NULL,
-  `nivel_dificultad` int(11) NOT NULL,
-  `num1` int(11) NOT NULL,
-  `num2` int(11) NOT NULL,
-  `respuesta_correcta` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `usuario_id` int(11) NOT NULL,
+  `device_id` varchar(64) NOT NULL,
+  `user_agent` varchar(255) DEFAULT NULL,
+  `fecha_ultimo_2fa` datetime NOT NULL,
+  `contador_2fa` int(11) DEFAULT 1,
+  `fecha_registro` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `usuario_id` (`usuario_id`,`device_id`),
+  CONSTRAINT `dispositivos_reconocidos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `ejercicios`
+-- Dumping data for table `dispositivos_reconocidos`
 --
 
-LOCK TABLES `ejercicios` WRITE;
-/*!40000 ALTER TABLE `ejercicios` DISABLE KEYS */;
-/*!40000 ALTER TABLE `ejercicios` ENABLE KEYS */;
+LOCK TABLES `dispositivos_reconocidos` WRITE;
+/*!40000 ALTER TABLE `dispositivos_reconocidos` DISABLE KEYS */;
+INSERT INTO `dispositivos_reconocidos` VALUES (1,25,'3615a70d-aa1b-432f-9ff2-8f4a4b6075f1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-09-28 20:19:23',1,'2025-09-28 20:19:23'),(2,25,'fe5f69a1-614e-4cb1-9eac-4ab237d12ec2','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-09-28 20:33:17',1,'2025-09-28 20:33:17'),(3,25,'654321f7-c9f2-4c91-93bd-e63ea47c3e21','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-09-28 20:42:56',1,'2025-09-28 20:42:56'),(4,1,'654321f7-c9f2-4c91-93bd-e63ea47c3e21','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-09-28 20:43:23',1,'2025-09-28 20:43:23'),(5,25,'8cfc2ee5-cef8-40b8-98ab-5311b5659018','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-09-28 20:49:45',1,'2025-09-28 20:49:45');
+/*!40000 ALTER TABLE `dispositivos_reconocidos` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -183,7 +122,7 @@ CREATE TABLE `log_acceso` (
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   CONSTRAINT `log_acceso_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,19 +142,24 @@ DROP TABLE IF EXISTS `log_auditoria`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `log_auditoria` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `nombre_usuario` varchar(50) NOT NULL,
   `accion` varchar(100) NOT NULL,
-  `detalles` text DEFAULT NULL,
+  `tabla_afectada` varchar(50) DEFAULT NULL,
+  `valor_anterior` text DEFAULT NULL,
+  `valor_nuevo` text DEFAULT NULL,
+  `descripcion` text DEFAULT NULL,
+  `estado` varchar(20) DEFAULT NULL,
   `fecha_hora` datetime DEFAULT current_timestamp(),
-  `ip_address` varchar(45) DEFAULT NULL,
+  `ip_usuario` varchar(45) DEFAULT NULL,
   `aprobado_por_admin_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
+  KEY `usuario_id` (`id_usuario`),
   KEY `aprobado_por_admin_id` (`aprobado_por_admin_id`),
-  CONSTRAINT `log_auditoria_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `log_auditoria_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`),
   CONSTRAINT `log_auditoria_ibfk_2` FOREIGN KEY (`aprobado_por_admin_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -224,149 +168,66 @@ CREATE TABLE `log_auditoria` (
 
 LOCK TABLES `log_auditoria` WRITE;
 /*!40000 ALTER TABLE `log_auditoria` DISABLE KEYS */;
+INSERT INTO `log_auditoria` VALUES (1,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 6 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-16 22:50:47','0:0:0:0:0:0:0:1',2),(3,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 8 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-17 08:31:17','0:0:0:0:0:0:0:1',2),(4,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 9 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-17 08:36:34','0:0:0:0:0:0:0:1',2),(5,2,'lumela','ELIMINACION_FALLIDA','usuarios','ID: 4 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-17 08:55:08','0:0:0:0:0:0:0:1',2),(9,2,'lumela','ELIMINAR_USUARIO','usuarios','ID: 10 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-18 00:35:43','0:0:0:0:0:0:0:1',2),(10,2,'lumela','ELIMINACION_FALLIDA','usuarios','ID: 11 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-18 10:29:01','0:0:0:0:0:0:0:1',2),(13,1,'sebasagudelo','ELIMINACION_FALLIDA','usuarios','ID: 12 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-28 14:26:22','0:0:0:0:0:0:0:1',1),(14,1,'sebasagudelo','ELIMINACION_FALLIDA','usuarios','ID: 12 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-28 14:33:34','0:0:0:0:0:0:0:1',1),(15,1,'sebasagudelo','ELIMINACION_FALLIDA','usuarios','ID: 12 - Intento fallido',NULL,'Contraseña incorrecta','FALLIDO','2025-09-28 14:35:24','0:0:0:0:0:0:0:1',1),(16,1,'sebasagudelo','ELIMINACION_FALLIDA','usuarios','ID: 12 - Intento fallido',NULL,'Contraseña de administrador incorrecta','FALLIDO','2025-09-28 14:45:22','0:0:0:0:0:0:0:1',1),(17,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 12 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-28 14:45:37','0:0:0:0:0:0:0:1',1),(18,1,'sebasagudelo','ERROR_ELIMINACION','usuarios','ID: 13 - Error en eliminación',NULL,'Error: Cannot delete or update a parent row: a foreign key constraint fails (`sumixkids`.`dispositivos_reconocidos`, CONSTRAINT `dispositivos_reconocidos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`))','ERROR','2025-09-28 14:48:59','0:0:0:0:0:0:0:1',1),(19,1,'sebasagudelo','ERROR_ELIMINACION','usuarios','ID: 13 - Error en eliminación',NULL,'Error: Cannot delete or update a parent row: a foreign key constraint fails (`sumixkids`.`dispositivos_reconocidos`, CONSTRAINT `dispositivos_reconocidos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`))','ERROR','2025-09-28 14:49:38','0:0:0:0:0:0:0:1',1),(22,1,'sebasagudelo','ELIMINACION_FALLIDA','usuarios','ID: 15 - Intento fallido',NULL,'Contraseña de administrador incorrecta','FALLIDO','2025-09-28 15:20:50','0:0:0:0:0:0:0:1',1),(23,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 15 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-28 15:20:58','0:0:0:0:0:0:0:1',1),(24,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 16 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-28 15:40:49','0:0:0:0:0:0:0:1',1),(27,1,'sebasagudelo','LIMPIAR_REGISTROS','multiple','ID: 17 - Limpieza de registros tipo: todos',NULL,'Registros limpiados exitosamente para usuario: karen12','EXITOSO','2025-09-28 17:25:40','0:0:0:0:0:0:0:1',1),(28,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 17 - Usuario eliminado',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-28 17:25:56','0:0:0:0:0:0:0:1',1),(29,1,'sebasagudelo','ERROR_ELIMINACION','usuarios','ID: 21 - Error en eliminación',NULL,'Error: El usuario tiene registros dependientes que deben eliminarse primero:\\n- 1 código(s) de recuperación de contraseña\\nUse los botones de limpieza para eliminar estos registros antes de eliminar el usuario.','ERROR','2025-09-28 17:28:29','0:0:0:0:0:0:0:1',1),(41,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 24 - Usuario: juancuellar',NULL,'Preparando eliminación de usuario','INICIADO','2025-09-28 17:56:44','0:0:0:0:0:0:0:1',1),(43,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 13 - Usuario: sebas',NULL,'Preparando eliminación de usuario','INICIADO','2025-09-28 18:44:55','127.0.0.1',1),(44,1,'sebasagudelo','ERROR_ELIMINACION','usuarios','ID: 1 - Error eliminando usuario ID: 13',NULL,'Error: El usuario tiene registros dependientes que deben eliminarse primero:\\n- 1 registro(s) de auditoría\\nUse los botones de limpieza para eliminar estos registros antes de eliminar el usuario.','ERROR','2025-09-28 18:44:55','127.0.0.1',1),(45,1,'sebasagudelo','LIMPIAR_REGISTROS','multiple','ID: 13 - Limpieza de registros tipo: todos',NULL,'Registros limpiados exitosamente para usuario: sebas','EXITOSO','2025-09-28 18:45:01','127.0.0.1',1),(47,1,'sebasagudelo','ERROR_ELIMINACION','usuarios','ID: 1 - Error eliminando usuario ID: 13',NULL,'Error: Cannot delete or update a parent row: a foreign key constraint fails (`sumixkids`.`dispositivos_reconocidos`, CONSTRAINT `dispositivos_reconocidos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`))','ERROR','2025-09-28 18:45:11','127.0.0.1',1),(48,1,'sebasagudelo','ELIMINAR_USUARIO','usuarios','ID: 13 - Usuario: sebas',NULL,'Preparando eliminación de usuario','INICIADO','2025-09-28 18:56:12','0:0:0:0:0:0:0:1',1),(49,1,'sebasagudelo','ELIMINAR_USUARIO_EXITOSO','usuarios','ID: 1 - Usuario eliminado: sebas',NULL,'Usuario eliminado correctamente','EXITOSO','2025-09-28 18:56:15','0:0:0:0:0:0:0:1',1),(51,25,'sebasoquendo','ERROR_ELIMINACION','usuarios','ID: 25 - Error eliminando usuario ID: 25',NULL,'Error: Cannot delete or update a parent row: a foreign key constraint fails (`sumixkids`.`log_auditoria`, CONSTRAINT `log_auditoria_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`))','ERROR','2025-09-28 18:58:49','0:0:0:0:0:0:0:1',25),(52,25,'sebasoquendo','ELIMINAR_USUARIO','usuarios','ID: 25 - Usuario: sebasoquendo',NULL,'Preparando eliminación de usuario','INICIADO','2025-09-28 19:22:07','0:0:0:0:0:0:0:1',25),(53,25,'sebasoquendo','ERROR_ELIMINACION','usuarios','ID: 25 - Error eliminando usuario ID: 25',NULL,'Error: El usuario tiene registros dependientes que deben eliminarse primero:\\n- 2 registro(s) de auditoría\\nUse los botones de limpieza para eliminar estos registros antes de eliminar el usuario.','ERROR','2025-09-28 19:22:07','0:0:0:0:0:0:0:1',25);
 /*!40000 ALTER TABLE `log_auditoria` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `niveles_dificultad`
+-- Table structure for table `mantenimiento_programado`
 --
 
-DROP TABLE IF EXISTS `niveles_dificultad`;
+DROP TABLE IF EXISTS `mantenimiento_programado`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `niveles_dificultad` (
+CREATE TABLE `mantenimiento_programado` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  `rango_num1_min` int(11) DEFAULT NULL,
-  `rango_num1_max` int(11) DEFAULT NULL,
-  `rango_num2_min` int(11) DEFAULT NULL,
-  `rango_num2_max` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `niveles_dificultad`
---
-
-LOCK TABLES `niveles_dificultad` WRITE;
-/*!40000 ALTER TABLE `niveles_dificultad` DISABLE KEYS */;
-/*!40000 ALTER TABLE `niveles_dificultad` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `progreso_estudiante`
---
-
-DROP TABLE IF EXISTS `progreso_estudiante`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `progreso_estudiante` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `estudiante_id` int(11) NOT NULL,
-  `nivel_actual` int(11) DEFAULT NULL,
-  `ejercicios_resueltos_correctos` int(11) DEFAULT 0,
+  `titulo` varchar(255) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `fecha_inicio` datetime NOT NULL,
+  `fecha_fin` datetime NOT NULL,
+  `creado_por` int(11) NOT NULL,
+  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `estudiante_id` (`estudiante_id`),
-  KEY `nivel_actual` (`nivel_actual`),
-  CONSTRAINT `progreso_estudiante_ibfk_1` FOREIGN KEY (`estudiante_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `progreso_estudiante_ibfk_2` FOREIGN KEY (`nivel_actual`) REFERENCES `niveles_dificultad` (`id`)
+  KEY `creado_por` (`creado_por`),
+  CONSTRAINT `mantenimiento_programado_ibfk_1` FOREIGN KEY (`creado_por`) REFERENCES `usuarios` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `progreso_estudiante`
+-- Dumping data for table `mantenimiento_programado`
 --
 
-LOCK TABLES `progreso_estudiante` WRITE;
-/*!40000 ALTER TABLE `progreso_estudiante` DISABLE KEYS */;
-/*!40000 ALTER TABLE `progreso_estudiante` ENABLE KEYS */;
+LOCK TABLES `mantenimiento_programado` WRITE;
+/*!40000 ALTER TABLE `mantenimiento_programado` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mantenimiento_programado` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `recompensas`
+-- Table structure for table `password_resets_codes`
 --
 
-DROP TABLE IF EXISTS `recompensas`;
+DROP TABLE IF EXISTS `password_resets_codes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `recompensas` (
+CREATE TABLE `password_resets_codes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  `descripcion` varchar(255) DEFAULT NULL,
-  `imagen_url` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `recompensas`
---
-
-LOCK TABLES `recompensas` WRITE;
-/*!40000 ALTER TABLE `recompensas` DISABLE KEYS */;
-/*!40000 ALTER TABLE `recompensas` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `recompensas_obtenidas`
---
-
-DROP TABLE IF EXISTS `recompensas_obtenidas`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `recompensas_obtenidas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `estudiante_id` int(11) NOT NULL,
-  `recompensa_id` int(11) NOT NULL,
-  `fecha_obtencion` datetime DEFAULT current_timestamp(),
+  `usuario_id` int(11) NOT NULL,
+  `code` varchar(10) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `estudiante_id` (`estudiante_id`),
-  KEY `recompensa_id` (`recompensa_id`),
-  CONSTRAINT `recompensas_obtenidas_ibfk_1` FOREIGN KEY (`estudiante_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `recompensas_obtenidas_ibfk_2` FOREIGN KEY (`recompensa_id`) REFERENCES `recompensas` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `usuario_id` (`usuario_id`),
+  CONSTRAINT `fk_password_resets_user` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `recompensas_obtenidas`
+-- Dumping data for table `password_resets_codes`
 --
 
-LOCK TABLES `recompensas_obtenidas` WRITE;
-/*!40000 ALTER TABLE `recompensas_obtenidas` DISABLE KEYS */;
-/*!40000 ALTER TABLE `recompensas_obtenidas` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `respuestas_estudiante`
---
-
-DROP TABLE IF EXISTS `respuestas_estudiante`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `respuestas_estudiante` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `estudiante_id` int(11) NOT NULL,
-  `ejercicio_id` int(11) NOT NULL,
-  `respuesta_dada` int(11) NOT NULL,
-  `es_correcta` tinyint(1) DEFAULT NULL,
-  `fecha_respuesta` datetime DEFAULT current_timestamp(),
-  `tiempo_empleado` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `estudiante_id` (`estudiante_id`),
-  KEY `ejercicio_id` (`ejercicio_id`),
-  CONSTRAINT `respuestas_estudiante_ibfk_1` FOREIGN KEY (`estudiante_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `respuestas_estudiante_ibfk_2` FOREIGN KEY (`ejercicio_id`) REFERENCES `ejercicios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `respuestas_estudiante`
---
-
-LOCK TABLES `respuestas_estudiante` WRITE;
-/*!40000 ALTER TABLE `respuestas_estudiante` DISABLE KEYS */;
-/*!40000 ALTER TABLE `respuestas_estudiante` ENABLE KEYS */;
+LOCK TABLES `password_resets_codes` WRITE;
+/*!40000 ALTER TABLE `password_resets_codes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `password_resets_codes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -381,7 +242,7 @@ CREATE TABLE `roles` (
   `nombre_rol` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `nombre_rol` (`nombre_rol`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1246 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -390,6 +251,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
+INSERT INTO `roles` VALUES (1,'admin'),(2,'docent'),(4,'parents'),(3,'student');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -422,6 +284,66 @@ LOCK TABLES `sesiones_activas` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `two_factor_codes`
+--
+
+DROP TABLE IF EXISTS `two_factor_codes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `two_factor_codes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `usuario_id` int(11) NOT NULL,
+  `code` varchar(10) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `usuario_id` (`usuario_id`),
+  CONSTRAINT `two_factor_codes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=162 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `two_factor_codes`
+--
+
+LOCK TABLES `two_factor_codes` WRITE;
+/*!40000 ALTER TABLE `two_factor_codes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `two_factor_codes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `usuario_roles`
+--
+
+DROP TABLE IF EXISTS `usuario_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `usuario_roles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `usuario_id` int(11) NOT NULL,
+  `rol_id` int(11) NOT NULL,
+  `asignado_por` int(11) DEFAULT NULL,
+  `fecha_asignacion` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `usuario_id` (`usuario_id`),
+  KEY `rol_id` (`rol_id`),
+  KEY `asignado_por` (`asignado_por`),
+  CONSTRAINT `usuario_roles_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `usuario_roles_ibfk_2` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`),
+  CONSTRAINT `usuario_roles_ibfk_3` FOREIGN KEY (`asignado_por`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `usuario_roles`
+--
+
+LOCK TABLES `usuario_roles` WRITE;
+/*!40000 ALTER TABLE `usuario_roles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `usuario_roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `usuarios`
 --
 
@@ -433,6 +355,9 @@ CREATE TABLE `usuarios` (
   `username` varchar(50) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
   `email` varchar(100) NOT NULL,
+  `nombres` varchar(100) NOT NULL,
+  `apellidos` varchar(100) NOT NULL,
+  `grado` varchar(10) NOT NULL,
   `rol_id` int(11) NOT NULL,
   `fecha_registro` datetime DEFAULT current_timestamp(),
   `ultima_conexion` datetime DEFAULT NULL,
@@ -444,7 +369,7 @@ CREATE TABLE `usuarios` (
   UNIQUE KEY `email` (`email`),
   KEY `rol_id` (`rol_id`),
   CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -453,6 +378,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
+INSERT INTO `usuarios` VALUES (1,'sebasagudelo','$2a$10$utiqSrtrshAIu1ACHO4rJOQPUQhgaDEtvLdB8lxJzg2bCNqJFEy8e','agudelosebastian726@gmail.com','Sebastian Steven','Agudelo Oquendo','',1,'2025-09-11 19:37:21','2025-09-29 22:28:31',0,0,NULL),(2,'lumela','$2a$10$pXgY28V/M0JsnynCQ9Zlhum/Enat5GHDsPp/8XhKrEC5zHKCfBTzq','lanbrrr153@gmail.com','Luis Eduardo','Mercado Laza','',1,'2025-09-12 20:44:10','2025-09-18 10:28:28',0,0,NULL),(25,'sebasoquendo','$2a$10$8xz4Qzscw39CvK91zq5cJuwYz.OLVaBNh/NDBUttwmnwVcu4l5SJO','sebasagu312@gmail.com','Sebastian Steven','Oquendo','5',3,'2025-09-28 18:56:51','2025-09-28 21:12:02',0,0,NULL);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -465,4 +391,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-09-11 11:43:04
+-- Dump completed on 2025-09-29 22:39:57

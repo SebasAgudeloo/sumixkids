@@ -89,6 +89,36 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>AdminUsuariosServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.AdminUsuariosServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AdminUsuariosServlet</servlet-name>
+		<url-pattern>/usuarios</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>AuditoriaServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.AuditoriaServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AuditoriaServlet</servlet-name>
+		<url-pattern>/auditoria</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>CargaMasivaServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.CargaMasivaServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CargaMasivaServlet</servlet-name>
+		<url-pattern>/carga_masiva</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>LogoutServlet</servlet-name>
 		<servlet-class>com.sumixkids.web.LogoutServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
@@ -96,6 +126,107 @@
 	<servlet-mapping>
 		<servlet-name>LogoutServlet</servlet-name>
 		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>EliminarUsuarioServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.EliminarUsuarioServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EliminarUsuarioServlet</servlet-name>
+		<url-pattern>/eliminar_usuario</url-pattern>
+	</servlet-mapping>
+
+	<!-- Rutas adicionales para eliminación de usuarios -->
+	<servlet-mapping>
+		<servlet-name>EliminarUsuarioServlet</servlet-name>
+		<url-pattern>/usuario_eliminar</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>EliminarUsuarioServlet</servlet-name>
+		<url-pattern>/admin_eliminar</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>EditarUsuarioServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.EditarUsuarioServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EditarUsuarioServlet</servlet-name>
+		<url-pattern>/editar_usuario</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>CambiarEstadoUsuarioServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.CambiarEstadoUsuarioServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CambiarEstadoUsuarioServlet</servlet-name>
+		<url-pattern>/cambiar_estado</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>TwoFactorServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.TwoFactorServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TwoFactorServlet</servlet-name>
+		<url-pattern>/2fa</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>CrearUsuarioServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.CrearUsuarioServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CrearUsuarioServlet</servlet-name>
+		<url-pattern>/crear_usuario</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>RecuperarServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.RecuperarServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RecuperarServlet</servlet-name>
+		<url-pattern>/recuperar</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>RestablecerServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.RestablecerServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RestablecerServlet</servlet-name>
+		<url-pattern>/restablecer</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>CambiarRolUsuarioServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.CambiarRolUsuarioServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CambiarRolUsuarioServlet</servlet-name>
+		<url-pattern>/cambiar_rol_usuario</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>RegistrosAsociadosServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.RegistrosAsociadosServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RegistrosAsociadosServlet</servlet-name>
+		<url-pattern>/registros_asociados</url-pattern>
 	</servlet-mapping>
 
 	<!-- (Se pueden agregar más servlets en el futuro) -->
@@ -110,5 +241,12 @@
 	<listener>
 		<listener-class>com.sumixkids.config.BootstrapListener</listener-class>
 	</listener>
+
+	<session-config>
+		<session-timeout>1</session-timeout>
+		<cookie-config>
+			<http-only>true</http-only>
+		</cookie-config>
+	</session-config>
 
 </web-app>
