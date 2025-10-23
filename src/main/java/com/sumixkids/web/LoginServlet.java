@@ -4,9 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sumixkids.dao.UsuarioDAO;
+import com.sumixkids.dao.DispositivoReconocidoDAO;
 import com.sumixkids.model.Usuario;
 import com.sumixkids.util.PasswordUtil;
 import com.sumixkids.util.TwoFactorUtil;
+import com.sumixkids.util.ClienteUtil;
 import com.sumixkids.service.EmailService;
 import com.sumixkids.dao.TwoFactorCodeDAO;
 import java.util.Properties;
@@ -29,6 +31,7 @@ public class LoginServlet extends HttpServlet {
 	private static final Logger logger = LoggerFactory.getLogger(LoginServlet.class);
 
 	private final UsuarioDAO usuarioDAO = new UsuarioDAO();
+	private final DispositivoReconocidoDAO dispositivoDAO = new DispositivoReconocidoDAO();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
@@ -72,17 +75,43 @@ public class LoginServlet extends HttpServlet {
 
 			if (PasswordUtil.verify(password, u.getPasswordHash())) {
 									
-				// Contraseña correcta: reiniciamos contador y preparamos 2FA.
+				// Contraseña correcta: reiniciamos contador de intentos fallidos
 				usuarioDAO.updateLoginSuccess(u.getId());
 				HttpSession session = req.getSession(true);
 				session.setAttribute("usuario", u);
 
-				// Generar código 2FA, guardarlo en la base de datos y enviarlo por correo
+				// Obtener información del dispositivo
+				String clienteIP = ClienteUtil.getClienteIP(req);
+				String userAgent = ClienteUtil.getUserAgent(req);
+				
+				// Verificar si este dispositivo necesita 2FA (con fallback seguro)
+				boolean necesita2FA = true; // Por defecto, requerir 2FA por seguridad
+				try {
+					necesita2FA = dispositivoDAO.necesita2FA(u.getId(), clienteIP, userAgent);
+					logger.info("Verificación 2FA completada - Usuario: {}, necesita2FA: {}", u.getUsername(), necesita2FA);
+				} catch (Exception e) {
+					logger.warn("Error verificando necesidad de 2FA para usuario {}: {}. Aplicando 2FA por seguridad.", 
+							   u.getUsername(), e.getMessage());
+					necesita2FA = true; // Fallback seguro: siempre pedir 2FA si hay error
+				}
+				
+				if (!necesita2FA) {
+					// Dispositivo reconocido, login exitoso directo
+					session.setAttribute("2fa_passed", true);
+					logger.info("Login exitoso sin 2FA - Usuario: {} desde dispositivo reconocido", u.getUsername());
+					resp.sendRedirect(req.getContextPath() + "/bienvenida");
+					return;
+				}
+
+				// Dispositivo no reconocido o necesita 2FA, generar código 2FA
+				logger.info("Generando código 2FA para usuario: {}", u.getUsername());
 				String code = TwoFactorUtil.generateCode();
 				java.time.LocalDateTime expiresAt = java.time.ZonedDateTime.now(java.time.ZoneId.of("America/Bogota")).plusMinutes(15).toLocalDateTime();
+				logger.info("Código 2FA generado: {}, guardando en BD", code);
 				try {
 					TwoFactorCodeDAO.guardarCodigo(u.getId(), code, expiresAt);
 					TwoFactorCodeDAO.eliminarCodigosExpiradosYUsados();
+					logger.info("Código 2FA guardado exitosamente en BD");
 				} catch (SQLException e) {
 					logger.error("Error al guardar el código 2FA", e);
 					req.setAttribute("error", "Error al guardar el código 2FA. Intenta de nuevo más tarde.");
@@ -93,28 +122,41 @@ public class LoginServlet extends HttpServlet {
 				session.setAttribute("2fa_passed", false);
 
 				// Leer config de correo
+				logger.info("Preparando envío de email 2FA para usuario: {}", u.getUsername());
 				Properties props2 = new Properties();
 				try (java.io.InputStream in = getClass().getClassLoader().getResourceAsStream("config.properties")) {
 					if (in != null) props2.load(in);
 				}
 				String mailUser2 = props2.getProperty("mail.smtp.user");
 				String mailPass2 = props2.getProperty("mail.smtp.pass");
+				logger.info("Configuración de email cargada, creando EmailService");
 				EmailService emailService2 = new EmailService(mailUser2, mailPass2);
 				try {
 					// Construir mensaje con el código
 					String fechaHora = EmailService.getCurrentFormattedDateTime();
-					String ipAddress = req.getRemoteAddr();
-					String forwarded = req.getHeader("X-Forwarded-For");
-					if (forwarded != null && !forwarded.isEmpty()) {
-						ipAddress = forwarded.split(",")[0].trim();
+					String ipAddress = clienteIP; // Usar la IP obtenida de ClienteUtil
+					
+					// Obtener información del dispositivo para mostrar en el email
+					String infoDispositivo;
+					try {
+						infoDispositivo = dispositivoDAO.getInfoDispositivo(u.getId(), clienteIP, userAgent);
+					} catch (SQLException e) {
+						infoDispositivo = "Información no disponible";
+						logger.warn("No se pudo obtener información del dispositivo", e);
 					}
 					
 					String mensaje = EmailService.getEmailHeader() +
 						"<h2 style='color: #2196F3; margin-bottom: 20px;'>¡Hola " + u.getNombres() + " " + u.getApellidos() + "! 👋</h2>" +
 						"<div style='background-color: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>" +
 						"<p style='font-size: 16px; line-height: 1.6; color: #333; margin-bottom: 15px;'>Hemos detectado un intento de inicio de sesión en tu cuenta de <strong>SumixKids</strong>. 🔐</p>" +
-						"<p style='font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 20px;'>Fecha y hora: <strong>" + fechaHora + "</strong></p>" +
-						"<p style='font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 20px;'>IP de acceso: <strong>" + ipAddress + "</strong></p>" +
+						"<div style='background-color: #F5F5F5; padding: 15px; border-radius: 8px; margin: 20px 0;'>" +
+						"<p style='margin: 0 0 10px 0; color: #666; font-weight: bold;'>📊 Información del acceso:</p>" +
+						"<ul style='margin: 0; color: #666;'>" +
+						"<li><strong>Fecha y hora:</strong> " + fechaHora + "</li>" +
+						"<li><strong>IP de acceso:</strong> " + ipAddress + "</li>" +
+						"<li><strong>Dispositivo:</strong> " + infoDispositivo + "</li>" +
+						"</ul>" +
+						"</div>" +
 						"<p style='font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 20px;'>Para continuar, por favor ingresa el siguiente código de verificación en la pantalla de autenticación de dos factores (2FA):</p>" +
 						"<div style='background-color: #E3F2FD; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #2196F3; margin: 20px 0;'>" +
 						"<p style='margin: 0 0 10px 0; color: #0D47A1; font-weight: bold; font-size: 14px;'>Código de verificación 2FA:</p>" +
@@ -128,13 +170,16 @@ public class LoginServlet extends HttpServlet {
 						"</div>" +
 						EmailService.getEmailFooter() +
 						EmailService.getEmailCloser();
+					logger.info("Enviando email 2FA a: {}", u.getEmail());
 					emailService2.sendHtmlEmail(u.getEmail(), "🔐 Código de verificación 2FA - SumixKids", mensaje);
+					logger.info("Email 2FA enviado exitosamente");
 				} catch (Exception ex) {
 					logger.error("No se pudo enviar el código 2FA a {}", u.getEmail(), ex);
 					req.setAttribute("error", "No se pudo enviar el código 2FA a tu correo. Intenta de nuevo más tarde.");
 					req.getRequestDispatcher("/login.jsp").forward(req, resp);
 					return;
 				}
+				logger.info("Redirigiendo a página 2FA para usuario: {}", u.getUsername());
 				resp.sendRedirect(req.getContextPath() + "/2fa");
 			} else {
 										usuarioDAO.updateLoginFailure(u.getId(), maxIntentos); // Si falla sumamos un intento (límite 3).

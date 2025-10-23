@@ -128,6 +128,7 @@
                         </li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/perfil"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/configuracion"><i class="fas fa-cog me-2"></i>Configuración</a></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/dispositivos_reconocidos"><i class="fa-solid fa-shield-halved me-2"></i>Dispositivos Reconocidos</a></li>
                         
                         <%-- Botón de eliminar cuenta solo para usuarios no-admin --%>
                         <c:if test="${sessionScope.usuario != null && sessionScope.usuario.rolId != 1}">
@@ -476,6 +477,61 @@
                 </div>
             </div>
         </c:if>
+
+        <!-- SECCIÓN DE SEGURIDAD PARA TODOS LOS USUARIOS -->
+        <div class="row g-4 mb-5">
+            <div class="col-12">
+                <h2 class="text-white drop-shadow mb-4">🔐 Seguridad y Configuración</h2>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-lg">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-shield-check text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="mb-2 fw-bold">Dispositivos 2FA</h5>
+                        <p class="text-muted mb-4">Gestiona los dispositivos reconocidos para autenticación</p>
+                        <div class="d-grid">
+                            <a href="${pageContext.request.contextPath}/dispositivos_reconocidos" class="btn btn-outline-success">
+                                <i class="bi bi-devices me-2"></i>Ver Dispositivos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-lg">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-key text-warning" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="mb-2 fw-bold">Cambiar Contraseña</h5>
+                        <p class="text-muted mb-4">Actualiza tu contraseña por seguridad</p>
+                        <div class="d-grid">
+                            <a href="${pageContext.request.contextPath}/cambiar_password" class="btn btn-outline-warning">
+                                <i class="bi bi-lock me-2"></i>Cambiar Contraseña
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-lg">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-person-gear text-info" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="mb-2 fw-bold">Mi Perfil</h5>
+                        <p class="text-muted mb-4">Edita tu información personal</p>
+                        <div class="d-grid">
+                            <a href="${pageContext.request.contextPath}/perfil" class="btn btn-outline-info">
+                                <i class="bi bi-person me-2"></i>Ver Perfil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Alertas de notificación -->
         <c:if test="${not empty error || not empty param.error}">

@@ -20,7 +20,7 @@
         <a class="navbar-brand fw-bold d-flex align-items-center" href="${pageContext.request.contextPath}/">
             <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="Logo SumixKids" 
                  style="height: 40px; width: auto; margin-right: 12px; border-radius: 8px;"/>
-            <span class="text-white-contrast">SumixKids</span>
+            SumixKids
         </a>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
             <span class="navbar-toggler-icon"></span>

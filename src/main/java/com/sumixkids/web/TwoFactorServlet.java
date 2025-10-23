@@ -10,10 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import com.sumixkids.dao.TwoFactorCodeDAO;
+import com.sumixkids.dao.DispositivoReconocidoDAO;
 import com.sumixkids.model.Usuario;
+import com.sumixkids.util.ClienteUtil;
 
 public class TwoFactorServlet extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(TwoFactorServlet.class);
+    private final DispositivoReconocidoDAO dispositivoDAO = new DispositivoReconocidoDAO();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.getRequestDispatcher("/2fa.jsp").forward(req, resp);
@@ -38,15 +41,37 @@ public class TwoFactorServlet extends HttpServlet {
             return;
         }
         if (valido) {
+            logger.info("Código 2FA válido para usuario: {}", usuario.getUsername());
             try {
+                // Marcar código como usado y limpiar códigos expirados
                 TwoFactorCodeDAO.marcarComoUsado(usuario.getId(), code);
                 TwoFactorCodeDAO.eliminarCodigosExpiradosYUsados();
+                logger.info("Código 2FA marcado como usado para usuario: {}", usuario.getUsername());
+                
+                // Registrar 2FA exitoso para el dispositivo (de forma asíncrona para no bloquear)
+                try {
+                    String clienteIP = ClienteUtil.getClienteIP(req);
+                    String userAgent = ClienteUtil.getUserAgent(req);
+                    logger.info("Intentando registrar dispositivo - Usuario: {}, IP: {}", usuario.getUsername(), clienteIP);
+                    
+                    dispositivoDAO.registrar2FAExitoso(usuario.getId(), clienteIP, userAgent);
+                } catch (Exception deviceException) {
+                    // Si falla el registro del dispositivo, no debe bloquear el login
+                    logger.warn("Error registrando dispositivo para usuario {}: {}", 
+                               usuario.getUsername(), deviceException.getMessage());
+                }
+                
+                logger.info("2FA exitoso registrado - Usuario: {}", usuario.getUsername());
+                           
             } catch (Exception e) {
-                logger.warn("Error limpiando códigos 2FA expirados/usados para usuario {}", usuario.getUsername(), e);
-                // Si falla la limpieza, no bloquea el login
+                logger.warn("Error en procesamiento post-2FA para usuario {}: {}", 
+                           usuario.getUsername(), e.getMessage());
+                // Los errores en limpieza o registro no deben bloquear el login
             }
+            
             session.setAttribute("2fa_passed", true);
             session.removeAttribute("2fa_code");
+            logger.info("Redirigiendo a bienvenida para usuario: {}", usuario.getUsername());
             resp.sendRedirect(req.getContextPath() + "/bienvenida");
         } else {
             req.setAttribute("error", "Código incorrecto, expirado o ya usado. Intenta de nuevo.");

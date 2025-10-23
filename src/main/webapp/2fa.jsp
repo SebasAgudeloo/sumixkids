@@ -9,6 +9,7 @@
     <title>Verificación 2FA · SumixKids</title>
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css" />
 </head>
 <body class="bg-gradient-primary d-flex flex-column min-vh-100">
@@ -36,12 +37,12 @@
                         <form method="post" action="${pageContext.request.contextPath}/2fa" class="needs-validation" novalidate>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">
-                                    <i class="fas fa-shield-alt me-1"></i>Código de verificación <span class="text-danger">*</span>
+                                    <i class="bi bi-shield-check me-1"></i>Código de verificación <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" name="codigo" id="codigo" class="form-control" 
                                        placeholder="123456" maxlength="6" pattern="[0-9]{6}" required autofocus />
                                 <div class="form-text">
-                                    <i class="fas fa-envelope me-1"></i>Ingresa el código de <strong>6 dígitos numéricos</strong> que recibiste por correo
+                                    <i class="bi bi-envelope me-1"></i>Ingresa el código de <strong>6 dígitos numéricos</strong> que recibiste por correo
                                 </div>
                                 <div class="invalid-feedback">El código debe tener exactamente 6 dígitos numéricos.</div>
                             </div>
@@ -79,7 +80,6 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 

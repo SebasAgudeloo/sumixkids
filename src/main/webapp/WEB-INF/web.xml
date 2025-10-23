@@ -180,6 +180,16 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>DispositivosReconocidosServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.DispositivosReconocidosServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DispositivosReconocidosServlet</servlet-name>
+		<url-pattern>/dispositivos_reconocidos</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>CrearUsuarioServlet</servlet-name>
 		<servlet-class>com.sumixkids.web.CrearUsuarioServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>

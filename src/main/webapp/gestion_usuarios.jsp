@@ -70,8 +70,11 @@
                                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/perfil"><i
                                                     class="fas fa-user me-2"></i>Mi Perfil</a></li>
                                         <li><a class="dropdown-item"
-                                                href="${pageContext.request.contextPath}/configuracion"><i
-                                                    class="fas fa-cog me-2"></i>Configuración</a></li>
+                                                href="${pageContext.request.contextPath}/configuracion">
+                                                <i class="fas fa-cog me-2"></i>Configuración</a></li>
+                                        <li><a class="dropdown-item"
+                                                href="${pageContext.request.contextPath}/dispositivos_reconocidos"><i
+                                                    class="fa-solid fa-shield-halved me-2"></i>Dispositivos Reconocidos</a></li>
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>

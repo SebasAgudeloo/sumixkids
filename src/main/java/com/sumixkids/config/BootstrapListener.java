@@ -1,4 +1,3 @@
-
 package com.sumixkids.config;
 
 import org.slf4j.Logger;
@@ -11,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import com.sumixkids.model.RoleType;
+import com.sumixkids.dao.DispositivoReconocidoDAO;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -41,8 +41,14 @@ public class BootstrapListener implements ServletContextListener {
             for (RoleType rt : RoleType.values()) {
                 ensureRole(rt.dbName());
             }
+            
+            // Limpiar dispositivos antiguos al inicio
+            DispositivoReconocidoDAO dispositivoDAO = new DispositivoReconocidoDAO();
+            dispositivoDAO.limpiarDispositivosAntiguos();
+            logger.info("Limpieza de dispositivos antiguos completada");
+            
         } catch (Exception e) {
-            logger.error("Problema creando roles iniciales", e);
+            logger.error("Problema en inicialización del sistema", e);
         }
     }
 
