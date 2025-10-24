@@ -128,7 +128,14 @@
                             </div>
                             
                             <%-- Grado (solo para estudiantes) --%>
-                            <div class="form-group mb-3" id="gradoContainer" style="display: '${usuarioEditar.rolId == 3 ? 'block' : 'none'}';">
+                            <c:choose>
+                                <c:when test="${usuarioEditar.rolId == 3}">
+                                    <div class="form-group mb-3" id="gradoContainer" style="display:block;">
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="form-group mb-3" id="gradoContainer" style="display:none;">
+                                </c:otherwise>
+                            </c:choose>
                                 <label for="grado" class="form-label fw-semibold">
                                     <i class="fas fa-graduation-cap me-1"></i>Grado <span class="text-danger" id="gradoRequired">*</span>
                                 </label>

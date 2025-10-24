@@ -135,7 +135,7 @@
             </c:if>
             
             <c:if test="${empty usuario}">
-                <p class="text-muted">Usuario ID: <strong>${param.userId}</strong></p>
+                <p class="text-muted">Usuario ID: <strong>${userId}</strong></p>
             </c:if>
         </div>
         
@@ -147,7 +147,7 @@
         </c:if>
 
         <form id="deleteForm" method="POST" action="${pageContext.request.contextPath}/eliminar_usuario" onsubmit="return confirmarEliminacion(event)">
-            <input type="hidden" name="userId" value="${param.userId}">
+            <input type="hidden" name="userId" value="${userId}">
             <input type="hidden" name="esAutoEliminacion" value="${esAutoEliminacion}">
             
             <div class="form-group">
@@ -194,7 +194,7 @@
                         </a>
                     </c:when>
                     <c:otherwise>
-                        <a href="${pageContext.request.contextPath}/registros_asociados?userId=${param.userId}&esAutoEliminacion=false" 
+                        <a href="${pageContext.request.contextPath}/registros_asociados?userId=${userId}&esAutoEliminacion=false" 
                            class="btn btn-warning text-center">
                             <i class="bi bi-list-ul"></i> Ver Registros Asociados
                         </a>

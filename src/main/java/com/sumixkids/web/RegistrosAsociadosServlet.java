@@ -54,20 +54,25 @@ public class RegistrosAsociadosServlet extends HttpServlet {
         String esAutoEliminacionParam = request.getParameter("esAutoEliminacion");
         boolean esAutoEliminacion = "true".equals(esAutoEliminacionParam);
         
+        logger.info("[DEBUG] RegistrosAsociados - userIdParam: '{}', esAutoEliminacionParam: '{}', usuarioSesion.getId(): {}", 
+                   userIdParam, esAutoEliminacionParam, usuarioSesion.getId());
+        
         // Si es auto-eliminación, usar el ID del usuario de la sesión
         int userId;
         if (esAutoEliminacion) {
             userId = usuarioSesion.getId();
             userIdParam = String.valueOf(userId);
+            logger.info("[DEBUG] Usando auto-eliminación - userId final: {}", userId);
         } else {
             if (userIdParam == null || userIdParam.trim().isEmpty()) {
-                logger.error("ID de usuario no válido: {}", userIdParam);
+                logger.error("[DEBUG] ID de usuario no válido: '{}'", userIdParam);
                 request.setAttribute("error", "ID de usuario no válido - parámetro faltante");
                 request.getRequestDispatcher("/registros_asociados.jsp").forward(request, response);
                 return;
             }
             try {
                 userId = Integer.parseInt(userIdParam);
+                logger.info("[DEBUG] Usando eliminación por admin - userId final: {}", userId);
             } catch (NumberFormatException e) {
                 logger.error("ID de usuario inválido: {}", userIdParam, e);
                 request.setAttribute("error", "ID de usuario inválido - formato incorrecto");
@@ -336,8 +341,11 @@ public class RegistrosAsociadosServlet extends HttpServlet {
      */
     private List<LogAuditoria> obtenerRegistrosAuditoriaPorUsuario(int userId) {
         try {
+            logger.info("[DEBUG RegistrosAsociados] Buscando registros de auditoría para userId: {}", userId);
             // Buscar registros donde el usuario fue el que realizó la acción
-            return logAuditoriaDAO.buscarLogs(null, null, null, userId);
+            List<LogAuditoria> registros = logAuditoriaDAO.buscarLogs(null, null, null, userId);
+            logger.info("[DEBUG RegistrosAsociados] Registros encontrados: {}", registros.size());
+            return registros;
         } catch (Exception e) {
             logger.error("Error al obtener registros de auditoría para usuario: {}", userId, e);
             return new ArrayList<>();
@@ -420,19 +428,48 @@ public class RegistrosAsociadosServlet extends HttpServlet {
     }
     
     /**
-     * Obtiene otros registros asociados al usuario (placeholder para futuras funcionalidades)
-     * Como actividades, sesiones, etc.
+     * Obtiene otros registros asociados al usuario de todas las tablas con foreign keys
      */
     private List<Map<String, Object>> obtenerOtrosRegistros(int userId) {
         List<Map<String, Object>> registros = new ArrayList<>();
         
-        // Placeholder - aquí se implementarían consultas a otras tablas
-        // Ejemplo:
-        // - Actividades del usuario
-        // - Sesiones activas
-        // - Configuraciones personalizadas
-        // - etc.
+        try (Connection conn = com.sumixkids.config.DatabaseManager.getConnection()) {
+            // Verificar solo las tablas que realmente IMPIDEN la eliminación del usuario
+            // Excluimos registros temporales que se limpian automáticamente:
+            // - password_resets (se limpian automáticamente)
+            // - sesiones_activas (se limpian automáticamente)
+            // - two_factor_codes (se limpian automáticamente)
+            // - dispositivos_reconocidos (se limpian automáticamente - son específicos del usuario)
+            // También excluimos log_auditoria que se preserva pero no impide eliminación
+            String[] consultas = {
+                "SELECT 'Cargas Masivas' as tipo, id, tipo_carga as detalle, fecha_carga as fecha FROM cargas_masivas WHERE usuario_id = ?",
+                "SELECT 'Log de Acceso' as tipo, id, accion as detalle, fecha_hora as fecha FROM log_acceso WHERE usuario_id = ?",
+                "SELECT 'Roles de Usuario' as tipo, id, CONCAT('Rol: ', role_id) as detalle, fecha_asignacion as fecha FROM usuario_roles WHERE usuario_id = ?",
+                "SELECT 'Mantenimiento Programado' as tipo, id, descripcion as detalle, fecha_inicio as fecha FROM mantenimiento_programado WHERE creado_por = ?",
+                "SELECT 'Roles Asignados por Usuario' as tipo, id, CONCAT('Asignó rol a usuario: ', usuario_id) as detalle, fecha_asignacion as fecha FROM usuario_roles WHERE asignado_por = ?"
+            };
+            
+            for (String sql : consultas) {
+                logger.info("[DEBUG] Ejecutando consulta: {} para userId: {}", sql, userId);
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setInt(1, userId);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            Map<String, Object> registro = new java.util.HashMap<>();
+                            registro.put("tipo", rs.getString("tipo"));
+                            registro.put("id", rs.getInt("id"));
+                            registro.put("detalle", rs.getString("detalle"));
+                            registro.put("fecha", rs.getTimestamp("fecha"));
+                            registros.add(registro);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error al obtener otros registros para usuario: {}", userId, e);
+        }
         
+        logger.info("[DEBUG] Total otros registros encontrados: {}", registros.size());
         return registros;
     }
     

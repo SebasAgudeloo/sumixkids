@@ -5,21 +5,29 @@ package com.sumixkids.model;
  * Cada uno guarda su nombre exacto tal como aparece en la base.
  */
 public enum RoleType {
-    ADMIN("admin"),
-    DOCENT("docent"),
-    STUDENT("student"),
-    PARENTS("parents");
+    ADMIN("admin", "Administrador", "👑"),
+    DOCENT("docent", "Docente", "👨‍🏫"),
+    STUDENT("student", "Estudiante", "🎓"),
+    PARENTS("parents", "Padre/Madre", "👨‍👩‍👧‍👦");
 
     private final String dbName;
+    private final String displayName;
+    private final String emoji;
 
-    RoleType(String dbName) {
+    RoleType(String dbName, String displayName, String emoji) {
         this.dbName = dbName;
+        this.displayName = displayName;
+        this.emoji = emoji;
     }
 
     /** Nombre tal cual se guarda en la tabla de roles. */
-    public String dbName() {
-        return dbName;
-    }
+    public String dbName() { return dbName; }
+
+    /** Nombre legible para mostrar en la interfaz (español). */
+    public String displayName() { return displayName; }
+
+    /** Emoji representativo (usar emoji estándar, evitar Font Awesome PRO). */
+    public String emoji() { return emoji; }
 
     /** Convierte un nombre de texto al valor del enum (no diferencia mayúsculas/minúsculas). */
     public static RoleType fromDbName(String name) {

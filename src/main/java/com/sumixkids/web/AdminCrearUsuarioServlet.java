@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,29 +23,44 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 /**
- * Atiende el formulario de registro de nuevos usuarios.
- * GET: muestra el formulario.
+ * Servlet para que los administradores creen nuevos usuarios desde el panel admin.
+ * Mantiene la navegación del panel administrativo.
+ * GET: muestra el formulario de creación.
  * POST: valida datos y crea el usuario.
  */
-public class RegistroServlet extends HttpServlet {
+@WebServlet("/admin_crear_usuario")
+public class AdminCrearUsuarioServlet extends HttpServlet {
 
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
     private final LogAuditoriaDAO logDAO = new LogAuditoriaDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Sólo mostrar el formulario de registro.
-        req.getRequestDispatcher("/registro.jsp").forward(req, resp);
+        // Verificar que el usuario sea administrador
+        HttpSession session = req.getSession(false);
+        Usuario admin = (session != null) ? (Usuario) session.getAttribute("usuario") : null;
+        
+        if (admin == null || admin.getRolId() != 1) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+        
+        // Mostrar el formulario de creación de usuario para admin
+        req.getRequestDispatcher("/admin_crear_usuario.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         
-        // Verificar si es un admin quien está creando el usuario
+        // Verificar que el usuario sea administrador
         HttpSession session = req.getSession(false);
         Usuario admin = (session != null) ? (Usuario) session.getAttribute("usuario") : null;
-        boolean esAdmin = (admin != null && admin.getRolId() == 1);
+        
+        if (admin == null || admin.getRolId() != 1) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
         
         String username = req.getParameter("username");
         String nombres = req.getParameter("nombres");
@@ -52,7 +68,7 @@ public class RegistroServlet extends HttpServlet {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
         String gradoParam = req.getParameter("grado");
-        String rolIdStr = req.getParameter("rolId"); // Solo para admin
+        String rolIdStr = req.getParameter("rolId");
         
         // Variable para grado normalizado
         String gradoNormalizado = null;
@@ -86,9 +102,12 @@ public class RegistroServlet extends HttpServlet {
             req.setAttribute("errorPassword", true);
         }
         
-        // Validar rol si es admin
-        int rolId = 3; // Por defecto estudiante para registro público
-        if (esAdmin && rolIdStr != null && !rolIdStr.trim().isEmpty()) {
+        // Validar rol (obligatorio para admin)
+        int rolId = 0;
+        if (rolIdStr == null || rolIdStr.trim().isEmpty()) {
+            errores.add("Debe seleccionar un rol para el usuario.");
+            req.setAttribute("errorRolId", true);
+        } else {
             try {
                 rolId = Integer.parseInt(rolIdStr);
                 if (rolId < 1 || rolId > 4) {
@@ -124,56 +143,52 @@ public class RegistroServlet extends HttpServlet {
         if (!errores.isEmpty()) {
             req.setAttribute("errores", errores);
             setFormValues(req, username, nombres, apellidos, email, gradoParam, rolIdStr);
-            req.getRequestDispatcher("/registro.jsp").forward(req, resp);
+            req.getRequestDispatcher("/admin_crear_usuario.jsp").forward(req, resp);
             return;
         }
 
         try {
+            // Verificar si el usuario o email ya existen
             if (usuarioDAO.existsByUsernameOrEmail(username, email)) {
-                req.setAttribute("error", "Usuario o correo ya existe");
+                req.setAttribute("error", "El nombre de usuario o correo electrónico ya están registrados");
                 setFormValues(req, username, nombres, apellidos, email, gradoParam, rolIdStr);
-                req.getRequestDispatcher("/registro.jsp").forward(req, resp);
+                req.getRequestDispatcher("/admin_crear_usuario.jsp").forward(req, resp);
                 return;
             }
 
+            // Crear nuevo usuario
             Usuario u = new Usuario();
             u.setUsername(username);
             u.setNombres(nombres);
             u.setApellidos(apellidos);
             u.setEmail(email);
             u.setPasswordHash(PasswordUtil.hash(password));
-            u.setRolId(rolId); // Usar el rol determinado (3 por defecto o el seleccionado por admin)
+            u.setRolId(rolId);
+            
             // Asignar grado normalizado (con °) solo si es estudiante
             if (rolId == 3 && gradoNormalizado != null && !gradoNormalizado.trim().isEmpty()) {
                 u.setGrado(gradoNormalizado.trim());
             } else {
                 u.setGrado("");
             }
+            
             u.setFechaRegistro(ZonedDateTime.now(ZoneId.of("America/Bogota")).toLocalDateTime());
+            
             int id = usuarioDAO.createUser(u);
             if (id > 0) {
                 // Registrar en auditoría
                 LogAuditoria log = new LogAuditoria();
                 log.setFechaHora(LocalDateTime.now());
                 log.setIpUsuario(req.getRemoteAddr());
-                
-                if (esAdmin) {
-                    // Registro creado por admin
-                    log.setIdUsuario(admin.getId());
-                    log.setNombreUsuario(admin.getUsername());
-                    log.setAccion("REGISTRO_ADMIN");
-                    log.setDescripcion(String.format("Admin creó usuario '%s' con rol ID %d", username, rolId));
-                } else {
-                    // Registro público
-                    log.setIdUsuario(id);
-                    log.setNombreUsuario(username);
-                    log.setAccion("REGISTRO");
-                    log.setDescripcion(String.format("Usuario '%s' se registró públicamente", username));
-                }
-                
+                log.setIdUsuario(admin.getId());
+                log.setNombreUsuario(admin.getUsername());
+                log.setAccion("REGISTRO_ADMIN");
+                log.setDescripcion(String.format("Admin creó usuario '%s' (%s %s) con rol ID %d", 
+                    username, nombres, apellidos, rolId));
                 log.setTablaAfectada("usuarios");
                 log.setEstado("EXITOSO");
                 logDAO.registrarLog(log);
+                
                 // Enviar correo de bienvenida
                 try {
                     ResourceBundle config = ResourceBundle.getBundle("config");
@@ -185,23 +200,41 @@ public class RegistroServlet extends HttpServlet {
                     emailService.sendWelcomeEmail(email, nombres, apellidos, username);
                 } catch (Exception e) {
                     // No interrumpir el registro si falla el correo
+                    System.err.println("Error al enviar correo de bienvenida: " + e.getMessage());
                     e.printStackTrace();
                 }
                 
-                // Redirigir según quien creó el usuario
-                if (esAdmin) {
-                    req.setAttribute("success", "✅ Usuario registrado exitosamente");
-                    req.getRequestDispatcher("/registro.jsp").forward(req, resp);
-                } else {
-                    req.setAttribute("mensaje", "Registro exitoso. Ahora puedes iniciar sesión.");
-                    req.getRequestDispatcher("/login.jsp").forward(req, resp);
-                }
+                // Mostrar mensaje de éxito y limpiar formulario
+                req.setAttribute("success", "✅ Usuario registrado exitosamente. Se ha enviado un correo de bienvenida.");
+                // Limpiar valores del formulario para permitir crear otro usuario
+                clearFormValues(req);
+                req.getRequestDispatcher("/admin_crear_usuario.jsp").forward(req, resp);
             } else {
-                req.setAttribute("error", "No se pudo registrar el usuario");
-                req.getRequestDispatcher("/registro.jsp").forward(req, resp);
+                req.setAttribute("error", "❌ No se pudo registrar el usuario. Inténtelo nuevamente.");
+                setFormValues(req, username, nombres, apellidos, email, gradoParam, rolIdStr);
+                req.getRequestDispatcher("/admin_crear_usuario.jsp").forward(req, resp);
             }
         } catch (SQLException e) {
-            throw new ServletException("Error en registro", e);
+            // Log del error
+            LogAuditoria log = new LogAuditoria();
+            log.setFechaHora(LocalDateTime.now());
+            log.setIpUsuario(req.getRemoteAddr());
+            log.setIdUsuario(admin.getId());
+            log.setNombreUsuario(admin.getUsername());
+            log.setAccion("REGISTRO_ADMIN_ERROR");
+            log.setDescripcion(String.format("Error al crear usuario '%s': %s", username, e.getMessage()));
+            log.setTablaAfectada("usuarios");
+            log.setEstado("ERROR");
+            
+            try {
+                logDAO.registrarLog(log);
+            } catch (Exception logException) {
+                System.err.println("Error al registrar log de auditoría: " + logException.getMessage());
+            }
+            
+            req.setAttribute("error", "❌ Error interno del sistema. Por favor, contacte al administrador.");
+            setFormValues(req, username, nombres, apellidos, email, gradoParam, rolIdStr);
+            req.getRequestDispatcher("/admin_crear_usuario.jsp").forward(req, resp);
         }
     }
 
@@ -211,12 +244,23 @@ public class RegistroServlet extends HttpServlet {
      */
     private void setFormValues(HttpServletRequest req, String username, String nombres, String apellidos,
             String email, String grado, String rolId) {
-        req.setAttribute("username", username);
-        req.setAttribute("nombres", nombres);
-        req.setAttribute("apellidos", apellidos);
-        req.setAttribute("email", email);
-        req.setAttribute("grado", grado);
-        req.setAttribute("rolId", rolId);
+        req.setAttribute("username", username != null ? username : "");
+        req.setAttribute("nombres", nombres != null ? nombres : "");
+        req.setAttribute("apellidos", apellidos != null ? apellidos : "");
+        req.setAttribute("email", email != null ? email : "");
+        req.setAttribute("grado", grado != null ? grado : "");
+        req.setAttribute("rolId", rolId != null ? rolId : "");
     }
     
+    /**
+     * Limpia los valores del formulario tras registro exitoso
+     */
+    private void clearFormValues(HttpServletRequest req) {
+        req.setAttribute("username", "");
+        req.setAttribute("nombres", "");
+        req.setAttribute("apellidos", "");
+        req.setAttribute("email", "");
+        req.setAttribute("grado", "");
+        req.setAttribute("rolId", "");
+    }
 }

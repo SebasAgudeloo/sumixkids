@@ -73,7 +73,7 @@ public class RecuperarServlet extends HttpServlet {
         HttpSession session = request.getSession();
         session.setAttribute("correo_recuperacion", correo);
         session.setAttribute("usuario_recuperacion", usuario.getUsername());
-        // Enviar correo
+        // Enviar correo usando EmailService
         try {
             // Leer usuario y contraseña de Gmail desde config.properties
             Properties props = new Properties();
@@ -83,28 +83,15 @@ public class RecuperarServlet extends HttpServlet {
             String gmail = props.getProperty("mail.smtp.user");
             String pass = props.getProperty("mail.smtp.pass");
             EmailService emailService = new EmailService(gmail, pass);
-            String asunto = "🔐 Recuperación de contraseña - SumixKids";
             
-            String fechaHora = EmailService.getCurrentFormattedDateTime();
-            String mensaje = EmailService.getEmailHeader() +
-                "<h2 style='color: #FF9800; margin-bottom: 20px;'>¡Hola " + usuario.getNombres() + " " + usuario.getApellidos() + "! 👋</h2>" +
-                "<div style='background-color: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>" +
-                "<p style='font-size: 16px; line-height: 1.6; color: #333; margin-bottom: 15px;'>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en <strong>SumixKids</strong>.</p>" +
-                "<p style='font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 20px;'>Fecha y hora de la solicitud: <strong>" + fechaHora + "</strong></p>" +
-                "<div style='background-color: #FFF3E0; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #FF9800; margin: 20px 0;'>" +
-                "<p style='margin: 0 0 10px 0; color: #E65100; font-weight: bold; font-size: 14px;'>Tu código de recuperación es:</p>" +
-                "<p style='font-size: 32px; font-weight: bold; color: #FF9800; margin: 10px 0; letter-spacing: 3px; font-family: monospace;'>" + codigo + "</p>" +
-                "<p style='margin: 10px 0 0 0; color: #E65100; font-size: 12px;'>⏰ Válido por 15 minutos - Solo se puede usar una vez</p>" +
-                "</div>" +
-                "<div style='background-color: #FFEBEE; padding: 15px; border-radius: 8px; border-left: 4px solid #F44336; margin: 20px 0;'>" +
-                "<p style='margin: 0; color: #C62828; font-weight: bold;'>⚠️ Importante:</p>" +
-                "<p style='margin: 10px 0 0 0; color: #C62828; font-size: 14px;'>Si tú no solicitaste este cambio, por favor ignora este mensaje o cambia tu contraseña inmediatamente desde tu perfil.</p>" +
-                "</div>" +
-                "</div>" +
-                EmailService.getEmailFooter() +
-                EmailService.getEmailCloser();
+            // Crear enlace de recuperación con el código
+            String resetLink = request.getScheme() + "://" + request.getServerName() + ":" + 
+                             request.getServerPort() + request.getContextPath() + 
+                             "/restablecer.jsp?codigo=" + codigo;
             
-            emailService.sendHtmlEmail(correo, asunto, mensaje);
+            // Usar el método específico del EmailService para recuperación de contraseña
+            emailService.sendPasswordRecoveryEmail(correo, usuario.getNombres(), 
+                                                 usuario.getApellidos(), resetLink);
             request.setAttribute("mensaje", "✅ Se ha enviado un código de recuperación a tu correo electrónico. Por favor, revisa tu bandeja de entrada");
         } catch (Exception e) {
             logger.error("No se pudo enviar el correo de recuperación a {}", correo, e);

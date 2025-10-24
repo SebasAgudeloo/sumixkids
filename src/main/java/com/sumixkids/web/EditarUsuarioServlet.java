@@ -6,6 +6,7 @@ import com.sumixkids.model.Usuario;
 import com.sumixkids.model.LogAuditoria;
 import com.sumixkids.util.PasswordUtil;
 import com.sumixkids.util.ValidacionUtil;
+import com.sumixkids.util.SecurityUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -228,7 +229,9 @@ public class EditarUsuarioServlet extends HttpServlet {
                 cambios.add(String.format("email: '%s' → '%s'", usuario.getEmail(), email));
             }
             if (usuario.getRolId() != rolId) {
-                cambios.add(String.format("rol: %d → %d", usuario.getRolId(), rolId));
+                String rolAntes = SecurityUtils.getNombreRol(usuario.getRolId());
+                String rolDespues = SecurityUtils.getNombreRol(rolId);
+                cambios.add(String.format("rol: %s → %s", rolAntes, rolDespues));
             }
             
             String gradoActual = usuario.getGrado() != null ? usuario.getGrado() : "";
@@ -268,6 +271,24 @@ public class EditarUsuarioServlet extends HttpServlet {
                     usuario.getUsername(), usuario.getId(), String.join(", ", cambios)));
                 log.setEstado("EXITOSO");
                 logDAO.registrarLog(log);
+                
+                // Enviar correo de notificación al usuario con los cambios
+                try {
+                    java.util.Properties props = new java.util.Properties();
+                    try (java.io.InputStream in = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+                        if (in != null) props.load(in);
+                    }
+                    String mailUser = props.getProperty("mail.smtp.user");
+                    String mailPass = props.getProperty("mail.smtp.pass");
+                    com.sumixkids.service.EmailService emailService = new com.sumixkids.service.EmailService(mailUser, mailPass);
+                    
+                    // Usar el nuevo método sendDataChangeEmail con los cambios detectados
+                    emailService.sendDataChangeEmail(usuario.getEmail(), usuario.getNombres(), 
+                                                   usuario.getApellidos(), cambios, admin.getUsername());
+                } catch (Exception emailEx) {
+                    System.err.println("No se pudo enviar correo de notificación de cambios: " + emailEx.getMessage());
+                    emailEx.printStackTrace();
+                }
                 
                 session.setAttribute("mensajeExito", "✅ Usuario actualizado exitosamente");
             } else if (!cambios.isEmpty()) {

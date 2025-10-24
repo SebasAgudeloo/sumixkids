@@ -159,55 +159,11 @@ public class CrearUsuarioServlet extends HttpServlet {
             String mailPass = config.getString("mail.smtp.pass");
             EmailService emailService = new EmailService(mailUser, mailPass);
             
-            String asunto = "🎉 ¡Bienvenido a SumixKids! - Cuenta creada por administrador";
-            String fechaHora = EmailService.getCurrentFormattedDateTime();
-            
-            String rolNombre = "";
-            String icono = "";
-            String color = "";
-            switch (usuario.getRolId()) {
-                case 1: rolNombre = "Administrador"; icono = "👑"; color = "#9C27B0"; break;
-                case 2: rolNombre = "Docente"; icono = "👨‍🏫"; color = "#2196F3"; break;
-                case 3: rolNombre = "Estudiante"; icono = "🎓"; color = "#4CAF50"; break;
-                case 4: rolNombre = "Padre/Madre"; icono = "👨‍👩‍👧‍👦"; color = "#FF9800"; break;
-                default: rolNombre = "Usuario"; icono = "👤"; color = "#757575";
-            }
-            
-            String mensaje = EmailService.getEmailHeader() +
-                "<h2 style='color: " + color + "; margin-bottom: 20px;'>¡Hola " + usuario.getNombres() + " " + usuario.getApellidos() + "! 👋</h2>" +
-                "<div style='background-color: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>" +
-                "<p style='font-size: 16px; line-height: 1.6; color: #333; margin-bottom: 15px;'>¡Bienvenido a <strong>SumixKids</strong>! 🌟</p>" +
-                "<p style='font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 15px;'>Un administrador ha creado una cuenta para ti el <strong>" + fechaHora + "</strong>.</p>" +
-                "<div style='background-color: #E3F2FD; padding: 20px; border-radius: 8px; margin: 20px 0;'>" +
-                "<p style='margin: 0 0 15px 0; color: #0D47A1; font-weight: bold;'>📊 Detalles de tu cuenta:</p>" +
-                "<ul style='margin: 0; color: #0D47A1; list-style: none; padding: 0;'>" +
-                "<li style='margin-bottom: 8px;'><strong>👤 Usuario:</strong> " + usuario.getUsername() + "</li>" +
-                "<li style='margin-bottom: 8px;'><strong>📧 Email:</strong> " + usuario.getEmail() + "</li>" +
-                "<li style='margin-bottom: 8px;'><strong>🎯 Rol asignado:</strong> " + icono + " " + rolNombre + "</li>" +
-                (usuario.getGrado() != null && !usuario.getGrado().isEmpty() ? 
-                "<li style='margin-bottom: 8px;'><strong>📚 Grado:</strong> " + usuario.getGrado() + "</li>" : "") +
-                "<li style='margin-bottom: 8px;'><strong>🛡️ Creado por:</strong> " + admin.getNombres() + " " + admin.getApellidos() + "</li>" +
-                "</ul>" +
-                "</div>" +
-                "<div style='background-color: #FFEBEE; padding: 20px; border-radius: 8px; border: 2px solid #F44336; margin: 20px 0;'>" +
-                "<p style='margin: 0 0 10px 0; color: #C62828; font-weight: bold;'>🔐 Credenciales de acceso:</p>" +
-                "<p style='margin: 0; color: #C62828; font-size: 14px;'><strong>Contraseña temporal:</strong> " + password + "</p>" +
-                "<p style='margin: 10px 0 0 0; color: #C62828; font-size: 12px;'>⚠️ Te recomendamos cambiar esta contraseña en tu primer inicio de sesión</p>" +
-                "</div>" +
-                "<div style='background-color: #E8F5E8; padding: 15px; border-radius: 8px; border-left: 4px solid #4CAF50; margin: 20px 0;'>" +
-                "<p style='margin: 0; color: #2E7D32; font-weight: bold;'>💡 Primeros pasos:</p>" +
-                "<ul style='margin: 10px 0 0 0; color: #2E7D32;'>" +
-                "<li>Inicia sesión con tus credenciales</li>" +
-                "<li>Explora las funcionalidades de tu rol</li>" +
-                "<li>Cambia tu contraseña por una personal</li>" +
-                "<li>¡Comienza a disfrutar la plataforma!</li>" +
-                "</ul>" +
-                "</div>" +
-                "</div>" +
-                EmailService.getEmailFooter() +
-                EmailService.getEmailCloser();
-            
-            emailService.sendHtmlEmail(usuario.getEmail(), asunto, mensaje);
+            // Usar el método específico para usuario creado por administrador
+            emailService.sendAdminCreatedUserEmail(usuario.getEmail(), usuario.getNombres(), 
+                                                 usuario.getApellidos(), usuario.getUsername(), 
+                                                 password, usuario.getRolId(), usuario.getGrado(),
+                                                 admin.getNombres(), admin.getApellidos());
         } catch (Exception e) {
             // No interrumpir el proceso si falla el correo
             e.printStackTrace();

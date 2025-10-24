@@ -121,7 +121,7 @@ public class LoginServlet extends HttpServlet {
 
 				session.setAttribute("2fa_passed", false);
 
-				// Leer config de correo
+				// Leer config de correo y crear EmailService
 				logger.info("Preparando envío de email 2FA para usuario: {}", u.getUsername());
 				Properties props2 = new Properties();
 				try (java.io.InputStream in = getClass().getClassLoader().getResourceAsStream("config.properties")) {
@@ -132,10 +132,6 @@ public class LoginServlet extends HttpServlet {
 				logger.info("Configuración de email cargada, creando EmailService");
 				EmailService emailService2 = new EmailService(mailUser2, mailPass2);
 				try {
-					// Construir mensaje con el código
-					String fechaHora = EmailService.getCurrentFormattedDateTime();
-					String ipAddress = clienteIP; // Usar la IP obtenida de ClienteUtil
-					
 					// Obtener información del dispositivo para mostrar en el email
 					String infoDispositivo;
 					try {
@@ -145,33 +141,10 @@ public class LoginServlet extends HttpServlet {
 						logger.warn("No se pudo obtener información del dispositivo", e);
 					}
 					
-					String mensaje = EmailService.getEmailHeader() +
-						"<h2 style='color: #2196F3; margin-bottom: 20px;'>¡Hola " + u.getNombres() + " " + u.getApellidos() + "! 👋</h2>" +
-						"<div style='background-color: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>" +
-						"<p style='font-size: 16px; line-height: 1.6; color: #333; margin-bottom: 15px;'>Hemos detectado un intento de inicio de sesión en tu cuenta de <strong>SumixKids</strong>. 🔐</p>" +
-						"<div style='background-color: #F5F5F5; padding: 15px; border-radius: 8px; margin: 20px 0;'>" +
-						"<p style='margin: 0 0 10px 0; color: #666; font-weight: bold;'>📊 Información del acceso:</p>" +
-						"<ul style='margin: 0; color: #666;'>" +
-						"<li><strong>Fecha y hora:</strong> " + fechaHora + "</li>" +
-						"<li><strong>IP de acceso:</strong> " + ipAddress + "</li>" +
-						"<li><strong>Dispositivo:</strong> " + infoDispositivo + "</li>" +
-						"</ul>" +
-						"</div>" +
-						"<p style='font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 20px;'>Para continuar, por favor ingresa el siguiente código de verificación en la pantalla de autenticación de dos factores (2FA):</p>" +
-						"<div style='background-color: #E3F2FD; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #2196F3; margin: 20px 0;'>" +
-						"<p style='margin: 0 0 10px 0; color: #0D47A1; font-weight: bold; font-size: 14px;'>Código de verificación 2FA:</p>" +
-						"<p style='font-size: 32px; font-weight: bold; color: #2196F3; margin: 10px 0; letter-spacing: 3px; font-family: monospace;'>" + code + "</p>" +
-						"<p style='margin: 10px 0 0 0; color: #0D47A1; font-size: 12px;'>⏰ Válido por 15 minutos - Solo se puede usar una vez</p>" +
-						"</div>" +
-						"<div style='background-color: #FFEBEE; padding: 15px; border-radius: 8px; border-left: 4px solid #F44336; margin: 20px 0;'>" +
-						"<p style='margin: 0; color: #C62828; font-weight: bold;'>⚠️ Importante:</p>" +
-						"<p style='margin: 10px 0 0 0; color: #C62828; font-size: 14px;'>Si tú no solicitaste este acceso, te recomendamos cambiar tu contraseña inmediatamente o contactar al soporte.</p>" +
-						"</div>" +
-						"</div>" +
-						EmailService.getEmailFooter() +
-						EmailService.getEmailCloser();
+					// Usar el método específico del EmailService para 2FA
 					logger.info("Enviando email 2FA a: {}", u.getEmail());
-					emailService2.sendHtmlEmail(u.getEmail(), "🔐 Código de verificación 2FA - SumixKids", mensaje);
+					emailService2.send2FAEmail(u.getEmail(), u.getNombres(), u.getApellidos(), 
+											 code, clienteIP, infoDispositivo);
 					logger.info("Email 2FA enviado exitosamente");
 				} catch (Exception ex) {
 					logger.error("No se pudo enviar el código 2FA a {}", u.getEmail(), ex);
@@ -182,68 +155,62 @@ public class LoginServlet extends HttpServlet {
 				logger.info("Redirigiendo a página 2FA para usuario: {}", u.getUsername());
 				resp.sendRedirect(req.getContextPath() + "/2fa");
 			} else {
-										usuarioDAO.updateLoginFailure(u.getId(), maxIntentos); // Si falla sumamos un intento (límite 3).
-										// ...registro de acceso fallido eliminado...
-				// Obtener intentos restantes
-				int intentosRestantes = maxIntentos - (u.getIntentosFallidos() + 1);
+				// Calcular si será bloqueado ANTES de actualizar para enviar correo si es necesario
+				int intentosActuales = u.getIntentosFallidos() + 1; // Nuevos intentos fallidos tras este fallo
+				boolean seraBoqueado = intentosActuales >= maxIntentos;
+				
+				// Actualizar la BD con el nuevo intento fallido
+				usuarioDAO.updateLoginFailure(u.getId(), maxIntentos); // Si falla sumamos un intento (límite 3).
+				logger.info("Intento fallido para usuario: {}. Intentos actuales: {}, máximo permitido: {}", 
+				           u.getUsername(), intentosActuales, maxIntentos);
+				
+				// Calcular mensaje y enviar correo si corresponde
 				String advertencia = "Usuario o contraseña incorrectos.";
-				   if (intentosRestantes > 0) {
-					   advertencia += " Tu cuenta será bloqueada en " + intentosRestantes + (intentosRestantes == 1 ? " intento erróneo." : " intentos erróneos.");
-					   advertencia += " Si no recuerdas tu contraseña, te sugiero que la cambies para evitar el bloqueo de tu cuenta.";
-				   } else {
-					   advertencia = "Cuenta bloqueada por múltiples intentos fallidos.";
-					   // Enviar correo de alerta por bloqueo
-					   try {
-						   Properties props3 = new Properties();
-						   try (java.io.InputStream in = getClass().getClassLoader().getResourceAsStream("config.properties")) {
-							   if (in != null) props3.load(in);
-						   }
-						   String mailUser3 = props3.getProperty("mail.smtp.user");
-						   String mailPass3 = props3.getProperty("mail.smtp.pass");
-						   EmailService emailService3 = new EmailService(mailUser3, mailPass3);
-						   String asunto = "🚨 Alerta de seguridad: Cuenta bloqueada - SumixKids";
-						   
-						   String fechaHora = EmailService.getCurrentFormattedDateTime();
-						   String ipAddress = req.getRemoteAddr();
-						   String forwarded = req.getHeader("X-Forwarded-For");
-						   if (forwarded != null && !forwarded.isEmpty()) {
-							   ipAddress = forwarded.split(",")[0].trim();
-						   }
-						   
-						   String mensaje = EmailService.getEmailHeader() +
-							   "<h2 style='color: #F44336; margin-bottom: 20px;'>¡Hola " + u.getNombres() + " " + u.getApellidos() + "! 👋</h2>" +
-							   "<div style='background-color: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>" +
-							   "<div style='background-color: #FFEBEE; padding: 20px; border-radius: 8px; border: 2px solid #F44336; margin-bottom: 20px;'>" +
-							   "<h3 style='color: #C62828; margin: 0 0 15px 0; text-align: center;'>🚨 ALERTA DE SEGURIDAD</h3>" +
-							   "<p style='font-size: 16px; line-height: 1.6; color: #C62828; margin-bottom: 15px; text-align: center; font-weight: bold;'>Tu cuenta ha sido bloqueada automáticamente</p>" +
-							   "</div>" +
-							   "<p style='font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 15px;'>Tu cuenta de <strong>SumixKids</strong> ha sido bloqueada por superar el número máximo de intentos fallidos de inicio de sesión permitidos.</p>" +
-							   "<div style='background-color: #FFF3E0; padding: 15px; border-radius: 8px; margin: 20px 0;'>" +
-							   "<p style='margin: 0 0 10px 0; color: #E65100; font-weight: bold;'>📊 Detalles del bloqueo:</p>" +
-							   "<ul style='margin: 0; color: #E65100;'>" +
-							   "<li><strong>Fecha y hora:</strong> " + fechaHora + "</li>" +
-							   "<li><strong>IP de último intento:</strong> " + ipAddress + "</li>" +
-							   "<li><strong>Motivo:</strong> Múltiples intentos fallidos consecutivos</li>" +
-							   "</ul>" +
-							   "</div>" +
-							   "<div style='background-color: #E8F5E8; padding: 15px; border-radius: 8px; border-left: 4px solid #4CAF50; margin: 20px 0;'>" +
-							   "<p style='margin: 0; color: #2E7D32; font-weight: bold;'>💡 ¿Qué puedes hacer?</p>" +
-							   "<ul style='margin: 10px 0 0 0; color: #2E7D32;'>" +
-							   "<li>Utiliza la opción de 'Recuperar contraseña' en la página de login</li>" +
-							   "<li>Contacta con un docente encargado o administrador</li>" +
-							   "<li>Espera un tiempo antes de intentar nuevamente</li>" +
-							   "</ul>" +
-							   "</div>" +
-							   "<p style='font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 15px;'>Si no reconoces estos intentos, te recomendamos restablecer tu contraseña inmediatamente.</p>" +
-							   "</div>" +
-							   EmailService.getErrorEmailFooter() +
-							   EmailService.getEmailCloser();
-						   
-						   emailService3.sendHtmlEmail(u.getEmail(), asunto, mensaje);
-					   } catch (Exception e) {
-						   logger.warn("No se pudo enviar correo de alerta de bloqueo de cuenta", e);
-					   }
-				   }
+				if (!seraBoqueado) {
+					int intentosRestantes = maxIntentos - intentosActuales;
+					advertencia += " Tu cuenta será bloqueada en " + intentosRestantes + (intentosRestantes == 1 ? " intento erróneo." : " intentos erróneos.");
+					advertencia += " Si no recuerdas tu contraseña, te sugiero que la cambies para evitar el bloqueo de tu cuenta.";
+				} else {
+					advertencia = "Cuenta bloqueada por múltiples intentos fallidos.";
+					// Enviar correo de alerta por bloqueo usando EmailService
+					logger.info("Enviando correo de alerta de bloqueo para usuario: {}", u.getUsername());
+					try {
+						Properties props3 = new Properties();
+						try (java.io.InputStream in = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+							if (in != null) {
+								props3.load(in);
+								logger.debug("Configuración de correo cargada correctamente");
+							} else {
+								logger.error("No se pudo cargar el archivo config.properties");
+							}
+						}
+						String mailUser3 = props3.getProperty("mail.smtp.user");
+						String mailPass3 = props3.getProperty("mail.smtp.pass");
+						
+						if (mailUser3 == null || mailPass3 == null) {
+							logger.error("Credenciales de correo no configuradas. mailUser: {}, mailPass: {}", 
+							           mailUser3, mailPass3 != null ? "[CONFIGURADA]" : "[NO CONFIGURADA]");
+							return;
+						}
+						
+						logger.debug("Creando EmailService con usuario: {}", mailUser3);
+						EmailService emailService3 = new EmailService(mailUser3, mailPass3);
+						
+						// Usar el método específico del EmailService para cuenta bloqueada
+						String ipBloqueo = ClienteUtil.getClienteIP(req);
+						logger.debug("IP de bloqueo detectada: {}", ipBloqueo);
+						logger.debug("Enviando correo a: {} ({} {})", u.getEmail(), u.getNombres(), u.getApellidos());
+						
+						emailService3.sendAccountLockedEmail(u.getEmail(), u.getNombres(), 
+														   u.getApellidos(), ipBloqueo);
+						logger.info("Correo de alerta de bloqueo enviado exitosamente a: {}", u.getEmail());
+					} catch (jakarta.mail.MessagingException me) {
+						logger.error("Error de mensajería al enviar correo de bloqueo para usuario: {} - Detalles: {}", 
+								   u.getUsername(), me.getMessage(), me);
+					} catch (Exception e) {
+						logger.error("Error general al enviar correo de alerta de bloqueo de cuenta para usuario: " + u.getUsername(), e);
+					}
+				}
 				req.setAttribute("error", advertencia);
 				req.getRequestDispatcher("/login.jsp").forward(req, resp);
 			}

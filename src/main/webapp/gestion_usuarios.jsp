@@ -100,7 +100,7 @@
                                             <p class="lead text-white mb-0">Administra todos los usuarios del sistema
                                             </p>
                                         </div>
-                                        <a href="${pageContext.request.contextPath}/registro"
+                                        <a href="${pageContext.request.contextPath}/admin_crear_usuario"
                                             class="btn btn-outline-light btn-lg shadow-sm">
                                             <i class="fas fa-plus-circle me-2"></i>Crear Usuario
                                         </a>
@@ -513,8 +513,11 @@
                     }
 
                     function eliminarUsuario(id, username) {
-                        // Redirigir a la página de confirmación de eliminación
-                        window.location.href = '${pageContext.request.contextPath}/eliminar_confirmar.jsp?userId=' + id;
+                        // Confirmar antes de eliminar
+                        if (confirm('¿Está seguro que desea eliminar el usuario "' + username + '"?')) {
+                            // Redirigir al servlet de eliminación (NO directo a JSP)
+                            window.location.href = '${pageContext.request.contextPath}/eliminar_usuario?id=' + id;
+                        }
                     }
 
                     // Inicializar tooltips

@@ -144,30 +144,16 @@ public class CambiarEstadoUsuarioServlet extends HttpServlet {
             
             EmailService emailService = new EmailService(mailUser, mailPass);
             
-            String asunto;
-            String mensaje;
-            
             if (bloquear) {
-                // Correo de cuenta bloqueada
-                asunto = "⚠️ Tu cuenta en SumixKids ha sido bloqueada";
-                mensaje = EmailService.generateAccountBlockedEmail(
-                    usuario.getNombres(),
-                    usuario.getApellidos(),
-                    usuario.getUsername(),
-                    admin.getUsername()
-                );
+                // Usar método específico para cuenta deshabilitada
+                emailService.sendStatusChangeEmail(usuario.getEmail(), usuario.getNombres(), 
+                                                 usuario.getApellidos(), false, admin.getUsername());
             } else {
-                // Correo de cuenta desbloqueada
-                asunto = "✅ Tu cuenta en SumixKids ha sido desbloqueada";
-                mensaje = EmailService.generateAccountUnblockedEmail(
-                    usuario.getNombres(),
-                    usuario.getApellidos(),
-                    usuario.getUsername(),
-                    admin.getUsername()
-                );
+                // Usar método específico para cuenta habilitada/desbloqueada
+                emailService.sendAccountUnblockedNotification(usuario.getEmail(), usuario.getNombres(), 
+                                                            usuario.getApellidos(), usuario.getUsername(), 
+                                                            admin.getUsername());
             }
-            
-            emailService.sendHtmlEmail(usuario.getEmail(), asunto, mensaje);
             logger.info(String.format(
                 "Correo de notificación enviado a %s (%s)",
                 usuario.getUsername(), usuario.getEmail()

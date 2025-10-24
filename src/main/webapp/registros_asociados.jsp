@@ -41,7 +41,7 @@
                             </a>
                         </c:when>
                         <c:otherwise>
-                            <a class="nav-link" href="${pageContext.request.contextPath}/eliminar_confirmar.jsp?userId=${usuario.id}">
+                            <a class="nav-link" href="${pageContext.request.contextPath}/eliminar_usuario?id=${usuario.id}">
                                 <i class="bi bi-arrow-left"></i> Volver a Eliminar Usuario
                             </a>
                         </c:otherwise>

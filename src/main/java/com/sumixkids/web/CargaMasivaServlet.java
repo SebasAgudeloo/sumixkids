@@ -219,7 +219,6 @@ public class CargaMasivaServlet extends HttpServlet {
                     // Enviar email si está activo
                     if (enviarEmails) {
                         try {
-                            // TODO: Implementar envío de email con credenciales
                             System.out.println("Email pendiente de enviar a: " + email + " con usuario: " + username);
                         } catch (Exception e) {
                             System.err.println("Error enviando email a " + email + ": " + e.getMessage());
