@@ -415,16 +415,33 @@
 
 <!-- Bootstrap Bundle con Popper (Solo una vez) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="${pageContext.request.contextPath}/js/session-timeout.js?v=1.6"></script>
+
 
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
 // Function to export to Excel
 function exportarExcel() {
-    // Mostrar confirmación
-    if (!confirm('¿Desea exportar los registros de auditoría a Excel?')) {
-        return;
-    }
+    // Mostrar confirmación con SweetAlert2
+    Swal.fire({
+        title: '📊 Exportar a Excel',
+        text: '¿Desea exportar los registros de auditoría a Excel?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, exportar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (!result.isConfirmed) {
+            return;
+        }
+        
+        // Continuar con la exportación
     
     // Obtener los parámetros del formulario
     const fechaInicio = document.getElementById('fechaInicio').value;
@@ -458,6 +475,7 @@ function exportarExcel() {
         btnExport.disabled = false;
         btnExport.innerHTML = originalText;
     }, 10000);
+    });
 }
 
 // Auto-refresh every 30 seconds for real-time monitoring
@@ -493,7 +511,13 @@ document.getElementById('usuario').addEventListener('keypress', function(e) {
 document.getElementById('fechaInicio').addEventListener('change', function() {
     const fechaFin = document.getElementById('fechaFin');
     if (this.value && fechaFin.value && this.value > fechaFin.value) {
-        alert('⚠️ La fecha de inicio no puede ser posterior a la fecha de fin');
+        Swal.fire({
+            title: '⚠️ Fecha Inválida',
+            text: 'La fecha de inicio no puede ser posterior a la fecha de fin',
+            icon: 'warning',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#3085d6'
+        });
         this.value = '';
     }
 });
@@ -501,7 +525,13 @@ document.getElementById('fechaInicio').addEventListener('change', function() {
 document.getElementById('fechaFin').addEventListener('change', function() {
     const fechaInicio = document.getElementById('fechaInicio');
     if (this.value && fechaInicio.value && this.value < fechaInicio.value) {
-        alert('⚠️ La fecha de fin no puede ser anterior a la fecha de inicio');
+        Swal.fire({
+            title: '⚠️ Fecha Inválida',
+            text: 'La fecha de fin no puede ser anterior a la fecha de inicio',
+            icon: 'warning',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#3085d6'
+        });
         this.value = '';
     }
 });

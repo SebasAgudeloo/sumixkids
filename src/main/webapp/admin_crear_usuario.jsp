@@ -264,6 +264,9 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="${pageContext.request.contextPath}/js/session-timeout.js?v=1.6"></script>
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -333,13 +336,25 @@
 
             if (!validatePassword(password)) {
                 e.preventDefault();
-                alert('La contraseña no cumple con todos los requisitos.');
+                Swal.fire({
+                    title: '🔒 Contraseña inválida',
+                    text: 'La contraseña no cumple con todos los requisitos.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#dc3545'
+                });
                 return;
             }
 
             if (password !== confirm) {
                 e.preventDefault();
-                alert('Las contraseñas no coinciden.');
+                Swal.fire({
+                    title: '🔑 Error de confirmación',
+                    text: 'Las contraseñas no coinciden.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#dc3545'
+                });
                 return;
             }
         });

@@ -203,7 +203,9 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script src="${pageContext.request.contextPath}/js/session-timeout.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="${pageContext.request.contextPath}/js/session-timeout.js?v=1.6"></script>
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 

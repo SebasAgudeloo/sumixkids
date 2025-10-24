@@ -431,6 +431,9 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="${pageContext.request.contextPath}/js/session-timeout.js?v=1.6"></script>
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -451,13 +454,25 @@ document.getElementById('archivo').addEventListener('change', function(e) {
         const allowedTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
         
         if (fileSize > 10) {
-            alert('❌ El archivo es demasiado grande. Máximo 10MB permitido.');
+            Swal.fire({
+                title: '📁 Archivo muy grande',
+                text: 'El archivo es demasiado grande. Máximo 10MB permitido.',
+                icon: 'error',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#dc3545'
+            });
             e.target.value = '';
             return;
         }
         
         if (!allowedTypes.includes(file.type)) {
-            alert('❌ Formato de archivo no válido. Solo se permiten archivos Excel (.xlsx, .xls).');
+            Swal.fire({
+                title: '📄 Formato inválido',
+                text: 'Formato de archivo no válido. Solo se permiten archivos Excel (.xlsx, .xls).',
+                icon: 'error',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#dc3545'
+            });
             e.target.value = '';
             return;
         }

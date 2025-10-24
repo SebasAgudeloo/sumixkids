@@ -74,7 +74,8 @@
                                                 <i class="fas fa-cog me-2"></i>Configuración</a></li>
                                         <li><a class="dropdown-item"
                                                 href="${pageContext.request.contextPath}/dispositivos_reconocidos"><i
-                                                    class="fa-solid fa-shield-halved me-2"></i>Dispositivos Reconocidos</a></li>
+                                                    class="fa-solid fa-shield-halved me-2"></i>Dispositivos
+                                                Reconocidos</a></li>
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
@@ -83,7 +84,7 @@
                                         </li>
                                     </ul>
                                 </li>
-                            </ul>   
+                            </ul>
                         </div>
                     </div>
                 </nav>
@@ -306,7 +307,8 @@
                                                                                     Estudiante</span>
                                                                             </c:when>
                                                                             <c:when test="${usuario.rolId == 4}">
-                                                                                <span class="badge" style="background-color: #8b5cf6; color: white;">👨‍👩‍👧‍👦
+                                                                                <span class="badge"
+                                                                                    style="background-color: #8b5cf6; color: white;">👨‍👩‍👧‍👦
                                                                                     Padre</span>
                                                                             </c:when>
                                                                             <c:otherwise>
@@ -372,7 +374,8 @@
                                                                                 class="btn btn-sm btn-outline-danger"
                                                                                 data-bs-toggle="tooltip"
                                                                                 title="Eliminar usuario"
-                                                                                onclick="eliminarUsuario('${usuario.id}', '${usuario.username}')">
+                                                                                data-user-id="${usuario.id}"
+                                                                                onclick="eliminarUsuarioSeguro(this)">
                                                                                 <i class="fas fa-trash"></i>
                                                                             </button>
                                                                         </div>
@@ -405,129 +408,167 @@
                 </main>
 
                 <%-- Footer --%>
-<footer class="py-4 mt-auto" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6 text-center text-md-start">
-                <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-2 mb-md-0">
-                    <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="SumixKids" 
-                         style="height: 24px; margin-right: 8px;">
-                    <span class="text-white fw-semibold">SumixKids</span>
-                </div>
-                <p class="text-white-50 small mb-0">Software educativo para la práctica de sumas</p>
-            </div>
-            <div class="col-md-6 text-center text-md-end">
-                <p class="text-white-50 small mb-1">
-                    © <span id="year"></span> SumixKids · Todos los derechos reservados
-                </p>
-            </div>
-        </div>
-    </div>
-</footer>
+                    <footer class="py-4 mt-auto" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);">
+                        <div class="container">
+                            <div class="row align-items-center">
+                                <div class="col-md-6 text-center text-md-start">
+                                    <div
+                                        class="d-flex align-items-center justify-content-center justify-content-md-start mb-2 mb-md-0">
+                                        <img src="${pageContext.request.contextPath}/images/sumixkids.png"
+                                            alt="SumixKids" style="height: 24px; margin-right: 8px;">
+                                        <span class="text-white fw-semibold">SumixKids</span>
+                                    </div>
+                                    <p class="text-white-50 small mb-0">Software educativo para la práctica de sumas</p>
+                                </div>
+                                <div class="col-md-6 text-center text-md-end">
+                                    <p class="text-white-50 small mb-1">
+                                        © <span id="year"></span> SumixKids · Todos los derechos reservados
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
 
-                <!-- Scripts -->
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-                    crossorigin="anonymous"></script>
-                <script>
-                    document.getElementById('year').textContent = new Date().getFullYear();
+                    <!-- Scripts -->
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+                        crossorigin="anonymous"></script>
+                    <!-- SweetAlert2 -->
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    <script src="${pageContext.request.contextPath}/js/session-timeout.js?v=1.6"></script>
+                    <script>
+                        document.getElementById('year').textContent = new Date().getFullYear();
 
-                    // Funciones de filtrado
-                    function filtrarUsuarios() {
-                        const busqueda = document.getElementById('buscarUsuario').value.toLowerCase();
-                        const filtroRol = document.getElementById('filtroRol').value;
-                        const filtroEstado = document.getElementById('filtroEstado').value;
-                        const filas = document.querySelectorAll('#tablaUsuarios tbody .usuario-row');
-                        let contador = 0;
+                        // Funciones de filtrado
+                        function filtrarUsuarios() {
+                            const busqueda = document.getElementById('buscarUsuario').value.toLowerCase();
+                            const filtroRol = document.getElementById('filtroRol').value;
+                            const filtroEstado = document.getElementById('filtroEstado').value;
+                            const filas = document.querySelectorAll('#tablaUsuarios tbody .usuario-row');
+                            let contador = 0;
 
-                        filas.forEach(fila => {
-                            const texto = fila.textContent.toLowerCase();
-                            const rol = fila.getAttribute('data-rol');
-                            const activo = fila.getAttribute('data-estado') === 'true';
+                            filas.forEach(fila => {
+                                const texto = fila.textContent.toLowerCase();
+                                const rol = fila.getAttribute('data-rol');
+                                const activo = fila.getAttribute('data-estado') === 'true';
 
-                            let mostrar = true;
+                                let mostrar = true;
 
-                            // Filtro de búsqueda
-                            if (busqueda && !texto.includes(busqueda)) {
-                                mostrar = false;
-                            }
+                                // Filtro de búsqueda
+                                if (busqueda && !texto.includes(busqueda)) {
+                                    mostrar = false;
+                                }
 
-                            // Filtro de rol
-                            if (filtroRol && rol !== filtroRol) {
-                                mostrar = false;
-                            }
+                                // Filtro de rol
+                                if (filtroRol && rol !== filtroRol) {
+                                    mostrar = false;
+                                }
 
-                            // Filtro de estado
-                            if (filtroEstado === 'activo' && !activo) {
-                                mostrar = false;
-                            } else if (filtroEstado === 'inactivo' && activo) {
-                                mostrar = false;
-                            }
+                                // Filtro de estado
+                                if (filtroEstado === 'activo' && !activo) {
+                                    mostrar = false;
+                                } else if (filtroEstado === 'inactivo' && activo) {
+                                    mostrar = false;
+                                }
 
-                            fila.style.display = mostrar ? '' : 'none';
-                            if (mostrar) contador++;
-                        });
+                                fila.style.display = mostrar ? '' : 'none';
+                                if (mostrar) contador++;
+                            });
 
-                        // Actualizar contador
-                        document.getElementById('contadorUsuarios').textContent = contador + ' usuarios mostrados';
-                    }
-
-                    function limpiarFiltros() {
-                        document.getElementById('buscarUsuario').value = '';
-                        document.getElementById('filtroRol').value = '';
-                        document.getElementById('filtroEstado').value = '';
-                        filtrarUsuarios();
-                        document.getElementById('contadorUsuarios').textContent = '${totalUsuarios} usuarios registrados';
-                    }
-
-                    function editarUsuario(id) {
-                        window.location.href = '${pageContext.request.contextPath}/editar_usuario?id=' + id;
-                    }
-
-                    function cambiarEstado(id, bloquear) {
-                        const accion = bloquear === 'true' ? 'bloquear' : 'desbloquear';
-                        const pregunta = bloquear === 'true'
-                            ? '¿Está seguro que desea bloquear este usuario? No podrá iniciar sesión.'
-                            : '¿Está seguro que desea desbloquear este usuario? Podrá iniciar sesión nuevamente.';
-
-                        if (confirm(pregunta)) {
-                            // Crear formulario y enviarlo por POST
-                            const form = document.createElement('form');
-                            form.method = 'POST';
-                            form.action = '${pageContext.request.contextPath}/cambiar_estado';
-
-                            const inputId = document.createElement('input');
-                            inputId.type = 'hidden';
-                            inputId.name = 'id';
-                            inputId.value = id;
-                            form.appendChild(inputId);
-
-                            const inputBloquear = document.createElement('input');
-                            inputBloquear.type = 'hidden';
-                            inputBloquear.name = 'bloquear';
-                            inputBloquear.value = bloquear;
-                            form.appendChild(inputBloquear);
-
-                            document.body.appendChild(form);
-                            form.submit();
+                            // Actualizar contador
+                            document.getElementById('contadorUsuarios').textContent = contador + ' usuarios mostrados';
                         }
-                    }
 
-                    function eliminarUsuario(id, username) {
-                        // Confirmar antes de eliminar
-                        if (confirm('¿Está seguro que desea eliminar el usuario "' + username + '"?')) {
-                            // Redirigir al servlet de eliminación (NO directo a JSP)
-                            window.location.href = '${pageContext.request.contextPath}/eliminar_usuario?id=' + id;
+                        function limpiarFiltros() {
+                            document.getElementById('buscarUsuario').value = '';
+                            document.getElementById('filtroRol').value = '';
+                            document.getElementById('filtroEstado').value = '';
+                            filtrarUsuarios();
+                            document.getElementById('contadorUsuarios').textContent = '${totalUsuarios} usuarios registrados';
                         }
-                    }
 
-                    // Inicializar tooltips
-                    document.addEventListener('DOMContentLoaded', function () {
-                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                            return new bootstrap.Tooltip(tooltipTriggerEl);
+                        function editarUsuario(id) {
+                            window.location.href = '${pageContext.request.contextPath}/editar_usuario?id=' + id;
+                        }
+
+                        function cambiarEstado(id, bloquear) {
+                            const accion = bloquear === 'true' ? 'bloquear' : 'desbloquear';
+                            const titulo = bloquear === 'true' ? '🚫 Bloquear Usuario' : '✅ Desbloquear Usuario';
+                            const texto = bloquear === 'true'
+                                ? 'Este usuario no podrá iniciar sesión hasta que sea desbloqueado.'
+                                : 'Este usuario podrá iniciar sesión nuevamente.';
+                            const icono = bloquear === 'true' ? 'warning' : 'question';
+                            const confirmButtonColor = bloquear === 'true' ? '#dc3545' : '#198754';
+                            const confirmButtonText = bloquear === 'true' ? 'Sí, bloquear' : 'Sí, desbloquear';
+
+                            Swal.fire({
+                                title: titulo,
+                                text: texto,
+                                icon: icono,
+                                showCancelButton: true,
+                                confirmButtonColor: confirmButtonColor,
+                                cancelButtonColor: '#6c757d',
+                                confirmButtonText: confirmButtonText,
+                                cancelButtonText: 'Cancelar',
+                                reverseButtons: true
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Crear formulario y enviarlo por POST
+                                    const form = document.createElement('form');
+                                    form.method = 'POST';
+                                    form.action = '${pageContext.request.contextPath}/cambiar_estado';
+
+                                    const inputId = document.createElement('input');
+                                    inputId.type = 'hidden';
+                                    inputId.name = 'id';
+                                    inputId.value = id;
+                                    form.appendChild(inputId);
+
+                                    const inputBloquear = document.createElement('input');
+                                    inputBloquear.type = 'hidden';
+                                    inputBloquear.name = 'bloquear';
+                                    inputBloquear.value = bloquear;
+                                    form.appendChild(inputBloquear);
+
+                                    document.body.appendChild(form);
+                                    form.submit();
+                                }
+                            });
+                        }
+
+                        function eliminarUsuarioSeguro(button) {
+                            const id = button.getAttribute('data-user-id');
+
+                            Swal.fire({
+                                title: '🗑️ Eliminar Usuario',
+                                html: '¿Está seguro que desea eliminar este usuario?<br><br><small class="text-muted">Esta acción no se puede deshacer</small>',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#dc3545',
+                                cancelButtonColor: '#6c757d',
+                                confirmButtonText: 'Sí, eliminar',
+                                cancelButtonText: 'Cancelar',
+                                reverseButtons: true
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Redirigir al servlet de eliminación (NO directo a JSP)
+                                    window.location.href = '${pageContext.request.contextPath}/eliminar_usuario?id=' + id;
+                                }
+                            });
+                        }
+
+                        // Mantener función original para compatibilidad
+                        function eliminarUsuario(id, username) {
+                            eliminarUsuarioSeguro({ getAttribute: () => id });
+                        }
+
+                        // Inicializar tooltips
+                        document.addEventListener('DOMContentLoaded', function () {
+                            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                                return new bootstrap.Tooltip(tooltipTriggerEl);
+                            });
                         });
-                    });
-                </script>
+                    </script>
 
             </body>
 

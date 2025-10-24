@@ -92,13 +92,27 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
         
         function confirmarEliminacion(userId) {
-            if (confirm('¿Está seguro que desea eliminar este usuario?')) {
-                window.location.href = '${pageContext.request.contextPath}/eliminar_usuario?id=' + userId;
-            }
+            Swal.fire({
+                title: '🗑️ Eliminar Usuario',
+                text: '¿Está seguro que desea eliminar este usuario?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '${pageContext.request.contextPath}/eliminar_usuario?id=' + userId;
+                }
+            });
         }
     </script>
 </body>

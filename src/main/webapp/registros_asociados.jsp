@@ -262,6 +262,7 @@
 
 <!-- Sweet Alert 2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="${pageContext.request.contextPath}/js/session-timeout.js?v=1.6"></script>
 
 <script>
 // Eliminar registro de auditoría individual

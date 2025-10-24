@@ -168,7 +168,7 @@
                                                     </small>
                                                     
                                                     <form method="post" class="d-inline" 
-                                                          onsubmit="return confirm('¿Estás seguro de eliminar este dispositivo? Tendrás que completar 2FA nuevamente.')">
+                                                          onsubmit="return confirmarEliminacionDispositivo(this)">
                                                         <input type="hidden" name="action" value="eliminar">
                                                         <input type="hidden" name="deviceId" value="${dispositivo.deviceId}">
                                                         <button type="submit" class="btn btn-outline-danger btn-sm">
@@ -219,5 +219,31 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="${pageContext.request.contextPath}/js/session-timeout.js?v=1.6"></script>
+<script>
+function confirmarEliminacionDispositivo(form) {
+    event.preventDefault();
+    
+    Swal.fire({
+        title: '📱 Eliminar Dispositivo',
+        text: '¿Estás seguro de eliminar este dispositivo? Tendrás que completar 2FA nuevamente.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+    
+    return false;
+}
+</script>
 </body>
 </html>
