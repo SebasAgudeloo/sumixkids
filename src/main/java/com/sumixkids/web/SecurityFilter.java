@@ -16,7 +16,7 @@ import com.sumixkids.model.Usuario;
 public class SecurityFilter implements Filter {
     // Rutas públicas (no requieren autenticación)
     private static final String[] PUBLIC_PATHS = {
-        "/login", "/registro", "/recuperar", "/restablecer", "/2fa", "/css/", "/images/", "/js/", "/favicon.ico", "/"
+        "/login", "/registro", "/recuperar_password", "/restablecer_password", "/2fa", "/css/", "/images/", "/js/", "/favicon.ico", "/"
     };
 
     // Rutas solo para admin

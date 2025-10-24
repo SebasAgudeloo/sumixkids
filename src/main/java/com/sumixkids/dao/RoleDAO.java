@@ -64,4 +64,43 @@ public class RoleDAO {
         }
         return roles;
     }
+    
+    /**
+     * Obtiene el RoleType basándose en el ID del rol
+     */
+    public RoleType findRoleTypeById(Integer rolId) throws SQLException {
+        if (rolId == null) {
+            return null;
+        }
+        
+        String sql = "SELECT nombre_rol FROM roles WHERE id = ?";
+        try (Connection cn = DatabaseManager.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, rolId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String nombre = rs.getString("nombre_rol");
+                    
+                    // Mapear el nombre del rol a RoleType
+                    switch (nombre.toLowerCase()) {
+                        case "admin":
+                        case "administrador":
+                            return RoleType.ADMIN;
+                        case "docent":
+                        case "docente":
+                            return RoleType.DOCENT;
+                        case "student":
+                        case "estudiante":
+                            return RoleType.STUDENT;
+                        case "parents":
+                        case "padre":
+                            return RoleType.PARENTS;
+                        default:
+                            return null;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }

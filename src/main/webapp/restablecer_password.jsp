@@ -41,7 +41,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         </c:if>
-                        <form id="restablecerForm" method="post" action="${pageContext.request.contextPath}/restablecer">
+                        <form id="restablecerForm" method="post" action="${pageContext.request.contextPath}/restablecer_password">
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">
                                     <i class="fas fa-user me-1"></i>Usuario o correo <span class="text-danger">*</span>

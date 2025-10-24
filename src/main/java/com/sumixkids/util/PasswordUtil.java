@@ -1,19 +1,45 @@
+/**
+ * SumixKids - Sistema Educativo para Práctica de Sumas
+ * Paquete de utilidades del sistema
+ */
 package com.sumixkids.util;
 
+// Sistema de logging para depuración
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// Librería BCrypt para hash seguro de contraseñas
 import org.mindrot.jbcrypt.BCrypt;
 
+// Manejo de archivos y propiedades
 import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Herramientas para guardar contraseñas de manera segura (no en texto plano).
- * Usa la librería BCrypt que añade "sal" y repite el proceso varias veces.
+ * PasswordUtil - Utilidades para manejo seguro de contraseñas
+ * 
+ * Proporciona métodos estáticos para hash, validación y verificación
+ * de contraseñas utilizando el algoritmo BCrypt con salt automático.
+ * 
+ * FUNCIONALIDADES:
+ * - Generación de hash BCrypt seguro para contraseñas
+ * - Verificación de contraseñas contra hash almacenado
+ * - Configuración ajustable del costo computacional
+ * - Protección contra ataques de diccionario y fuerza bruta
+ * 
+ * SEGURIDAD:
+ * - Utiliza salt aleatorio para cada contraseña
+ * - Costo computacional configurable (default: 10 rounds)
+ * - Resistente a ataques rainbow table
+ * - No almacena contraseñas en texto plano
+ * 
+ * @author Equipo SumixKids
+ * @version 1.0
+ * @since 2024
  */
 public class PasswordUtil {
 
+	/** Logger para eventos de hash y verificación de contraseñas */
 	private static final Logger logger = LoggerFactory.getLogger(PasswordUtil.class);
 
 	private static final Properties props = new Properties();

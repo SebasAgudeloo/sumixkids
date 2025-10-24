@@ -27,8 +27,8 @@ public class SessionTimeoutFilter implements Filter {
             Long lastActivity = (Long) session.getAttribute("lastActivity");
             long currentTime = System.currentTimeMillis();
             
-            // Solo verificar timeout si existe lastActivity
-            if (lastActivity != null && currentTime - lastActivity > 60000) {
+            // Solo verificar timeout si existe lastActivity (30 minutos = 1,800,000 ms)
+            if (lastActivity != null && currentTime - lastActivity > 1800000) {
                 session.invalidate();
                 res.sendRedirect(req.getContextPath() + "/login?timeout=true");
                 return;

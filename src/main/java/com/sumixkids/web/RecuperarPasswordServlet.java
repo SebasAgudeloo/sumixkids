@@ -21,11 +21,11 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.SecureRandom;
 
-public class RecuperarServlet extends HttpServlet {
-    private static final Logger logger = LoggerFactory.getLogger(RecuperarServlet.class);
+public class RecuperarPasswordServlet extends HttpServlet {
+    private static final Logger logger = LoggerFactory.getLogger(RecuperarPasswordServlet.class);
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("recuperar.jsp").forward(request, response);
+        request.getRequestDispatcher("recuperar_password.jsp").forward(request, response);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class RecuperarServlet extends HttpServlet {
         if (correo == null || correo.trim().isEmpty()) {
             request.setAttribute("error", "❌ Debes ingresar tu correo electrónico");
             request.setAttribute("errorCorreo", true);
-            request.getRequestDispatcher("recuperar.jsp").forward(request, response);
+            request.getRequestDispatcher("recuperar_password.jsp").forward(request, response);
             return;
         }
         
@@ -47,7 +47,7 @@ public class RecuperarServlet extends HttpServlet {
         if (!correo.matches(emailPattern)) {
             request.setAttribute("error", "❌ Por favor, ingresa un correo electrónico válido");
             request.setAttribute("errorCorreo", true);
-            request.getRequestDispatcher("recuperar.jsp").forward(request, response);
+            request.getRequestDispatcher("recuperar_password.jsp").forward(request, response);
             return;
         }
         
@@ -55,7 +55,7 @@ public class RecuperarServlet extends HttpServlet {
         if (usuario == null) {
             request.setAttribute("error", "❌ No existe una cuenta registrada con ese correo electrónico");
             request.setAttribute("errorCorreo", true);
-            request.getRequestDispatcher("recuperar.jsp").forward(request, response);
+            request.getRequestDispatcher("recuperar_password.jsp").forward(request, response);
             return;
         }
         // Generar código seguro y guardar en BD con PasswordResetDAO
@@ -67,7 +67,7 @@ public class RecuperarServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("No se pudo guardar el código de recuperación para {}", usuario.getUsername(), e);
             request.setAttribute("error", "No se pudo guardar el código de recuperación: " + e.getMessage());
-            request.getRequestDispatcher("recuperar.jsp").forward(request, response);
+            request.getRequestDispatcher("recuperar_password.jsp").forward(request, response);
             return;
         }
         HttpSession session = request.getSession();
@@ -87,7 +87,7 @@ public class RecuperarServlet extends HttpServlet {
             // Crear enlace de recuperación con el código
             String resetLink = request.getScheme() + "://" + request.getServerName() + ":" + 
                              request.getServerPort() + request.getContextPath() + 
-                             "/restablecer.jsp?codigo=" + codigo;
+                             "/restablecer_password?codigo=" + codigo;
             
             // Usar el método específico del EmailService para recuperación de contraseña
             emailService.sendPasswordRecoveryEmail(correo, usuario.getNombres(), 
@@ -96,10 +96,10 @@ public class RecuperarServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("No se pudo enviar el correo de recuperación a {}", correo, e);
             request.setAttribute("error", "❌ No se pudo enviar el correo. Por favor, verifica tu conexión a internet e intenta nuevamente");
-            request.getRequestDispatcher("recuperar.jsp").forward(request, response);
+            request.getRequestDispatcher("recuperar_password.jsp").forward(request, response);
             return;
         }
-        response.sendRedirect("restablecer.jsp");
+        response.sendRedirect(request.getContextPath() + "/restablecer_password");
     }
 
     private String generarCodigo() {

@@ -44,7 +44,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         </c:if>
-                        <form id="recuperarForm" method="post" action="${pageContext.request.contextPath}/recuperar">
+                        <form id="recuperarForm" method="post" action="${pageContext.request.contextPath}/recuperar_password">
                             <div class="mb-4">
                                 <label class="form-label fw-semibold">
                                     <i class="fas fa-at me-1"></i>Correo electrónico <span class="text-danger">*</span>

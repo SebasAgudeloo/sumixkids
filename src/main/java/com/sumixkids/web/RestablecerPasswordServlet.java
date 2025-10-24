@@ -18,11 +18,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class RestablecerServlet extends HttpServlet {
-    private static final Logger logger = LoggerFactory.getLogger(RestablecerServlet.class);
+public class RestablecerPasswordServlet extends HttpServlet {
+    private static final Logger logger = LoggerFactory.getLogger(RestablecerPasswordServlet.class);
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("restablecer.jsp").forward(request, response);
+        // Si viene un código en la URL, pasarlo al JSP
+        String codigo = request.getParameter("codigo");
+        if (codigo != null && !codigo.trim().isEmpty()) {
+            request.setAttribute("codigo", codigo);
+        }
+        request.getRequestDispatcher("restablecer_password.jsp").forward(request, response);
     }
 
     @Override
@@ -43,7 +48,7 @@ public class RestablecerServlet extends HttpServlet {
             request.setAttribute("errorUsuarioCorreo", true);
             request.setAttribute("errorCodigo", true);
             request.setAttribute("errorPassword", true);
-            request.getRequestDispatcher("restablecer.jsp").forward(request, response);
+            request.getRequestDispatcher("restablecer_password.jsp").forward(request, response);
             return;
         }
         
@@ -51,7 +56,7 @@ public class RestablecerServlet extends HttpServlet {
         if (!codigo.matches("^[A-Za-z]{6}$")) {
             request.setAttribute("error", "❌ El código debe tener 6 letras (solo letras, sin números)");
             request.setAttribute("errorCodigo", true);
-            request.getRequestDispatcher("restablecer.jsp").forward(request, response);
+            request.getRequestDispatcher("restablecer_password.jsp").forward(request, response);
             return;
         }
         
@@ -60,7 +65,7 @@ public class RestablecerServlet extends HttpServlet {
         if (!nueva1.matches(passwordPattern)) {
             request.setAttribute("error", "❌ La contraseña debe tener mínimo 5 letras, 2 números, 1 carácter especial y máximo 20 caracteres");
             request.setAttribute("errorPassword", true);
-            request.getRequestDispatcher("restablecer.jsp").forward(request, response);
+            request.getRequestDispatcher("restablecer_password.jsp").forward(request, response);
             return;
         }
         // Buscar usuario por correo o usuario
@@ -70,13 +75,13 @@ public class RestablecerServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("Error al buscar el usuario {}", usuarioCorreo, e);
             request.setAttribute("error", "Error al buscar el usuario: " + e.getMessage());
-            request.getRequestDispatcher("restablecer.jsp").forward(request, response);
+            request.getRequestDispatcher("restablecer_password.jsp").forward(request, response);
             return;
         }
         if (user == null) {
             request.setAttribute("error", "❌ No se encontró una cuenta con ese usuario o correo");
             request.setAttribute("errorUsuarioCorreo", true);
-            request.getRequestDispatcher("restablecer.jsp").forward(request, response);
+            request.getRequestDispatcher("restablecer_password.jsp").forward(request, response);
             return;
         }
         try {
@@ -84,20 +89,20 @@ public class RestablecerServlet extends HttpServlet {
             if (!valido) {
                 request.setAttribute("error", "❌ El código ingresado es incorrecto, expiró o ya fue usado");
                 request.setAttribute("errorCodigo", true);
-                request.getRequestDispatcher("restablecer.jsp").forward(request, response);
+                request.getRequestDispatcher("restablecer_password.jsp").forward(request, response);
                 return;
             }
         } catch (Exception e) {
             logger.error("Error al validar el código de recuperación para usuario {}", user.getUsername(), e);
             request.setAttribute("error", "❌ Error al validar el código. Por favor, intenta nuevamente");
             request.setAttribute("errorCodigo", true);
-            request.getRequestDispatcher("restablecer.jsp").forward(request, response);
+            request.getRequestDispatcher("restablecer_password.jsp").forward(request, response);
             return;
         }
         if (!nueva1.equals(nueva2)) {
             request.setAttribute("error", "❌ Las contraseñas no coinciden");
             request.setAttribute("errorPassword", true);
-            request.getRequestDispatcher("restablecer.jsp").forward(request, response);
+            request.getRequestDispatcher("restablecer_password.jsp").forward(request, response);
             return;
         }
         try {
@@ -119,7 +124,7 @@ public class RestablecerServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("Error al actualizar la contraseña para usuario {}", user.getUsername(), e);
             request.setAttribute("error", "❌ Error al actualizar la contraseña. Por favor, intenta nuevamente o contacta al administrador");
-            request.getRequestDispatcher("restablecer.jsp").forward(request, response);
+            request.getRequestDispatcher("restablecer_password.jsp").forward(request, response);
         }
     }
     

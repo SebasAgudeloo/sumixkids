@@ -91,7 +91,7 @@
                             </div>
                         </form>
                         <div class="text-center mt-3">
-                            <a href="${pageContext.request.contextPath}/recuperar">¿Olvidaste tu contraseña?</a>
+                            <a href="${pageContext.request.contextPath}/recuperar_password">¿Olvidaste tu contraseña?</a>
                         </div>
                     </div>
                 </div>

@@ -1,18 +1,54 @@
+/**
+ * Paquete de utilidades del sistema SumixKids
+ * Contiene clases helper y utilidades para funcionalidades
+ * transversales de la aplicación
+ */
 package com.sumixkids.util;
 
+// Importación para modelo de usuario
 import com.sumixkids.model.Usuario;
+// Importación para objetos de petición HTTP
 import javax.servlet.http.HttpServletRequest;
+// Importación para gestión de sesiones HTTP
 import javax.servlet.http.HttpSession;
 
 /**
- * Utilidades para manejo de seguridad y permisos en la aplicación
+ * SecurityUtils - Utilidades para manejo de seguridad y permisos
+ * 
+ * Funcionalidades:
+ * - Verificación de roles y permisos de usuario
+ * - Constantes de roles del sistema
+ * - Validación de autenticación de sesiones
+ * - Métodos helper para control de acceso
+ * - Verificación de privilegios administrativos
+ * 
+ * Roles del sistema:
+ * - ROL_ADMIN (1): Administrador con todos los permisos
+ * - ROL_DOCENTE (2): Docente con permisos de gestión académica
+ * - ROL_ESTUDIANTE (3): Estudiante con acceso limitado
+ * - ROL_PADRE (4): Padre/tutor con acceso a información del hijo
+ * 
+ * Uso típico:
+ * - Validar permisos antes de ejecutar acciones
+ * - Controlar acceso a funcionalidades específicas
+ * - Verificar autenticación en filtros de seguridad
+ * 
+ * @author SumixKids Team
+ * @version 1.0
+ * @since 2024
  */
 public class SecurityUtils {
     
-    // Constantes de roles
+    // Constante para identificar rol de administrador del sistema
     public static final int ROL_ADMIN = 1;
+    
+    // Constante para identificar rol de docente
     public static final int ROL_DOCENTE = 2;
+    
+    // Constante para identificar rol de estudiante
     public static final int ROL_ESTUDIANTE = 3;
+    
+    // Constante para identificar rol de padre/tutor
     public static final int ROL_PADRE = 4;
     
     /**

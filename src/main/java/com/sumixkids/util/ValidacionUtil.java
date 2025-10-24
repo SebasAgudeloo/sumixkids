@@ -1,15 +1,50 @@
+/**
+ * Paquete de utilidades del sistema SumixKids
+ * Contiene clases helper y utilidades para funcionalidades
+ * transversales de la aplicación
+ */
 package com.sumixkids.util;
 
+// Importación para manejo de expresiones regulares
 import java.util.regex.Pattern;
 
+/**
+ * ValidacionUtil - Utilidades para validación de datos de entrada
+ * 
+ * Funcionalidades:
+ * - Validación de nombres y apellidos con caracteres especiales español
+ * - Validación de usernames sin espacios y longitud controlada
+ * - Validación de direcciones de email con formato estándar
+ * - Validación de contraseñas con requisitos de seguridad
+ * - Validación de grados académicos permitidos (3°, 4°, 5°)
+ * 
+ * Expresiones regulares definidas:
+ * - Nombres/Apellidos: Letras, acentos, espacios, máx 30 caracteres
+ * - Username: Sin espacios, 5-15 caracteres
+ * - Email: Formato estándar de direcciones electrónicas
+ * - Grado: Solo acepta 3°, 4° o 5° grado
+ * - Contraseña: Mínimo 6 caracteres con variedad
+ * 
+ * @author SumixKids Team
+ * @version 1.0
+ * @since 2024
+ */
 public class ValidacionUtil {
     
-    // Expresiones regulares para validación
+    // Expresión regular para validar nombres (letras, acentos, espacios, máx 30)
     private static final String REGEX_NOMBRE = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,30}$";
+    
+    // Expresión regular para validar apellidos (igual formato que nombres)
     private static final String REGEX_APELLIDO = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,30}$";
-    private static final String REGEX_USERNAME = "^[^\s]{5,15}$"; // Sin espacios, mínimo 5, máximo 15
+    
+    // Expresión regular para username (sin espacios, 5-15 caracteres)
+    private static final String REGEX_USERNAME = "^[^\s]{5,15}$";
+    
+    // Expresión regular para validar formato de email estándar
     private static final String REGEX_CORREO = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-    private static final String REGEX_GRADO = "^[345]°$"; // Solo 3°, 4° o 5°
+    
+    // Expresión regular para validar grados académicos (solo 3°, 4°, 5°)
+    private static final String REGEX_GRADO = "^[345]°$";
     
     /**
      * Valida que el nombre solo contenga letras y espacios (máx. 30 caracteres)
