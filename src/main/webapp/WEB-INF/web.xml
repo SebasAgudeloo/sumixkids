@@ -351,6 +351,28 @@
 		<url-pattern>/mis_clases</url-pattern>
 	</servlet-mapping>
 
+	<!-- Carga de recursos estáticos -->
+
+	    <!-- Sirve archivos estáticos (imágenes, CSS, JS, etc.) -->
+    <servlet>
+        <servlet-name>default</servlet-name>
+        <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/css/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/images/*</url-pattern>
+    </servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/js/*</url-pattern>
+	</servlet-mapping>
+
 	<!-- (Se pueden agregar más servlets en el futuro) -->
 
 
