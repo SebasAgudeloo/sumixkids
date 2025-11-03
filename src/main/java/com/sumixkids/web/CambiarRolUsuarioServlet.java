@@ -52,7 +52,7 @@ public class CambiarRolUsuarioServlet extends HttpServlet {
                 case 1: nuevoRolNombre = "Administrador"; break;
                 case 2: nuevoRolNombre = "Docente"; break;
                 case 3: nuevoRolNombre = "Estudiante"; break;
-                case 4: nuevoRolNombre = "Padre/Madre"; break;
+                case 4: nuevoRolNombre = "Acompañante/Tutor"; break;
                 default: nuevoRolNombre = "Desconocido";
             }
             

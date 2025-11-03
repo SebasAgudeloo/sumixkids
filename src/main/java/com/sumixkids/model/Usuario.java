@@ -91,4 +91,58 @@ public class Usuario {
     /** Espacio reservado para un posible código de verificación adicional (2FA). */
 	public String getAutenticacion2fa() { return autenticacion2fa; }
 	public void setAutenticacion2fa(String autenticacion2fa) { this.autenticacion2fa = autenticacion2fa; }
+	
+	// Métodos de utilidad para extraer primer nombre y apellido
+	
+	/**
+	 * Obtiene el primer nombre (antes del primer espacio)
+	 */
+	public String getPrimerNombre() {
+		if (nombres == null || nombres.trim().isEmpty()) {
+			return "";
+		}
+		String nombresTrimmed = nombres.trim();
+		int espacioIndex = nombresTrimmed.indexOf(' ');
+		if (espacioIndex > 0) {
+			return nombresTrimmed.substring(0, espacioIndex);
+		}
+		return nombresTrimmed; // Si no hay espacios, devolver todo
+	}
+	
+	/**
+	 * Obtiene el primer apellido (antes del primer espacio)
+	 */
+	public String getPrimerApellido() {
+		if (apellidos == null || apellidos.trim().isEmpty()) {
+			return "";
+		}
+		String apellidosTrimmed = apellidos.trim();
+		int espacioIndex = apellidosTrimmed.indexOf(' ');
+		if (espacioIndex > 0) {
+			return apellidosTrimmed.substring(0, espacioIndex);
+		}
+		return apellidosTrimmed; // Si no hay espacios, devolver todo
+	}
+	
+	/**
+	 * Obtiene el nombre corto para mostrar en menús (Primer Nombre + Primer Apellido)
+	 */
+	public String getNombreCorto() {
+		String primerNombre = getPrimerNombre();
+		String primerApellido = getPrimerApellido();
+		
+		if (primerNombre.isEmpty() && primerApellido.isEmpty()) {
+			return username != null ? username : "Usuario";
+		}
+		
+		if (primerNombre.isEmpty()) {
+			return primerApellido;
+		}
+		
+		if (primerApellido.isEmpty()) {
+			return primerNombre;
+		}
+		
+		return primerNombre + " " + primerApellido;
+	}
 }

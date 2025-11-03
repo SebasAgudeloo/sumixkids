@@ -85,8 +85,8 @@ public class IndexServlet extends HttpServlet {
                 return "/bienvenida";  // Los docentes van al dashboard general
             case STUDENT:
                 return "/bienvenida";  // Los estudiantes van al dashboard general
-            case PARENTS:
-                return "/bienvenida";  // Los padres van al dashboard general
+            case ATTENDANT:
+                return "/bienvenida";  // Los acompañantes van al dashboard general
             default:
                 return "/bienvenida";  // Fallback por seguridad
         }

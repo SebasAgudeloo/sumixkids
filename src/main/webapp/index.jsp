@@ -183,7 +183,7 @@
                         <div class="feature-icon text-warning mb-3">
                             <i class="bi bi-heart-fill display-3"></i>
                         </div>
-                        <h4 class="fw-bold text-warning mb-3">Padres</h4>
+                        <h4 class="fw-bold text-warning mb-3">Acompañantes</h4>
                         <p class="text-muted mb-3">Familias que quieren apoyar el aprendizaje de sus hijos con control de tiempo y progreso.</p>
                         <div class="badge bg-warning-soft text-warning">Control parental</div>
                     </div>

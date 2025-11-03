@@ -8,7 +8,7 @@ public enum RoleType {
     ADMIN("admin", "Administrador", "👑"),
     DOCENT("docent", "Docente", "👨‍🏫"),
     STUDENT("student", "Estudiante", "🎓"),
-    PARENTS("parents", "Padre/Madre", "👨‍👩‍👧‍👦");
+    ATTENDANT("attendant", "Acompañante/Tutor", "👥");
 
     private final String dbName;
     private final String displayName;

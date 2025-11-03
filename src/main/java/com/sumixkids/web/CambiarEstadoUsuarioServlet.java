@@ -78,7 +78,7 @@ public class CambiarEstadoUsuarioServlet extends HttpServlet {
                 LogAuditoria log = new LogAuditoria();
                 log.setIdUsuario(usuarioSesion.getId());
                 log.setNombreUsuario(usuarioSesion.getUsername());
-                log.setAccion("ESTADO_USUARIO");
+                log.setAccion("Cambiar Estado Usuario");
                 log.setDescripcion(String.format(
                     "Usuario '%s' (ID: %d) %s por administrador '%s'",
                     usuario.getUsername(),

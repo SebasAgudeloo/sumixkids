@@ -1,13 +1,13 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://sumixkids.com/functions" prefix="util" %>
-<%-- Dashboard específico para padres --%>
+<%-- Dashboard específico para acompañantes/tutores --%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Panel Padres · SumixKids</title>
+    <title>Panel Acompañantes · SumixKids</title>
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
@@ -29,13 +29,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/bienvenida">
+                    <a class="nav-link active" href="${pageContext.request.contextPath}/bienvenida">
                         🏠 Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="${pageContext.request.contextPath}/padre_dashboard">
-                        👨‍👩‍👧‍👦 Panel Padres
                     </a>
                 </li>
                 <li class="nav-item">
@@ -53,15 +48,19 @@
                         💬 Mensajes
                     </a>
                 </li>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/mensajes">
+                        💬 Mensajes
+                    </a>
+                </li>
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-users me-2"></i>
-                        <span class="fw-semibold">${sessionScope.usuario.nombres}</span>
+                        <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
-                        <li><h6 class="dropdown-item">👨‍👩‍👧‍👦 Padre/Madre</h6></li>
+                        <li><h6 class="dropdown-item">👨‍👩‍👧‍👦 Acompañante</h6></li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/perfil"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/configuracion"><i class="fas fa-cog me-2"></i>Configuración</a></li>
                         
@@ -86,21 +85,21 @@
 
 <main class="flex-fill py-5">
     <div class="container">
-        <!-- Header personalizado para padre -->
+        <!-- Header personalizado para acompañante -->
         <div class="row justify-content-center mb-5">
             <div class="col-lg-10 text-center">
                 <div class="page-header">
                     <h1 class="display-4 fw-bold text-white-contrast mb-3 drop-shadow">
-                        👨‍👩‍👧‍👦 ¡Hola, ${sessionScope.usuario.nombres}!
+                        👨‍👩‍👧‍👦 ¡Hola, ${sessionScope.usuario.nombreCorto}!
                     </h1>
                     <p class="lead text-white-contrast mb-4">
-                        👀 Bienvenido al Panel de Padres - Supervisa el progreso de tus hijos
+                        👀 Bienvenido al Panel de Acompañantes - Supervisa el progreso del estudiante
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- Módulos específicos para padre -->
+        <!-- Módulos específicos para acompañante/tutor -->
         <div class="row g-4 mb-5">
             <div class="col-lg-4">
                 <div class="card stat-card h-100 border-0 shadow-lg">
@@ -143,7 +142,7 @@
             </div>
             
             <div class="col-lg-4">
-                <div class="card stat-card padre h-100 border-0 shadow-lg">
+                <div class="card stat-card attendant h-100 border-0 shadow-lg">
                     <div class="card-body text-center p-4">
                         <div class="stat-icon mb-3">
                             <i class="fas fa-comments"></i>

@@ -186,6 +186,13 @@ public class EliminarUsuarioServlet extends HttpServlet {
             // Verificar contraseña del usuario que ejecuta la acción
             Usuario usuarioVerificar = usuarioDAO.findById(usuario.getId());
             if (usuarioVerificar == null || !BCrypt.checkpw(password, usuarioVerificar.getPasswordHash())) {
+                // Registrar intento fallido de eliminación por contraseña incorrecta
+                String accionFallida = esAutoEliminacion ? "Auto Eliminacion Fallida" : "Eliminacion Fallida";
+                String descripcionError = esAutoEliminacion ? "Contraseña incorrecta para auto eliminacion" : "Contraseña de administrador incorrecta";
+                registrarAuditoria(usuario, req.getRemoteAddr(), accionFallida, 
+                                 "usuarios", "ID: " + userIdStr + " - Intento fallido", 
+                                 descripcionError, "FALLIDO", Integer.parseInt(userIdStr));
+                
                 req.setAttribute("error", "Contraseña incorrecta");
                 req.setAttribute("userId", userIdStr);
                 req.setAttribute("esAutoEliminacion", esAutoEliminacion);
@@ -296,7 +303,7 @@ public class EliminarUsuarioServlet extends HttpServlet {
                     emailEx.printStackTrace();
                 }
                 
-                String accionAuditoria = esAutoEliminacion ? "AUTO_ELIMINACION" : "ELIMINAR_USUARIO";
+                String accionAuditoria = esAutoEliminacion ? "Auto Eliminacion" : "Eliminar Usuario";
                 String descripcionAuditoria = esAutoEliminacion ? "Usuario eliminó su propia cuenta" : "Usuario eliminado por administrador";
                 registrarAuditoria(usuario, req.getRemoteAddr(), accionAuditoria, 
                                  "usuarios", descripcionAuditoria, 
@@ -337,7 +344,7 @@ public class EliminarUsuarioServlet extends HttpServlet {
             // Validar userIdStr antes de parsearlo para auditoría
             try {
                 if (userIdStr != null && !userIdStr.trim().isEmpty()) {
-                    String accionAuditoria = esAutoEliminacion ? "ERROR_AUTO_ELIMINACION" : "ERROR_ELIMINACION";
+                    String accionAuditoria = esAutoEliminacion ? "Error Auto Eliminacion" : "Error Eliminacion";
                     registrarAuditoria(usuario, req.getRemoteAddr(), accionAuditoria, 
                                       "usuarios", "Error SQL", 
                                       mensajeError, "ERROR", Integer.parseInt(userIdStr));
@@ -355,7 +362,7 @@ public class EliminarUsuarioServlet extends HttpServlet {
             // Validar userIdStr antes de parsearlo para auditoría
             try {
                 if (userIdStr != null && !userIdStr.trim().isEmpty()) {
-                    String accionAuditoria = esAutoEliminacion ? "ERROR_AUTO_ELIMINACION" : "ERROR_ELIMINACION";
+                    String accionAuditoria = esAutoEliminacion ? "Error Auto Eliminacion" : "Error Eliminacion";
                     registrarAuditoria(usuario, req.getRemoteAddr(), accionAuditoria, 
                                       "usuarios", "Error general", 
                                       "Error inesperado", "ERROR", Integer.parseInt(userIdStr));
@@ -451,7 +458,7 @@ public class EliminarUsuarioServlet extends HttpServlet {
             
             // Limpiar registros de auditoría de eliminación fallida que causan ciclos infinitos
             try (PreparedStatement pstmt = conn.prepareStatement(
-                "DELETE FROM log_auditoria WHERE id_usuario = ? AND accion IN ('ELIMINACION_FALLIDA', 'AUTO_ELIMINACION_FALLIDA', 'ERROR_ELIMINACION', 'ERROR_AUTO_ELIMINACION')")) {
+                "DELETE FROM log_auditoria WHERE id_usuario = ? AND accion IN ('Eliminacion Fallida', 'Auto Eliminacion Fallida', 'Error Eliminacion', 'Error Auto Eliminacion')")) {
                 pstmt.setInt(1, userId);
                 int deleted = pstmt.executeUpdate();
                 if (deleted > 0) {

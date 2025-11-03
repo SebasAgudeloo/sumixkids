@@ -112,7 +112,7 @@
                             <c:when test="${sessionScope.usuario.rolId == 4}"><i class="fas fa-users me-2"></i></c:when>
                             <c:otherwise><i class="fas fa-user-circle me-2"></i></c:otherwise>
                         </c:choose>
-                        <span class="fw-semibold">${sessionScope.usuario.nombres}</span>
+                        <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
                         <li>
@@ -121,7 +121,7 @@
                                     <c:when test="${sessionScope.usuario.rolId == 1}">👑 Administrador</c:when>
                                     <c:when test="${sessionScope.usuario.rolId == 2}">👨‍🏫 Docente</c:when>
                                     <c:when test="${sessionScope.usuario.rolId == 3}">🎓 Estudiante</c:when>
-                                    <c:when test="${sessionScope.usuario.rolId == 4}">👨‍👩‍👧‍👦 Padre/Madre</c:when>
+                                    <c:when test="${sessionScope.usuario.rolId == 4}">👥 Acompañante/Tutor</c:when>
                                     <c:otherwise>👤 Usuario</c:otherwise>
                                 </c:choose>
                             </h6>
@@ -161,7 +161,7 @@
                             <c:when test="${sessionScope.usuario.rolId == 2}">👨‍🏫 ¡Hola, ${sessionScope.usuario.nombres}!</c:when>
                             <c:when test="${sessionScope.usuario.rolId == 3}">🎓 ¡Hola, ${sessionScope.usuario.nombres}!</c:when>
                             <c:when test="${sessionScope.usuario.rolId == 4}">👨‍👩‍👧‍👦 ¡Hola, ${sessionScope.usuario.nombres}!</c:when>
-                            <c:otherwise>👋 ¡Hola, ${sessionScope.usuario.nombres}!</c:otherwise>
+                            <c:otherwise>👋 ¡Hola, ${sessionScope.usuario.nombreCorto}!</c:otherwise>
                         </c:choose>
                     </h1>
                     <p class="lead text-white-contrast mb-4">
@@ -169,7 +169,7 @@
                             <c:when test="${sessionScope.usuario.rolId == 1}">🚀 Bienvenido al Panel de Administración - Gestiona toda la plataforma educativa</c:when>
                             <c:when test="${sessionScope.usuario.rolId == 2}">📚 Bienvenido al Panel de Docente - Gestiona tus clases y estudiantes</c:when>
                             <c:when test="${sessionScope.usuario.rolId == 3}">🌟 Bienvenido a tu espacio de aprendizaje - ¡Explora y aprende jugando!</c:when>
-                            <c:when test="${sessionScope.usuario.rolId == 4}">👀 Bienvenido al Panel de Padres - Supervisa el progreso de tus hijos</c:when>
+                            <c:when test="${sessionScope.usuario.rolId == 4}">👀 Bienvenido al Panel de Acompañantes - Supervisa el progreso del estudiante</c:when>
                             <c:otherwise>🎉 Bienvenido a SumixKids - Tu plataforma educativa</c:otherwise>
                         </c:choose>
                     </p>
@@ -211,8 +211,8 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="bg-light rounded-3 p-2">
-                                        <small class="text-muted d-block">👨‍👩‍👧‍👦 Padres</small>
-                                        <strong class="text-info">${totalPadres != null ? totalPadres : 0}</strong>
+                                        <small class="text-muted d-block">👥 Acompañantes</small>
+                                        <strong class="text-info">${totalAttendants != null ? totalAttendants : 0}</strong>
                                     </div>
                                 </div>
                             </div>
@@ -413,7 +413,7 @@
             </div>
         </c:if>
 
-        <!-- MÓDULOS PARA PADRE -->
+        <!-- MÓDULOS PARA ACOMPAÑANTE/TUTOR -->
         <c:if test="${sessionScope.usuario != null && sessionScope.usuario.rolId == 4}">
             <div class="row g-4 mb-5">
                 <div class="col-12 col-md-6 col-lg-4 col-xl-4">
@@ -457,7 +457,7 @@
                 </div>
                 
                 <div class="col-12 col-md-6 col-lg-4 col-xl-4">
-                    <div class="card stat-card padre h-100 border-0 shadow-lg">
+                    <div class="card stat-card attendant h-100 border-0 shadow-lg">
                         <div class="card-body text-center p-4">
                             <div class="stat-icon mb-3">
                                 <i class="fas fa-comments"></i>

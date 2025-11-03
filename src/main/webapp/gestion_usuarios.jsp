@@ -63,7 +63,7 @@
                                         href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                                         aria-expanded="false">
                                         <i class="fas fa-crown me-2"></i>
-                                        <span class="fw-semibold">${sessionScope.usuario.nombres}</span>
+                                        <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
                                         <li class="dropdown-item">👑 Administrador</li>
@@ -146,13 +146,13 @@
                                 </div>
                             </div>
                             <div class="col-lg-3 col-md-6">
-                                <div class="card stat-card padre h-100 border-0 shadow-lg">
+                                <div class="card stat-card attendant h-100 border-0 shadow-lg">
                                     <div class="card-body text-center">
                                         <div class="stat-icon">
                                             <i class="fas fa-users"></i>
                                         </div>
-                                        <h3 class="mb-1">${totalPadres}</h3>
-                                        <p class="mb-0 fw-semibold">👨‍👩‍👧‍👦 Padres</p>
+                                        <h3 class="mb-1">${totalAttendants}</h3>
+                                        <p class="mb-0 fw-semibold">👨‍👩‍👧‍👦 Acompañantes</p>
                                     </div>
                                 </div>
                             </div>
@@ -183,7 +183,7 @@
                                                 <option value="1">👑 Administrador</option>
                                                 <option value="2">👨‍🏫 Docente</option>
                                                 <option value="3">🎓 Estudiante</option>
-                                                <option value="4">👨‍👩‍👧‍👦 Padre</option>
+                                                <option value="4">👨‍👩‍👧‍👦 Acompañante</option>
                                             </select>
                                         </div>
                                         <div class="col-md-3">
@@ -309,7 +309,7 @@
                                                                             <c:when test="${usuario.rolId == 4}">
                                                                                 <span class="badge"
                                                                                     style="background-color: #8b5cf6; color: white;">👨‍👩‍👧‍👦
-                                                                                    Padre</span>
+                                                                                    Acompañante</span>
                                                                             </c:when>
                                                                             <c:otherwise>
                                                                                 <span class="badge bg-secondary">❓

@@ -161,13 +161,13 @@ public class RegistroServlet extends HttpServlet {
                     // Registro creado por admin
                     log.setIdUsuario(admin.getId());
                     log.setNombreUsuario(admin.getUsername());
-                    log.setAccion("REGISTRO_ADMIN");
+                    log.setAccion("Registro Admin");
                     log.setDescripcion(String.format("Admin creó usuario '%s' con rol ID %d", username, rolId));
                 } else {
                     // Registro público
                     log.setIdUsuario(id);
                     log.setNombreUsuario(username);
-                    log.setAccion("REGISTRO");
+                    log.setAccion("Registro");
                     log.setDescripcion(String.format("Usuario '%s' se registró públicamente", username));
                 }
                 

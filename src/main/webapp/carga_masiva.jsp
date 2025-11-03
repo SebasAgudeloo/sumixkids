@@ -53,7 +53,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-crown me-2"></i>
-                        <span class="fw-semibold">${sessionScope.usuario.nombres}</span>
+                        <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
                         <li><h6 class="dropdown-item">👑 Administrador</h6></li>
@@ -135,7 +135,7 @@
                                     <option value="usuarios">👥 Usuarios del sistema</option>
                                     <option value="estudiantes">🎓 Solo estudiantes</option>
                                     <option value="docentes">👨‍🏫 Solo docentes</option>
-                                    <option value="padres">👨‍👩‍👧‍👦 Solo padres</option>
+                                    <option value="padres">👥 Solo acompañantes/tutores</option>
                                 </select>
                             </div>
 
@@ -252,7 +252,7 @@
                                         <span class="badge bg-warning w-100 p-2">3 - 🎓 Estudiante</span>
                                     </div>
                                     <div class="col-6">
-                                        <span class="badge bg-info w-100 p-2">4 - 👨‍👩‍👧‍👦 Padre</span>
+                                        <span class="badge bg-info w-100 p-2">4 - 👨‍👩‍👧‍👦 Acompañante/Tutor</span>
                                     </div>
                                 </div>
                             </div>

@@ -104,7 +104,7 @@
         </h2>
         
         <p class="coming-soon-description">
-            Sistema de mensajería integrado entre padres, docentes y administradores. Comunicación segura y eficiente.
+            Sistema de mensajería integrado entre acompañantes, docentes y administradores. Comunicación segura y eficiente.
             <br><br>
             ¡Mantente conectado con la comunidad educativa!
         </p>

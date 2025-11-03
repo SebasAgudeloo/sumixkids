@@ -104,7 +104,7 @@
         </h2>
         
         <p class="coming-soon-description">
-            Conecta y vincula las cuentas de tus hijos a tu perfil de padre para un mejor seguimiento educativo.
+            Conecta y vincula las cuentas de tus hijos a tu perfil de acompañante para un mejor seguimiento educativo.
             <br><br>
             ¡Une a toda la familia en una sola plataforma!
         </p>

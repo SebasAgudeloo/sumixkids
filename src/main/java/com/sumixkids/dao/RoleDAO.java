@@ -55,9 +55,10 @@ public class RoleDAO {
                     case "estudiante":
                         roles.add(RoleType.STUDENT);
                         break;
-                    case "parents":
-                    case "padre":
-                        roles.add(RoleType.PARENTS);
+                    case "attendant":
+                    case "acompañante":
+                    case "tutor":
+                        roles.add(RoleType.ATTENDANT);
                         break;
                 }
             }
@@ -92,9 +93,10 @@ public class RoleDAO {
                         case "student":
                         case "estudiante":
                             return RoleType.STUDENT;
-                        case "parents":
-                        case "padre":
-                            return RoleType.PARENTS;
+                        case "attendant":
+                        case "acompañante":
+                        case "tutor":
+                            return RoleType.ATTENDANT;
                         default:
                             return null;
                     }

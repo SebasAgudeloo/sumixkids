@@ -58,7 +58,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-chalkboard-teacher me-2"></i>
-                        <span class="fw-semibold">${sessionScope.usuario.nombres}</span>
+                        <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
                         <li><h6 class="dropdown-item">👨‍🏫 Docente</h6></li>
@@ -91,7 +91,7 @@
             <div class="col-lg-10 text-center">
                 <div class="page-header">
                     <h1 class="display-4 fw-bold text-white-contrast mb-3 drop-shadow">
-                        👨‍🏫 ¡Hola, ${sessionScope.usuario.nombres}!
+                        👨‍🏫 ¡Hola, ${sessionScope.usuario.nombreCorto}!
                     </h1>
                     <p class="lead text-white-contrast mb-4">
                         📚 Bienvenido al Panel de Docente - Gestiona tus clases y estudiantes

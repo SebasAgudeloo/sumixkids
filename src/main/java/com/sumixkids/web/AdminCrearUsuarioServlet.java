@@ -1,9 +1,7 @@
 package com.sumixkids.web;
 
-import com.sumixkids.dao.UsuarioDAO;
-import com.sumixkids.dao.LogAuditoriaDAO;
-import com.sumixkids.model.Usuario;
-import com.sumixkids.model.LogAuditoria;
+import com.sumixkids.dao.*;
+import com.sumixkids.model.*;
 import com.sumixkids.util.PasswordUtil;
 import com.sumixkids.service.EmailService;
 import com.sumixkids.util.ValidacionUtil;
@@ -33,6 +31,9 @@ public class AdminCrearUsuarioServlet extends HttpServlet {
 
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
     private final LogAuditoriaDAO logDAO = new LogAuditoriaDAO();
+    private final EstudianteDAO estudianteDAO = new EstudianteDAO();
+    private final DocenteDAO docenteDAO = new DocenteDAO();
+    private final AcompañanteDAO acompañanteDAO = new AcompañanteDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -176,13 +177,16 @@ public class AdminCrearUsuarioServlet extends HttpServlet {
             
             int id = usuarioDAO.createUser(u);
             if (id > 0) {
+                // Crear registro en subtipo según el rol
+                crearSubtipo(id, rolId, gradoNormalizado);
+                
                 // Registrar en auditoría
                 LogAuditoria log = new LogAuditoria();
                 log.setFechaHora(LocalDateTime.now());
                 log.setIpUsuario(req.getRemoteAddr());
                 log.setIdUsuario(admin.getId());
                 log.setNombreUsuario(admin.getUsername());
-                log.setAccion("REGISTRO_ADMIN");
+                log.setAccion("Registro Admin");
                 log.setDescripcion(String.format("Admin creó usuario '%s' (%s %s) con rol ID %d", 
                     username, nombres, apellidos, rolId));
                 log.setTablaAfectada("usuarios");
@@ -221,7 +225,7 @@ public class AdminCrearUsuarioServlet extends HttpServlet {
             log.setIpUsuario(req.getRemoteAddr());
             log.setIdUsuario(admin.getId());
             log.setNombreUsuario(admin.getUsername());
-            log.setAccion("REGISTRO_ADMIN_ERROR");
+            log.setAccion("Error Registro Admin");
             log.setDescripcion(String.format("Error al crear usuario '%s': %s", username, e.getMessage()));
             log.setTablaAfectada("usuarios");
             log.setEstado("ERROR");
@@ -262,5 +266,85 @@ public class AdminCrearUsuarioServlet extends HttpServlet {
         req.setAttribute("email", "");
         req.setAttribute("grado", "");
         req.setAttribute("rolId", "");
+    }
+    
+    /**
+     * Crear registro en tabla de subtipo según el rol del usuario
+     */
+    private void crearSubtipo(int usuarioId, int rolId, String grado) {
+        try {
+            switch (rolId) {
+                case 3: // Estudiante
+                    crearEstudiante(usuarioId, grado);
+                    break;
+                case 2: // Docente
+                    crearDocente(usuarioId);
+                    break;
+                case 4: // Acompañante
+                    crearAcompañante(usuarioId);
+                    break;
+                default:
+                    // Admin (rol 1) no necesita subtipo específico
+                    System.out.println("Usuario con rol " + rolId + " no requiere subtipo específico");
+                    break;
+            }
+        } catch (Exception e) {
+            System.err.println("Error al crear subtipo para usuario " + usuarioId + " con rol " + rolId + ": " + e.getMessage());
+            e.printStackTrace();
+            // No interrumpir el flujo principal, el usuario base ya fue creado
+        }
+    }
+    
+    /**
+     * Crear registro de estudiante
+     */
+    private void crearEstudiante(int usuarioId, String grado) throws SQLException {
+        Estudiante estudiante = new Estudiante();
+        estudiante.setUsuarioId(usuarioId);
+        estudiante.setNumeroEstudiante(estudianteDAO.generarNumeroEstudiante());
+        estudiante.setGradoActual(grado != null && !grado.trim().isEmpty() ? grado : "1°");
+        estudiante.setEstadoAcademico(Estudiante.EstadoAcademico.ACTIVO);
+        
+        int estudianteId = estudianteDAO.crear(estudiante);
+        if (estudianteId > 0) {
+            System.out.println("✅ Estudiante creado con ID: " + estudianteId + " y número: " + estudiante.getNumeroEstudiante());
+        } else {
+            System.err.println("❌ No se pudo crear el registro de estudiante para usuario: " + usuarioId);
+        }
+    }
+    
+    /**
+     * Crear registro de docente
+     */
+    private void crearDocente(int usuarioId) throws SQLException {
+        Docente docente = new Docente();
+        docente.setUsuarioId(usuarioId);
+        docente.setNumeroEmpleado(docenteDAO.generarNumeroEmpleado());
+        docente.setEstadoLaboral(Docente.EstadoLaboral.ACTIVO);
+        
+        int docenteId = docenteDAO.crear(docente);
+        if (docenteId > 0) {
+            System.out.println("✅ Docente creado con ID: " + docenteId + " y número: " + docente.getNumeroEmpleado());
+        } else {
+            System.err.println("❌ No se pudo crear el registro de docente para usuario: " + usuarioId);
+        }
+    }
+    
+    /**
+     * Crear registro de acompañante
+     */
+    private void crearAcompañante(int usuarioId) throws SQLException {
+        Acompañante acompañante = new Acompañante();
+        acompañante.setUsuarioId(usuarioId);
+        acompañante.setRelacionEstudiante(Acompañante.RelacionEstudiante.OTRO); // Por defecto, se puede cambiar después
+        acompañante.setRecibirNotificaciones(true);
+        acompañante.setAutorizacionRecoger(true);
+        
+        int acompañanteId = acompañanteDAO.crear(acompañante);
+        if (acompañanteId > 0) {
+            System.out.println("✅ Acompañante creado con ID: " + acompañanteId);
+        } else {
+            System.err.println("❌ No se pudo crear el registro de acompañante para usuario: " + usuarioId);
+        }
     }
 }

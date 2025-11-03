@@ -58,7 +58,7 @@ public class AdminUsuariosServlet extends HttpServlet {
             request.setAttribute("totalAdmins", estadisticas.getOrDefault("administradores", 0));
             request.setAttribute("totalDocentes", estadisticas.getOrDefault("docentes", 0));
             request.setAttribute("totalEstudiantes", estadisticas.getOrDefault("estudiantes", 0));
-            request.setAttribute("totalPadres", estadisticas.getOrDefault("padres", 0));
+            request.setAttribute("totalAttendants", estadisticas.getOrDefault("attendants", 0));
             logger.info("Estadísticas obtenidas correctamente");
             
             logger.info("Cargando gestión de usuarios para administrador: " + usuarioSesion.getUsername());

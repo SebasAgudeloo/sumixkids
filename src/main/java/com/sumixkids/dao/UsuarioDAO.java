@@ -466,7 +466,7 @@ public class UsuarioDAO {
                     "SUM(CASE WHEN rol_id = 1 THEN 1 ELSE 0 END) as administradores, " +
                     "SUM(CASE WHEN rol_id = 2 THEN 1 ELSE 0 END) as docentes, " +
                     "SUM(CASE WHEN rol_id = 3 THEN 1 ELSE 0 END) as estudiantes, " +
-                    "SUM(CASE WHEN rol_id = 4 THEN 1 ELSE 0 END) as padres " +
+                    "SUM(CASE WHEN rol_id = 4 THEN 1 ELSE 0 END) as acompañantes " +
                     "FROM usuarios";
         
         try (Connection cn = DatabaseManager.getConnection();
@@ -477,7 +477,7 @@ public class UsuarioDAO {
                 estadisticas.put("administradores", rs.getInt("administradores"));
                 estadisticas.put("docentes", rs.getInt("docentes"));
                 estadisticas.put("estudiantes", rs.getInt("estudiantes"));
-                estadisticas.put("padres", rs.getInt("padres"));
+                estadisticas.put("attendants", rs.getInt("acompañantes"));
             }
         }
         

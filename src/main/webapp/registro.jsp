@@ -69,7 +69,7 @@
                                         <h6 class="alert-heading mb-2">📝 Guía de Registro</h6>
                                         <p class="mb-2"><strong>🎓 Si eres estudiante:</strong> Regístrate normalmente.</p>
                                         <p class="mb-2"><strong>👨‍🏫 Si eres docente:</strong> Regístrate como estudiante y contacta al administrador para que te asigne el rol de docente.</p>
-                                        <p class="mb-0"><strong>👨‍👩‍👧‍👦 Si eres padre/madre:</strong> Regístrate como estudiante y solicita al docente de tu hijo(a) que te asigne el rol de padre.</p>
+                                        <p class="mb-0"><strong>👨‍👩‍👧‍👦 Si eres acompañante/tutor:</strong> Regístrate como estudiante y solicita al docente de tu hijo(a) que te asigne el rol de acompañante.</p>
                                         <hr class="my-2">
                                         <small class="text-muted">
                                             <i class="fas fa-shield-alt me-1"></i>
@@ -146,7 +146,7 @@
                                         <option value="1" ${rolId == '1' ? 'selected' : ''}>👑 Administrador</option>
                                         <option value="2" ${rolId == '2' ? 'selected' : ''}>👨‍🏫 Docente</option>
                                         <option value="3" ${rolId == '3' ? 'selected' : ''}>🎓 Estudiante</option>
-                                        <option value="4" ${rolId == '4' ? 'selected' : ''}>👨‍👩‍👧‍👦 Padre</option>
+                                        <option value="4" ${rolId == '4' ? 'selected' : ''}>👨‍👩‍👧‍👦 Acompañante</option>
                                     </select>
                                     <c:if test="${errorRolId}">
                                         <div class="invalid-feedback">Debe seleccionar un rol válido</div>

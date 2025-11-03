@@ -69,25 +69,41 @@ public class EmailService {
      * @throws MessagingException Si ocurre un error al enviar
      */
     public void sendHtmlEmail(String to, String subject, String htmlContent) throws MessagingException {
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
+        try {
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", "smtp.gmail.com");
+            props.put("mail.smtp.port", "587");
+            // Configuraciones adicionales para debugging
+            props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+            props.put("mail.debug", "false"); // Cambiar a true para debug
+            
+            Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(username, password);
+                }
+            });
 
-        Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
-            }
-        });
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+            message.setSubject(subject);
+            message.setContent(htmlContent, "text/html; charset=utf-8");
 
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(username));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-        message.setSubject(subject);
-        message.setContent(htmlContent, "text/html; charset=utf-8");
-
-        Transport.send(message);
+            Transport.send(message);
+            System.out.println("✅ Email enviado exitosamente a: " + to);
+            
+        } catch (jakarta.mail.AuthenticationFailedException e) {
+            System.err.println("❌ Error de autenticación Gmail:");
+            System.err.println("   - Usuario: " + username);
+            System.err.println("   - Verificar que la contraseña de aplicación esté correcta");
+            System.err.println("   - Verificar que 2FA esté habilitado en Google");
+            throw new MessagingException("Error de autenticación Gmail. Verificar contraseña de aplicación.", e);
+        } catch (MessagingException e) {
+            System.err.println("❌ Error general de correo: " + e.getMessage());
+            throw e;
+        }
     }
 
     /**

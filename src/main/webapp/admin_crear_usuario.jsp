@@ -52,18 +52,46 @@
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                        <a class="nav-link dropdown-toggle d-flex align-items-center text-white fw-semibold" href="#" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle me-2" style="font-size: 1.2rem;"></i>
-                            ${sessionScope.usuario.nombres} ${sessionScope.usuario.apellidos}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/dispositivos_reconocidos">
-                                <i class="fas fa-mobile-alt me-2"></i>Dispositivos Reconocidos</a></li>
+                        <c:choose>
+                            <c:when test="${sessionScope.usuario.rolId == 1}"><i class="fas fa-crown me-2"></i></c:when>
+                            <c:when test="${sessionScope.usuario.rolId == 2}"><i class="fas fa-chalkboard-teacher me-2"></i></c:when>
+                            <c:when test="${sessionScope.usuario.rolId == 3}"><i class="fas fa-graduation-cap me-2"></i></c:when>
+                            <c:when test="${sessionScope.usuario.rolId == 4}"><i class="fas fa-users me-2"></i></c:when>
+                            <c:otherwise><i class="fas fa-user-circle me-2"></i></c:otherwise>
+                        </c:choose>
+                        <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                        <li>
+                            <h6 class="dropdown-item">
+                                <c:choose>
+                                    <c:when test="${sessionScope.usuario.rolId == 1}">👑 Administrador</c:when>
+                                    <c:when test="${sessionScope.usuario.rolId == 2}">👨‍🏫 Docente</c:when>
+                                    <c:when test="${sessionScope.usuario.rolId == 3}">🎓 Estudiante</c:when>
+                                    <c:when test="${sessionScope.usuario.rolId == 4}">👥 Acompañante/Tutor</c:when>
+                                    <c:otherwise>👤 Usuario</c:otherwise>
+                                </c:choose>
+                            </h6>
+                        </li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/perfil"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/configuracion"><i class="fas fa-cog me-2"></i>Configuración</a></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/dispositivos_reconocidos"><i class="fa-solid fa-shield-halved me-2"></i>Dispositivos Reconocidos</a></li>
+                        
+                        <%-- Botón de eliminar cuenta solo para usuarios no-admin --%>
+                        <c:if test="${sessionScope.usuario != null && sessionScope.usuario.rolId != 1}">
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>
-                        </ul>
+                            <li>
+                                <a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/eliminar_usuario?tipo=usuario">
+                                    <i class="fas fa-user-times me-2"></i>Eliminar mi cuenta
+                                </a>
+                            </li>
+                        </c:if>
+                        
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout"><i class="fas fa-sign-out-alt me-2 text-danger"></i>Cerrar Sesión</a></li>
+                    </ul>
                     </li>
                 </ul>
             </div>
@@ -147,7 +175,7 @@
                                         <option value="1" ${rolId == '1' ? 'selected' : ''}>👑 Administrador</option>
                                         <option value="2" ${rolId == '2' ? 'selected' : ''}>👨‍🏫 Docente</option>
                                         <option value="3" ${rolId == '3' ? 'selected' : ''}>🎓 Estudiante</option>
-                                        <option value="4" ${rolId == '4' ? 'selected' : ''}>👨‍👩‍👧‍👦 Padre</option>
+                                        <option value="4" ${rolId == '4' ? 'selected' : ''}>👥 Acompañante/Tutor</option>
                                     </select>
                                     <c:if test="${errorRolId}">
                                         <div class="invalid-feedback">Debe seleccionar un rol válido</div>

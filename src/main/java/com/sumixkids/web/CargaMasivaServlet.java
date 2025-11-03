@@ -245,7 +245,7 @@ public class CargaMasivaServlet extends HttpServlet {
             log.setIdUsuario(admin.getId());
             log.setNombreUsuario(admin.getUsername());
             log.setIpUsuario(ipAddress);
-            log.setAccion("CARGA_MASIVA");
+            log.setAccion("Carga Masiva");
             log.setTablaAfectada("usuarios");
             log.setDescripcion(String.format(
                 "Carga masiva completada: %d creados, %d duplicados, %d errores (Total procesado: %d)", 

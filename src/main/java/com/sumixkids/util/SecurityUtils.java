@@ -26,7 +26,7 @@ import javax.servlet.http.HttpSession;
  * - ROL_ADMIN (1): Administrador con todos los permisos
  * - ROL_DOCENTE (2): Docente con permisos de gestión académica
  * - ROL_ESTUDIANTE (3): Estudiante con acceso limitado
- * - ROL_PADRE (4): Padre/tutor con acceso a información del hijo
+ * - ROL_ATTENDANT (4): Acompañante/tutor con acceso a información del estudiante
  * 
  * Uso típico:
  * - Validar permisos antes de ejecutar acciones
@@ -48,8 +48,8 @@ public class SecurityUtils {
     // Constante para identificar rol de estudiante
     public static final int ROL_ESTUDIANTE = 3;
     
-    // Constante para identificar rol de padre/tutor
-    public static final int ROL_PADRE = 4;
+    // Constante para identificar rol de acompañante/tutor
+    public static final int ROL_ATTENDANT = 4;
     
     /**
      * Verifica si el usuario actual es administrador
@@ -73,10 +73,10 @@ public class SecurityUtils {
     }
     
     /**
-     * Verifica si el usuario actual es padre
+     * Verifica si el usuario actual es acompañante/tutor
      */
-    public static boolean esPadre(Usuario usuario) {
-        return usuario != null && usuario.getRolId() != null && usuario.getRolId() == ROL_PADRE;
+    public static boolean esAttendant(Usuario usuario) {
+        return usuario != null && usuario.getRolId() != null && usuario.getRolId() == ROL_ATTENDANT;
     }
     
     /**
@@ -115,7 +115,7 @@ public class SecurityUtils {
             case ROL_ADMIN: return "Administrador";
             case ROL_DOCENTE: return "Docente";
             case ROL_ESTUDIANTE: return "Estudiante";
-            case ROL_PADRE: return "Padre";
+            case ROL_ATTENDANT: return "Acompañante/Tutor";
             default: return "Rol desconocido";
         }
     }

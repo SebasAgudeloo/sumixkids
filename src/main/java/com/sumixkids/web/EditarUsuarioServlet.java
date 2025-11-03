@@ -265,7 +265,7 @@ public class EditarUsuarioServlet extends HttpServlet {
                 log.setIdUsuario(admin.getId());
                 log.setNombreUsuario(admin.getUsername());
                 log.setIpUsuario(req.getRemoteAddr());
-                log.setAccion("EDITAR_USUARIO");
+                log.setAccion("Editar Usuario");
                 log.setTablaAfectada("usuarios");
                 log.setDescripcion(String.format("Usuario '%s' (ID: %d) editado. Cambios: %s", 
                     usuario.getUsername(), usuario.getId(), String.join(", ", cambios)));

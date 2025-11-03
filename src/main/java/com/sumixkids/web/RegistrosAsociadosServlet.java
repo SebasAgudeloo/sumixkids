@@ -243,7 +243,7 @@ public class RegistrosAsociadosServlet extends HttpServlet {
                            registroId, usuarioSesion.getEmail());
                 
                 // Registrar la acción en auditoría
-                registrarAccionAuditoria(usuarioSesion.getId(), "ELIMINAR_AUDITORIA", 
+                registrarAccionAuditoria(usuarioSesion.getId(), "Eliminar Auditoria", 
                                         "log_auditoria", registroId, 
                                         request.getRemoteAddr());
             } else {
@@ -275,7 +275,7 @@ public class RegistrosAsociadosServlet extends HttpServlet {
                            eliminados, userId, usuarioSesion.getEmail());
                 
                 // Registrar la acción en auditoría
-                registrarAccionAuditoria(usuarioSesion.getId(), "ELIMINAR_AUDITORIA_MASIVA", 
+                registrarAccionAuditoria(usuarioSesion.getId(), "Eliminar Auditoria Masiva", 
                                         "log_auditoria", userId, 
                                         request.getRemoteAddr());
             } else {
@@ -320,7 +320,18 @@ public class RegistrosAsociadosServlet extends HttpServlet {
                            tipo, registroId, usuarioSesion.getEmail());
                 
                 // Registrar la acción en auditoría
-                registrarAccionAuditoria(usuarioSesion.getId(), "ELIMINAR_" + tipo.toUpperCase(), 
+                String accionLimpia = "Eliminar " + tipo.replace("_", " ");
+                // Capitalizar primera letra de cada palabra
+                String[] palabras = accionLimpia.split(" ");
+                StringBuilder sb = new StringBuilder();
+                for (String palabra : palabras) {
+                    if (palabra.length() > 0) {
+                        sb.append(Character.toUpperCase(palabra.charAt(0)))
+                          .append(palabra.substring(1).toLowerCase())
+                          .append(" ");
+                    }
+                }
+                registrarAccionAuditoria(usuarioSesion.getId(), sb.toString().trim(), 
                                         tipo.toLowerCase(), registroId, 
                                         request.getRemoteAddr());
             } else {

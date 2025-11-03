@@ -120,7 +120,7 @@
                                     <option value="1" ${usuarioEditar.rolId == 1 ? 'selected' : ''}>👑 Administrador</option>
                                     <option value="2" ${usuarioEditar.rolId == 2 ? 'selected' : ''}>👨‍🏫 Docente</option>
                                     <option value="3" ${usuarioEditar.rolId == 3 ? 'selected' : ''}>🎓 Estudiante</option>
-                                    <option value="4" ${usuarioEditar.rolId == 4 ? 'selected' : ''}>👨‍👩‍👧‍👦 Padre</option>
+                                    <option value="4" ${usuarioEditar.rolId == 4 ? 'selected' : ''}>👨‍👩‍👧‍👦 Acompañante</option>
                                 </select>
                                 <c:if test="${errorRolId}">
                                     <div class="invalid-feedback">Debe seleccionar un rol válido</div>
