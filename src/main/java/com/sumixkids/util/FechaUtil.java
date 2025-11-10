@@ -37,4 +37,16 @@ public class FechaUtil {
         }
         return fecha.format(FORMATTER);
     }
+    
+    /**
+     * Formatea una fecha LocalDateTime para campos HTML datetime-local
+     * @param fecha La fecha a formatear
+     * @return String con formato "yyyy-MM-ddTHH:mm" o cadena vacía si la fecha es null
+     */
+    public static String formatearHTML(LocalDateTime fecha) {
+        if (fecha == null) {
+            return "";
+        }
+        return fecha.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+    }
 }

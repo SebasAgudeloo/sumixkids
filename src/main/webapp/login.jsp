@@ -74,7 +74,7 @@
                         <form method="post" action="${pageContext.request.contextPath}/login" class="needs-validation" novalidate>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Usuario o correo <span class="text-danger">*</span></label>
-                                <input type="text" name="username" class="form-control" placeholder="Tu usuario o correo" required />
+                                <input type="text" name="username" value="${username}" class="form-control" placeholder="Tu usuario o correo" required />
                                 <div class="invalid-feedback">Campo obligatorio.</div>
                             </div>
                             <div class="mb-3">
@@ -85,6 +85,45 @@
                                 </div>
                                 <div class="invalid-feedback">Ingresa tu contraseña.</div>
                             </div>
+                            
+                            <%-- Campo CAPTCHA - Solo aparece después de fallos de login --%>
+                            <c:if test="${showCaptcha}">
+                                <div class="mb-3" id="captchaSection">
+                                    <label class="form-label fw-semibold">
+                                        <i class="bi bi-shield-check me-2"></i>Verificación de seguridad 
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="alert alert-warning py-2 mb-2">
+                                        <small><i class="bi bi-info-circle me-1"></i>
+                                        Por seguridad, resuelve esta operación matemática para continuar.
+                                        </small>
+                                    </div>
+                                    <div class="captcha-container border rounded p-3 bg-light">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <div>
+                                                <small class="text-muted d-block mb-2">Resuelve la operación:</small>
+                                                <img src="${pageContext.request.contextPath}/captcha" 
+                                                     alt="CAPTCHA" 
+                                                     id="captchaImage" 
+                                                     class="img-fluid rounded shadow-sm"
+                                                     style="max-width: 200px; height: 60px; cursor: pointer;"
+                                                     title="Haz clic para generar un nuevo CAPTCHA" />
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshCaptcha()" title="Generar nuevo CAPTCHA">
+                                                <i class="bi bi-arrow-clockwise"></i> Nuevo
+                                            </button>
+                                        </div>
+                                        <input type="text" 
+                                               name="captcha" 
+                                               class="form-control captcha-input" 
+                                               placeholder="Escribe el resultado" 
+                                               autocomplete="off" 
+                                               required />
+                                    </div>
+                                    <div class="invalid-feedback">Por favor, resuelve la operación matemática.</div>
+                                </div>
+                            </c:if>
+                            
                             <div class="d-grid gap-2 mt-4">
                                 <button class="btn btn-primary btn-lg shadow-sm" type="submit">Entrar</button>
                                 <a class="btn btn-outline-secondary" href="${pageContext.request.contextPath}/registro">Crear cuenta</a>
@@ -124,6 +163,22 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+    
+    // Función para refrescar el CAPTCHA (solo si está visible)
+    function refreshCaptcha() {
+        const img = document.getElementById('captchaImage');
+        if (img) {
+            img.src = '${pageContext.request.contextPath}/captcha?' + new Date().getTime();
+        }
+    }
+    
+    // Hacer clic en la imagen también refresca el CAPTCHA (solo si existe)
+    const captchaImg = document.getElementById('captchaImage');
+    if (captchaImg) {
+        captchaImg.addEventListener('click', refreshCaptcha);
+    }
+    
+    // Toggle password visibility
     document.querySelectorAll('.toggle-pass').forEach(btn => {
         btn.addEventListener('click', () => {
             const input = btn.closest('.position-relative').querySelector('.password-field');
@@ -132,7 +187,8 @@
             btn.textContent = show ? 'Ocultar' : 'Ver';
         });
     });
-    // Ocultar alertas después de 3 segundos
+    
+    // Ocultar alertas después de 10 segundos
     setTimeout(() => {
         document.querySelectorAll('.alert').forEach(alert => {
             alert.classList.remove('show');
@@ -140,9 +196,20 @@
             setTimeout(() => alert.style.display = 'none', 300);
         });
     }, 10000);
+    
     // Bootstrap validation
-    (() => { const forms = document.querySelectorAll('.needs-validation');
-        Array.from(forms).forEach(form => { form.addEventListener('submit', evt => { if (!form.checkValidity()) { evt.preventDefault(); evt.stopPropagation(); } form.classList.add('was-validated'); }, false); }); })();
+    (() => { 
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => { 
+            form.addEventListener('submit', evt => { 
+                if (!form.checkValidity()) { 
+                    evt.preventDefault(); 
+                    evt.stopPropagation(); 
+                } 
+                form.classList.add('was-validated'); 
+            }, false); 
+        }); 
+    })();
 </script>
 </body>
 </html>

@@ -77,10 +77,10 @@
                                     <i class="fas fa-signature me-1"></i>Nombres <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control ${errorNombres ? 'is-invalid' : ''}" id="nombres" name="nombres" 
-                                       value="${usuarioEditar.nombres}" required maxlength="30"
-                                       placeholder="Ingrese los nombres">
+                                       value="${usuarioEditar.nombres}" required maxlength="40"
+                                       placeholder="Ingrese los nombres (solo letras, máx. 40 caracteres, máx. 5 espacios)">
                                 <c:if test="${errorNombres}">
-                                    <div class="invalid-feedback">El nombre solo puede contener letras y espacios (máximo 30 caracteres)</div>
+                                    <div class="invalid-feedback">El nombre solo puede contener letras y espacios (máximo 40 caracteres, máximo 5 espacios)</div>
                                 </c:if>
                             </div>
                             
@@ -90,10 +90,10 @@
                                     <i class="fas fa-file-signature me-1"></i>Apellidos <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control ${errorApellidos ? 'is-invalid' : ''}" id="apellidos" name="apellidos" 
-                                       value="${usuarioEditar.apellidos}" required maxlength="30"
-                                       placeholder="Ingrese los apellidos">
+                                       value="${usuarioEditar.apellidos}" required maxlength="40"
+                                       placeholder="Ingrese los apellidos (solo letras, máx. 40 caracteres, máx. 5 espacios)">
                                 <c:if test="${errorApellidos}">
-                                    <div class="invalid-feedback">El apellido solo puede contener letras y espacios (máximo 30 caracteres)</div>
+                                    <div class="invalid-feedback">El apellido solo puede contener letras y espacios (máximo 40 caracteres, máximo 5 espacios)</div>
                                 </c:if>
                             </div>
                             
@@ -350,29 +350,72 @@ function updateRequirement(elementId, isValid) {
     }
 }
 
-// Validación en tiempo real de campos
-const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{1,30}$/;
-const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+// Funciones de validación para campos de texto
+function validarNombreApellido(valor) {
+    // Verificar longitud máxima
+    if (valor.length > 40) {
+        return { valido: false, mensaje: 'Máximo 40 caracteres permitidos' };
+    }
+    
+    // Verificar que solo contenga letras y espacios
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(valor)) {
+        return { valido: false, mensaje: 'Solo se permiten letras y espacios' };
+    }
+    
+    // Contar espacios
+    const espacios = (valor.match(/\s/g) || []).length;
+    if (espacios > 5) {
+        return { valido: false, mensaje: 'Máximo 5 espacios permitidos' };
+    }
+    
+    // Verificar que no esté vacío y no sea solo espacios
+    if (valor.trim().length === 0) {
+        return { valido: false, mensaje: 'Este campo es obligatorio' };
+    }
+    
+    return { valido: true, mensaje: '' };
+}
 
+function validarCorreo(valor) {
+    if (!valor.includes('@')) {
+        return { valido: false, mensaje: 'El correo debe contener @' };
+    }
+    
+    if (!valor.includes('.')) {
+        return { valido: false, mensaje: 'El correo debe contener .' };
+    }
+    
+    const regexCorreo = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (!regexCorreo.test(valor)) {
+        return { valido: false, mensaje: 'Formato de correo inválido (ejemplo@gmail.com)' };
+    }
+    
+    return { valido: true, mensaje: '' };
+}
+
+// Validación en tiempo real de campos
 document.getElementById('nombres').addEventListener('input', function() {
-    if (!regexNombre.test(this.value)) {
-        mostrarError(this, 'El nombre solo puede contener letras y espacios (máx. 30)');
+    const resultado = validarNombreApellido(this.value);
+    if (!resultado.valido) {
+        mostrarError(this, resultado.mensaje);
     } else {
         limpiarError(this);
     }
 });
 
 document.getElementById('apellidos').addEventListener('input', function() {
-    if (!regexNombre.test(this.value)) {
-        mostrarError(this, 'El apellido solo puede contener letras y espacios (máx. 30)');
+    const resultado = validarNombreApellido(this.value);
+    if (!resultado.valido) {
+        mostrarError(this, resultado.mensaje);
     } else {
         limpiarError(this);
     }
 });
 
 document.getElementById('email').addEventListener('input', function() {
-    if (!regexCorreo.test(this.value)) {
-        mostrarError(this, 'Ingrese un correo electrónico válido');
+    const resultado = validarCorreo(this.value);
+    if (!resultado.valido) {
+        mostrarError(this, resultado.mensaje);
     } else {
         limpiarError(this);
     }
@@ -400,6 +443,39 @@ function limpiarError(input) {
     }
     input.classList.remove('is-invalid');
 }
+
+// Validación del formulario al envío
+document.getElementById('editarForm').addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    // Validar nombres
+    const nombres = document.getElementById('nombres');
+    const resultadoNombres = validarNombreApellido(nombres.value);
+    if (!resultadoNombres.valido) {
+        mostrarError(nombres, resultadoNombres.mensaje);
+        isValid = false;
+    }
+
+    // Validar apellidos
+    const apellidos = document.getElementById('apellidos');
+    const resultadoApellidos = validarNombreApellido(apellidos.value);
+    if (!resultadoApellidos.valido) {
+        mostrarError(apellidos, resultadoApellidos.mensaje);
+        isValid = false;
+    }
+
+    // Validar email
+    const email = document.getElementById('email');
+    const resultadoEmail = validarCorreo(email.value);
+    if (!resultadoEmail.valido) {
+        mostrarError(email, resultadoEmail.mensaje);
+        isValid = false;
+    }
+
+    if (!isValid) {
+        e.preventDefault();
+    }
+});
 </script>
 </body>
 </html>

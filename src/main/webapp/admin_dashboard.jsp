@@ -38,6 +38,17 @@
                         👥 Usuarios
                     </a>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        📚 Académico
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/grados"><i class="fas fa-graduation-cap me-2"></i>Grados Escolares</a></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/niveles"><i class="fas fa-signal me-2"></i>Niveles de Dificultad</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/asignaciones"><i class="fas fa-users me-2"></i>Asignaciones</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/auditoria">
                         📊 Auditoría
@@ -189,6 +200,48 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- GESTIÓN ACADÉMICA -->
+        <div class="row g-4 mb-5">
+            <div class="col-12">
+                <h2 class="text-white drop-shadow mb-4">📚 Gestión Académica</h2>
+            </div>
+            
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-lg">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-graduation-cap text-primary" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="mb-2 fw-bold">Grados Escolares</h5>
+                        <p class="text-muted mb-4">Administra los grados y grupos del sistema</p>
+                        <div class="d-grid gap-2">
+                            <a href="${pageContext.request.contextPath}/grados" class="btn btn-primary">
+                                <i class="fas fa-list me-2"></i>Ver Grados
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-lg">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-signal text-warning" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="mb-2 fw-bold">Niveles de Dificultad</h5>
+                        <p class="text-muted mb-4">Gestiona los niveles de complejidad</p>
+                        <div class="d-grid gap-2">
+                            <a href="${pageContext.request.contextPath}/niveles" class="btn btn-warning">
+                                <i class="fas fa-chart-line me-2"></i>Ver Niveles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
 
         <!-- HERRAMIENTAS ADMINISTRATIVAS ADICIONALES -->

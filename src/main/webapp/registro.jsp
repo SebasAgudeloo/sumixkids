@@ -98,20 +98,20 @@
                             <div class="form-group">
                                 <label for="nombres">Nombres:</label>
                                 <input type="text" class="form-control ${errorNombres ? 'is-invalid' : ''}" id="nombres" name="nombres" 
-                                       value="${nombres}" required maxlength="30"
-                                       placeholder="Ingrese sus nombres (solo letras, máx. 30 caracteres)">
+                                       value="${nombres}" required maxlength="40"
+                                       placeholder="Ingrese sus nombres (solo letras, máx. 40 caracteres, máx. 5 espacios)">
                                 <c:if test="${errorNombres}">
-                                    <div class="invalid-feedback">El nombre solo puede contener letras y espacios (máximo 30 caracteres)</div>
+                                    <div class="invalid-feedback">El nombre solo puede contener letras y espacios (máximo 40 caracteres, máximo 5 espacios)</div>
                                 </c:if>
                             </div>
                             
                             <div class="form-group">
                                 <label for="apellidos">Apellidos:</label>
                                 <input type="text" class="form-control ${errorApellidos ? 'is-invalid' : ''}" id="apellidos" name="apellidos" 
-                                       value="${apellidos}" required maxlength="30"
-                                       placeholder="Ingrese sus apellidos (solo letras, máx. 30 caracteres)">
+                                       value="${apellidos}" required maxlength="40"
+                                       placeholder="Ingrese sus apellidos (solo letras, máx. 40 caracteres, máx. 5 espacios)">
                                 <c:if test="${errorApellidos}">
-                                    <div class="invalid-feedback">El apellido solo puede contener letras y espacios (máximo 30 caracteres)</div>
+                                    <div class="invalid-feedback">El apellido solo puede contener letras y espacios (máximo 40 caracteres, máximo 5 espacios)</div>
                                 </c:if>
                             </div>
                             
@@ -375,39 +375,99 @@ function updateRequirementReg(elementId, isValid) {
     }
 }
 
-// Expresiones regulares para validación
-const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{2,50}$/;
+// Expresiones regulares para validación mejoradas
+const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{1,40}$/;
 const regexUsuario = /^[^\s]{5,15}$/;
-const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const regexCorreo = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+// Función para validar nombres y apellidos
+function validarNombreApellido(valor) {
+    // Verificar longitud máxima
+    if (valor.length > 40) {
+        return { valido: false, mensaje: 'Máximo 40 caracteres permitidos' };
+    }
+    
+    // Verificar que solo contenga letras y espacios
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(valor)) {
+        return { valido: false, mensaje: 'Solo se permiten letras y espacios' };
+    }
+    
+    // Contar espacios
+    const espacios = (valor.match(/\s/g) || []).length;
+    if (espacios > 5) {
+        return { valido: false, mensaje: 'Máximo 5 espacios permitidos' };
+    }
+    
+    // Verificar que no esté vacío y no sea solo espacios
+    if (valor.trim().length === 0) {
+        return { valido: false, mensaje: 'Este campo es obligatorio' };
+    }
+    
+    return { valido: true, mensaje: '' };
+}
+
+// Función para validar usuario
+function validarUsuario(valor) {
+    if (valor.length < 5 || valor.length > 15) {
+        return { valido: false, mensaje: 'Debe tener entre 5 y 15 caracteres' };
+    }
+    
+    if (/\s/.test(valor)) {
+        return { valido: false, mensaje: 'No se permiten espacios' };
+    }
+    
+    return { valido: true, mensaje: '' };
+}
+
+// Función para validar correo
+function validarCorreo(valor) {
+    if (!valor.includes('@')) {
+        return { valido: false, mensaje: 'El correo debe contener @' };
+    }
+    
+    if (!valor.includes('.')) {
+        return { valido: false, mensaje: 'El correo debe contener .' };
+    }
+    
+    if (!regexCorreo.test(valor)) {
+        return { valido: false, mensaje: 'Formato de correo inválido (ejemplo@gmail.com)' };
+    }
+    
+    return { valido: true, mensaje: '' };
+}
 
 // Validación en tiempo real
 document.getElementById('nombres').addEventListener('input', function() {
-    if (!regexNombre.test(this.value)) {
-        mostrarError(this, 'El nombre solo puede contener letras');
+    const resultado = validarNombreApellido(this.value);
+    if (!resultado.valido) {
+        mostrarError(this, resultado.mensaje);
     } else {
         limpiarError(this);
     }
 });
 
 document.getElementById('apellidos').addEventListener('input', function() {
-    if (!regexNombre.test(this.value)) {
-        mostrarError(this, 'El apellido solo puede contener letras');
+    const resultado = validarNombreApellido(this.value);
+    if (!resultado.valido) {
+        mostrarError(this, resultado.mensaje);
     } else {
         limpiarError(this);
     }
 });
 
 document.getElementById('username').addEventListener('input', function() {
-    if (!regexUsuario.test(this.value)) {
-        mostrarError(this, 'El usuario debe tener entre 5 y 15 caracteres sin espacios');
+    const resultado = validarUsuario(this.value);
+    if (!resultado.valido) {
+        mostrarError(this, resultado.mensaje);
     } else {
         limpiarError(this);
     }
 });
 
 document.getElementById('email').addEventListener('input', function() {
-    if (!regexCorreo.test(this.value)) {
-        mostrarError(this, 'Ingrese un correo electrónico válido (ejemplo@gmail.com)');
+    const resultado = validarCorreo(this.value);
+    if (!resultado.valido) {
+        mostrarError(this, resultado.mensaje);
     } else {
         limpiarError(this);
     }
@@ -417,32 +477,36 @@ document.getElementById('email').addEventListener('input', function() {
 document.getElementById('registroForm').addEventListener('submit', function(e) {
     e.preventDefault();
     let isValid = true;
-
+    
     // Validar nombres
     const nombres = document.getElementById('nombres');
-    if (!regexNombre.test(nombres.value)) {
-        mostrarError(nombres, 'El nombre solo puede contener letras');
+    const resultadoNombres = validarNombreApellido(nombres.value);
+    if (!resultadoNombres.valido) {
+        mostrarError(nombres, resultadoNombres.mensaje);
         isValid = false;
     }
 
     // Validar apellidos
     const apellidos = document.getElementById('apellidos');
-    if (!regexNombre.test(apellidos.value)) {
-        mostrarError(apellidos, 'El apellido solo puede contener letras');
+    const resultadoApellidos = validarNombreApellido(apellidos.value);
+    if (!resultadoApellidos.valido) {
+        mostrarError(apellidos, resultadoApellidos.mensaje);
         isValid = false;
     }
 
     // Validar usuario
     const username = document.getElementById('username');
-    if (!regexUsuario.test(username.value)) {
-        mostrarError(username, 'El usuario debe tener entre 5 y 15 caracteres sin espacios');
+    const resultadoUsuario = validarUsuario(username.value);
+    if (!resultadoUsuario.valido) {
+        mostrarError(username, resultadoUsuario.mensaje);
         isValid = false;
     }
 
     // Validar email
     const email = document.getElementById('email');
-    if (!regexCorreo.test(email.value)) {
-        mostrarError(email, 'Ingrese un correo electrónico válido (ejemplo@gmail.com)');
+    const resultadoEmail = validarCorreo(email.value);
+    if (!resultadoEmail.valido) {
+        mostrarError(email, resultadoEmail.mensaje);
         isValid = false;
     }
 

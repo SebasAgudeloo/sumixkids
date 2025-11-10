@@ -235,6 +235,16 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>CaptchaServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.CaptchaServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CaptchaServlet</servlet-name>
+		<url-pattern>/captcha</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>CambiarRolUsuarioServlet</servlet-name>
 		<servlet-class>com.sumixkids.web.CambiarRolUsuarioServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
@@ -350,6 +360,10 @@
 		<servlet-name>ProximamenteServlet</servlet-name>
 		<url-pattern>/mis_clases</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ProximamenteServlet</servlet-name>
+		<url-pattern>/escenarios</url-pattern>
+	</servlet-mapping>
 
 	<!-- Carga de recursos estáticos -->
 
@@ -371,6 +385,17 @@
 	<servlet-mapping>
 		<servlet-name>default</servlet-name>
 		<url-pattern>/js/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- Servlet para gestión de asignaciones docente-estudiante -->
+	<servlet>
+		<servlet-name>AsignacionServlet</servlet-name>
+		<servlet-class>com.sumixkids.web.AsignacionServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AsignacionServlet</servlet-name>
+		<url-pattern>/asignacion/*</url-pattern>
 	</servlet-mapping>
 
 	<!-- (Se pueden agregar más servlets en el futuro) -->

@@ -217,6 +217,28 @@
         </div>
     </div>
 </div>
+                    <%-- Footer --%>
+                        <footer class="py-4 mt-auto" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);">
+                            <div class="container">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6 text-center text-md-start">
+                                        <div
+                                            class="d-flex align-items-center justify-content-center justify-content-md-start mb-2 mb-md-0">
+                                            <img src="${pageContext.request.contextPath}/images/sumixkids.png"
+                                                alt="SumixKids" style="height: 24px; margin-right: 8px;">
+                                            <span class="text-white fw-semibold">SumixKids</span>
+                                        </div>
+                                        <p class="text-white-50 small mb-0">Software educativo para la práctica de sumas
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6 text-center text-md-end">
+                                        <p class="text-white-50 small mb-1">
+                                            © <span id="year"></span> SumixKids · Todos los derechos reservados
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- SweetAlert2 -->

@@ -436,11 +436,11 @@ footer {
 	color: #059669;
 }
 
-.stat-card.padre .stat-icon {
+.stat-card.attendant .stat-icon {
 	color: #8b5cf6;
 }
 
-.stat-card.padre h3 {
+.stat-card.attendant h3 {
 	color: #7c3aed;
 }
 
@@ -1417,3 +1417,72 @@ code {
 	color: #0a58ca;
 	text-decoration: underline;
 }
+
+/* ==============================
+   ESTILOS PARA CAPTCHA
+   ============================== */
+
+.captcha-container {
+	background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+	border: 2px solid #dee2e6 !important;
+	transition: all 0.3s ease;
+}
+
+.captcha-container:hover {
+	border-color: #0d6efd !important;
+	box-shadow: 0 2px 8px rgba(13, 110, 253, 0.15);
+}
+
+#captchaImage {
+	border: 2px solid #dee2e6;
+	transition: all 0.3s ease;
+	display: block;
+}
+
+#captchaImage:hover {
+	border-color: #0d6efd;
+	transform: scale(1.02);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.captcha-container input[name="captcha"] {
+	max-width: 150px;
+	font-size: 1.1rem;
+	font-weight: 600;
+	text-align: center;
+}
+
+/* Deshabilitar validación visual de Bootstrap para el campo CAPTCHA */
+.captcha-input.form-control:valid,
+.captcha-input.form-control:invalid {
+	background-image: none !important;
+	border-color: #ced4da !important;
+}
+
+.captcha-input.form-control:focus {
+	border-color: #0d6efd !important;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+
+.was-validated .captcha-input.form-control:valid,
+.was-validated .captcha-input.form-control:invalid {
+	background-image: none !important;
+	border-color: #ced4da !important;
+}
+
+.was-validated .captcha-input.form-control:focus {
+	border-color: #0d6efd !important;
+}
+
+.captcha-container .btn-outline-primary {
+	border-width: 2px;
+	font-weight: 600;
+	transition: all 0.3s ease;
+}
+
+.captcha-container .btn-outline-primary:hover {
+	transform: rotate(180deg);
+	background-color: #0d6efd;
+	border-color: #0d6efd;
+}
+

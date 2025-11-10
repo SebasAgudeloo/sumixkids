@@ -20,74 +20,70 @@
 
                 <!-- Navbar principal -->
                 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-                    <div class="container">
-                        <a class="navbar-brand fw-bold d-flex align-items-center"
-                            href="${pageContext.request.contextPath}/bienvenida">
-                            <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="Logo SumixKids"
-                                style="height: 36px; width: auto; margin-right: 8px;" />
-                            SumixKids
-                        </a>
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                            aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarNav">
-                            <ul class="navbar-nav me-auto">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="${pageContext.request.contextPath}/bienvenida">
-                                        🏠 Dashboard
-                                    </a>
-                                </li>
-                                <c:if test="${sessionScope.usuario != null && sessionScope.usuario.rolId == 1}">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" href="${pageContext.request.contextPath}/usuarios">
-                                            👥 Usuarios
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="${pageContext.request.contextPath}/auditoria">
-                                            📊 Auditoría
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="${pageContext.request.contextPath}/carga_masiva">
-                                            📁 Carga Masiva
-                                        </a>
-                                    </li>
-                                </c:if>
-                            </ul>
-                            <ul class="navbar-nav">
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3"
-                                        href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                        <i class="fas fa-crown me-2"></i>
-                                        <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
-                                        <li class="dropdown-item">👑 Administrador</li>
-                                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/perfil"><i
-                                                    class="fas fa-user me-2"></i>Mi Perfil</a></li>
-                                        <li><a class="dropdown-item"
-                                                href="${pageContext.request.contextPath}/configuracion">
-                                                <i class="fas fa-cog me-2"></i>Configuración</a></li>
-                                        <li><a class="dropdown-item"
-                                                href="${pageContext.request.contextPath}/dispositivos_reconocidos"><i
-                                                    class="fa-solid fa-shield-halved me-2"></i>Dispositivos
-                                                Reconocidos</a></li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout"><i
-                                                    class="fas fa-sign-out-alt me-2 text-danger"></i>Cerrar Sesión</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="${pageContext.request.contextPath}/bienvenida">
+            <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="Logo SumixKids" 
+                 style="height: 40px; width: auto; margin-right: 12px; border-radius: 8px;"/>
+            SumixKids
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/bienvenida">
+                        🏠 Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="${pageContext.request.contextPath}/usuarios">
+                        👥 Usuarios
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        📚 Académico
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/grados"><i class="fas fa-graduation-cap me-2"></i>Grados Escolares</a></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/niveles"><i class="fas fa-signal me-2"></i>Niveles de Dificultad</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/asignaciones"><i class="fas fa-users me-2"></i>Asignaciones</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/auditoria">
+                        📊 Auditoría
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/carga_masiva">
+                        📁 Carga Masiva
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-crown me-2"></i>
+                        <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                        <li>
+                            <h6 class="dropdown-item">👑 Administrador</h6>
+                        </li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/perfil"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/configuracion"><i class="fas fa-cog me-2"></i>Configuración</a></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/dispositivos_reconocidos"><i class="fa-solid fa-shield-halved me-2"></i>Dispositivos Reconocidos</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout"><i class="fas fa-sign-out-alt me-2 text-danger"></i>Cerrar Sesión</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
                 <main class="flex-fill py-4">
                     <div class="container">
@@ -148,10 +144,10 @@
                             <div class="col-lg-3 col-md-6">
                                 <div class="card stat-card attendant h-100 border-0 shadow-lg">
                                     <div class="card-body text-center">
-                                        <div class="stat-icon">
+                                        <div class="stat-icon" style="color: #8b5cf6 !important;">
                                             <i class="fas fa-users"></i>
                                         </div>
-                                        <h3 class="mb-1">${totalAttendants}</h3>
+                                        <h3 class="mb-1" style="color: #7c3aed !important;">${totalAttendants}</h3>
                                         <p class="mb-0 fw-semibold">👨‍👩‍👧‍👦 Acompañantes</p>
                                     </div>
                                 </div>

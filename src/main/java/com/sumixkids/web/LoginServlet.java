@@ -42,6 +42,9 @@ public class LoginServlet extends HttpServlet {
 	        req.setAttribute("mensaje", "Su sesión ha expirado por inactividad");
 	    }
 	    
+	    // CAPTCHA siempre visible para mayor seguridad
+	    req.setAttribute("showCaptcha", true);
+	    
 	    req.getRequestDispatcher("/login.jsp").forward(req, resp);
 	}
 
@@ -51,11 +54,42 @@ public class LoginServlet extends HttpServlet {
 		req.setCharacterEncoding("UTF-8");
 		String username = req.getParameter("username"); // puede ser usuario o correo
 		String password = req.getParameter("password");
+		String captchaInput = req.getParameter("captcha");
 
 		if (isBlank(username) || isBlank(password)) {
 			req.setAttribute("error", "Usuario y contraseña son obligatorios");
 			req.getRequestDispatcher("/login.jsp").forward(req, resp);
 			return;
+		}
+		
+		// Validar CAPTCHA siempre (seguridad permanente)
+		HttpSession session = req.getSession(true);
+		
+		// Siempre validar CAPTCHA
+		{
+			String captchaCode = (String) session.getAttribute("captchaCode");
+			
+			if (isBlank(captchaInput)) {
+				req.setAttribute("error", "Por favor, resuelve la operación matemática");
+				req.setAttribute("username", username);
+				req.setAttribute("showCaptcha", true);
+				req.getRequestDispatcher("/login.jsp").forward(req, resp);
+				return;
+			}
+			
+			if (captchaCode == null || !captchaInput.trim().equals(captchaCode)) {
+				req.setAttribute("error", "La respuesta del CAPTCHA es incorrecta");
+				req.setAttribute("username", username);
+				req.setAttribute("showCaptcha", true);
+				// Limpiar CAPTCHA para forzar uno nuevo
+				session.removeAttribute("captchaCode");
+				req.getRequestDispatcher("/login.jsp").forward(req, resp);
+				return;
+			}
+			
+			// CAPTCHA correcto, limpiar de la sesión
+			session.removeAttribute("captchaCode");
+			session.removeAttribute("showCaptcha");
 		}
 
 		try {
@@ -63,6 +97,8 @@ public class LoginServlet extends HttpServlet {
 			int maxIntentos = 3; // Número máximo de intentos permitidos
 			if (u == null) {
 				req.setAttribute("error", "Usuario o contraseña incorrectos");
+				req.setAttribute("username", username);
+				req.setAttribute("showCaptcha", true);
 				req.getRequestDispatcher("/login.jsp").forward(req, resp);
 				return;
 			}
@@ -77,7 +113,10 @@ public class LoginServlet extends HttpServlet {
 									
 				// Contraseña correcta: reiniciamos contador de intentos fallidos
 				usuarioDAO.updateLoginSuccess(u.getId());
-				HttpSession session = req.getSession(true);
+				
+				// Login exitoso: limpiar flags de CAPTCHA
+				session.removeAttribute("showCaptcha");
+				session.removeAttribute("captchaCode");
 				session.setAttribute("usuario", u);
 
 				// Obtener información del dispositivo
@@ -212,6 +251,8 @@ public class LoginServlet extends HttpServlet {
 					}
 				}
 				req.setAttribute("error", advertencia);
+				req.setAttribute("username", username);
+				req.setAttribute("showCaptcha", true);
 				req.getRequestDispatcher("/login.jsp").forward(req, resp);
 			}
 		} catch (SQLException e) {

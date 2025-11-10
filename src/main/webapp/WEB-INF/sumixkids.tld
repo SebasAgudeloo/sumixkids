@@ -13,4 +13,40 @@
         <function-class>com.sumixkids.util.FechaUtil</function-class>
         <function-signature>java.lang.String formatear(java.time.LocalDateTime)</function-signature>
     </function>
+    
+    <function>
+        <name>formatearFechaHTML</name>
+        <function-class>com.sumixkids.util.FechaUtil</function-class>
+        <function-signature>java.lang.String formatearHTML(java.time.LocalDateTime)</function-signature>
+    </function>
+    
+    <function>
+        <name>truncate</name>
+        <function-class>com.sumixkids.util.StringUtil</function-class>
+        <function-signature>java.lang.String truncate(java.lang.String, int)</function-signature>
+    </function>
+    
+    <function>
+        <name>capitalize</name>
+        <function-class>com.sumixkids.util.StringUtil</function-class>
+        <function-signature>java.lang.String capitalize(java.lang.String)</function-signature>
+    </function>
+    
+    <function>
+        <name>isEmpty</name>
+        <function-class>com.sumixkids.util.StringUtil</function-class>
+        <function-signature>boolean isEmpty(java.lang.String)</function-signature>
+    </function>
+    
+    <function>
+        <name>isNotEmpty</name>
+        <function-class>com.sumixkids.util.StringUtil</function-class>
+        <function-signature>boolean isNotEmpty(java.lang.String)</function-signature>
+    </function>
+    
+    <function>
+        <name>escapeJs</name>
+        <function-class>com.sumixkids.util.StringUtil</function-class>
+        <function-signature>java.lang.String escapeJs(java.lang.String)</function-signature>
+    </function>
 </taglib>

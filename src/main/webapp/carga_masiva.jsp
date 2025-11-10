@@ -18,7 +18,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
         <a class="navbar-brand fw-bold d-flex align-items-center" href="${pageContext.request.contextPath}/bienvenida">
-            <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="Logo SumixKids" style="height: 36px; width: auto; margin-right: 8px;"/>
+            <img src="${pageContext.request.contextPath}/images/sumixkids.png" alt="Logo SumixKids" 
+                 style="height: 40px; width: auto; margin-right: 12px; border-radius: 8px;"/>
             SumixKids
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,26 +29,35 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/bienvenida">
-                            🏠 Dashboard
+                        🏠 Dashboard
                     </a>
                 </li>
-                <c:if test="${sessionScope.usuario != null && sessionScope.usuario.rolId == 1}">
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/usuarios">
-                            👥 Usuarios
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/auditoria">
-                            📊 Auditoría
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="${pageContext.request.contextPath}/carga_masiva">
-                            📁 Carga Masiva
-                        </a>
-                    </li>
-                </c:if>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/usuarios">
+                        👥 Usuarios
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        📚 Académico
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/grados"><i class="fas fa-graduation-cap me-2"></i>Grados Escolares</a></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/niveles"><i class="fas fa-signal me-2"></i>Niveles de Dificultad</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/asignaciones"><i class="fas fa-users me-2"></i>Asignaciones</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/auditoria">
+                        📊 Auditoría
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="${pageContext.request.contextPath}/carga_masiva">
+                        📁 Carga Masiva
+                    </a>
+                </li>
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
@@ -56,7 +66,9 @@
                         <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
-                        <li><h6 class="dropdown-item">👑 Administrador</h6></li>
+                        <li>
+                            <h6 class="dropdown-item">👑 Administrador</h6>
+                        </li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/perfil"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/configuracion"><i class="fas fa-cog me-2"></i>Configuración</a></li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/dispositivos_reconocidos"><i class="fa-solid fa-shield-halved me-2"></i>Dispositivos Reconocidos</a></li>
