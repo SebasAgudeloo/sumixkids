@@ -268,8 +268,17 @@ public class UsuarioDAO {
             ps.setString(4, u.getPasswordHash());
             ps.setString(5, u.getEmail());
             ps.setString(6, u.getGrado() != null ? u.getGrado() : "");
-            int rolId = (u.getRolId() != null) ? u.getRolId() : 
-                       resolveRolIdByName(cn, RoleType.STUDENT.dbName());
+            int rolId;
+            if (u.getRolId() != null) {
+                rolId = u.getRolId();
+                // Verificar que el rol proporcionado existe para evitar violación de FK
+                if (!rolExists(cn, rolId)) {
+                    throw new SQLException("Rol con id " + rolId + " no existe en la tabla roles. " +
+                                           "Asegurese de que los roles estén inicializados en la base de datos.");
+                }
+            } else {
+                rolId = resolveRolIdByName(cn, RoleType.STUDENT.dbName());
+            }
             ps.setInt(7, rolId);
             ps.setTimestamp(8, Timestamp.valueOf(u.getFechaRegistro() != null ? 
                           u.getFechaRegistro() : 
@@ -277,10 +286,34 @@ public class UsuarioDAO {
             ps.setString(9, u.getAutenticacion2fa());
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) return keys.getInt(1);
+                if (keys.next()) {
+                    int usuarioId = keys.getInt(1);
+                    
+                    // Crear registro relacionado según el rol
+                    if (rolId == 4) { // ATTENDANT/acompañante
+                        createAcompananteRecord(cn, usuarioId);
+                    } else if (rolId == 3) { // STUDENT/estudiante
+                        createEstudianteRecord(cn, usuarioId, u.getGrado());
+                    }
+                    
+                    return usuarioId;
+                }
             }
         }
         return -1;
+    }
+
+    /**
+     * Verifica si existe un rol con el id dado.
+     */
+    private boolean rolExists(Connection cn, int rolId) throws SQLException {
+        String q = "SELECT 1 FROM roles WHERE id = ? LIMIT 1";
+        try (PreparedStatement ps = cn.prepareStatement(q)) {
+            ps.setInt(1, rolId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
     }
 
     /**
@@ -517,5 +550,30 @@ public class UsuarioDAO {
      */
     public void crearUsuario(Usuario u) throws SQLException {
         createUser(u);
+    }
+    
+    /**
+     * Crea un registro básico en la tabla acompañante para un usuario con rol 4.
+     */
+    private void createAcompananteRecord(Connection cn, int usuarioId) throws SQLException {
+        String sql = "INSERT INTO acompañante (usuario_id, relacion_estudiante, recibir_notificaciones, autorizacion_recoger) " +
+                    "VALUES (?, 'OTRO', 1, 1)";
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, usuarioId);
+            ps.executeUpdate();
+        }
+    }
+    
+    /**
+     * Crea un registro básico en la tabla estudiantes para un usuario con rol 3.
+     */
+    private void createEstudianteRecord(Connection cn, int usuarioId, String grado) throws SQLException {
+        String sql = "INSERT INTO estudiantes (usuario_id, grado_actual, estado_academico) " +
+                    "VALUES (?, ?, 'ACTIVO')";
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, usuarioId);
+            ps.setString(2, grado != null && !grado.trim().isEmpty() ? grado : "1°");
+            ps.executeUpdate();
+        }
     }
 }

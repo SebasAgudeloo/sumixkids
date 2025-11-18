@@ -4,6 +4,7 @@ import com.sumixkids.dao.UsuarioDAO;
 import com.sumixkids.dao.LogAuditoriaDAO;
 import com.sumixkids.model.Usuario;
 import com.sumixkids.model.LogAuditoria;
+import com.sumixkids.model.RoleType;
 import com.sumixkids.util.PasswordUtil;
 import com.sumixkids.service.EmailService;
 import com.sumixkids.util.ValidacionUtil;
@@ -87,13 +88,18 @@ public class RegistroServlet extends HttpServlet {
         }
         
         // Validar rol si es admin
-        int rolId = 3; // Por defecto estudiante para registro público
+        RoleType tipoRol = RoleType.STUDENT; // Por defecto estudiante para registro público
         if (esAdmin && rolIdStr != null && !rolIdStr.trim().isEmpty()) {
             try {
-                rolId = Integer.parseInt(rolIdStr);
-                if (rolId < 1 || rolId > 4) {
-                    errores.add("Rol inválido. Debe seleccionar un rol válido.");
-                    req.setAttribute("errorRolId", true);
+                int rolIdNum = Integer.parseInt(rolIdStr);
+                switch (rolIdNum) {
+                    case 1: tipoRol = RoleType.ADMIN; break;
+                    case 2: tipoRol = RoleType.DOCENT; break;
+                    case 3: tipoRol = RoleType.STUDENT; break;
+                    case 4: tipoRol = RoleType.ATTENDANT; break;
+                    default:
+                        errores.add("Rol inválido. Debe seleccionar un rol válido.");
+                        req.setAttribute("errorRolId", true);
                 }
             } catch (NumberFormatException e) {
                 errores.add("Rol inválido. Debe seleccionar un rol válido.");
@@ -102,7 +108,7 @@ public class RegistroServlet extends HttpServlet {
         }
         
         // Validación de grado (obligatorio solo para estudiantes)
-        if (rolId == 3) {
+        if (tipoRol == RoleType.STUDENT) {
             if (gradoParam == null || gradoParam.trim().isEmpty()) {
                 errores.add("El grado es obligatorio para estudiantes");
                 req.setAttribute("errorGrado", true);
@@ -142,9 +148,11 @@ public class RegistroServlet extends HttpServlet {
             u.setApellidos(apellidos);
             u.setEmail(email);
             u.setPasswordHash(PasswordUtil.hash(password));
-            u.setRolId(rolId); // Usar el rol determinado (3 por defecto o el seleccionado por admin)
+            // Resolver rol_id por nombre (crea el rol si no existe)
+            int rolId = usuarioDAO.resolveRolIdByType(tipoRol);
+            u.setRolId(rolId);
             // Asignar grado normalizado (con °) solo si es estudiante
-            if (rolId == 3 && gradoNormalizado != null && !gradoNormalizado.trim().isEmpty()) {
+            if (tipoRol == RoleType.STUDENT && gradoNormalizado != null && !gradoNormalizado.trim().isEmpty()) {
                 u.setGrado(gradoNormalizado.trim());
             } else {
                 u.setGrado("");
@@ -162,7 +170,7 @@ public class RegistroServlet extends HttpServlet {
                     log.setIdUsuario(admin.getId());
                     log.setNombreUsuario(admin.getUsername());
                     log.setAccion("Registro Admin");
-                    log.setDescripcion(String.format("Admin creó usuario '%s' con rol ID %d", username, rolId));
+                    log.setDescripcion(String.format("Admin creó usuario '%s' con rol %s (ID %d)", username, tipoRol.displayName(), rolId));
                 } else {
                     // Registro público
                     log.setIdUsuario(id);

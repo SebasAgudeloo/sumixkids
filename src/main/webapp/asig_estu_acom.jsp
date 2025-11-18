@@ -1,13 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://sumixkids.com/functions" prefix="util" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Gestión de Asignaciones · SumixKids</title>
+    <title>Gestión de Vínculos Estudiante-Acompañante · SumixKids</title>
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
@@ -16,22 +17,19 @@
     <style>
         /* Asegurar que el dropdown aparezca por encima de los cards y otros elementos */
         .dropdown-menu {
-            z-index: 1060 !important; /* Más alto que los modals de Bootstrap */
+            z-index: 1060 !important;
             position: absolute !important;
             will-change: transform;
         }
         
-        /* Mejorar la visualización del dropdown en la tabla */
         .table .btn-group {
-            position: static; /* Para que el dropdown no se corte */
+            position: static;
         }
         
-        /* Estilo adicional para el botón dropdown */
         .dropdown-toggle::after {
             margin-left: 0.5em;
         }
         
-        /* Animación suave para el dropdown */
         .dropdown-menu {
             transition: all 0.2s ease-in-out;
             opacity: 0;
@@ -95,12 +93,28 @@
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-crown me-2"></i>
+                        <c:choose>
+                            <c:when test="${sessionScope.usuario.rolId == 1}">
+                                <i class="fas fa-crown me-2"></i>
+                            </c:when>
+                            <c:when test="${sessionScope.usuario.rolId == 2}">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>
+                            </c:when>
+                            <c:otherwise>
+                                <i class="fas fa-user me-2"></i>
+                            </c:otherwise>
+                        </c:choose>
                         <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
                         <li>
-                            <h6 class="dropdown-item">👑 Administrador</h6>
+                            <h6 class="dropdown-item">
+                                <c:choose>
+                                    <c:when test="${sessionScope.usuario.rolId == 1}">👑 Administrador</c:when>
+                                    <c:when test="${sessionScope.usuario.rolId == 2}">👨‍🏫 Docente</c:when>
+                                    <c:otherwise>👤 Usuario</c:otherwise>
+                                </c:choose>
+                            </h6>
                         </li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/perfil"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/configuracion"><i class="fas fa-cog me-2"></i>Configuración</a></li>
@@ -120,10 +134,10 @@
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
                     <h1 class="display-6 fw-bold text-white-contrast drop-shadow">
-                        <i class="fas fa-users me-2"></i>Gestión de Asignaciones
+                        <i class="fas fa-user-friends me-2"></i>Gestión de Vínculos
                     </h1>
-                    <a href="${pageContext.request.contextPath}/asignaciones?action=agregar" class="btn btn-light shadow-sm">
-                        <i class="fas fa-plus me-2"></i>Nueva Asignación
+                    <a href="${pageContext.request.contextPath}/vinculos?action=agregar" class="btn btn-light shadow-sm">
+                        <i class="fas fa-plus me-2"></i>Nuevo Vínculo
                     </a>
                 </div>
             </div>
@@ -158,102 +172,95 @@
             </div>
         </c:if>
 
-        <!-- Tabla de asignaciones -->
+        <!-- Tabla de vínculos -->
         <div class="card shadow-lg border-0 mb-4">
             <div class="card-body">
+                <!-- Debug: Verificar condiciones -->
                 <c:choose>
-                    <c:when test="${not empty asignaciones}">
+                    <c:when test="${vinculos != null && fn:length(vinculos) > 0}">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle">
                                 <thead class="table-dark">
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col"><i class="fas fa-chalkboard-teacher me-1"></i>Docente</th>
-                                        <th scope="col"><i class="fas fa-graduation-cap me-1"></i>Estudiante</th>
-                                        <th scope="col"><i class="fas fa-school me-1"></i>Grado</th>
-                                        <th scope="col"><i class="fas fa-info-circle me-1"></i>Estado</th>
-                                        <th scope="col"><i class="fas fa-calendar me-1"></i>F. Asignación</th>
-                                        <th scope="col"><i class="fas fa-calendar-times me-1"></i>F. Finalización</th>
+                                        <th scope="col"><i class="fas fa-user-graduate me-1"></i>Estudiante</th>
+                                        <th scope="col"><i class="fas fa-user-shield me-1"></i>Acompañante</th>
+                                        <th scope="col"><i class="fas fa-heart me-1"></i>Tipo Relación</th>
+                                        <th scope="col"><i class="fas fa-toggle-on me-1"></i>Estado</th>
+                                        <th scope="col"><i class="fas fa-calendar me-1"></i>F. Vinculación</th>
                                         <th scope="col"><i class="fas fa-cogs me-1"></i>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="asignacion" items="${asignaciones}" varStatus="status">
+                                    <c:forEach var="vinculo" items="${vinculos}">
                                         <tr>
-                                            <td class="fw-semibold">${asignacion.id}</td>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <i class="fas fa-chalkboard-teacher text-primary me-2"></i>
-                                                    <span>${asignacion.nombreDocente}</span>
-                                                </div>
-                                            </td>
+                                            <td class="fw-semibold">${vinculo.id}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <i class="fas fa-graduation-cap text-success me-2"></i>
-                                                    <span>${asignacion.nombreEstudiante}</span>
+                                                    <span>${vinculo.nombreEstudiante}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-user-shield text-primary me-2"></i>
+                                                    <span>${vinculo.nombreAcompanante}</span>
                                                 </div>
                                             </td>
                                             <td>
                                                 <c:choose>
-                                                    <c:when test="${not empty asignacion.nombreGrado}">
-                                                        <span class="badge bg-info">${asignacion.nombreGrado}</span>
+                                                    <c:when test="${vinculo.tipoRelacion == 'PRINCIPAL'}">
+                                                        <span class="badge bg-primary">
+                                                            <i class="fas fa-star me-1"></i>Principal
+                                                        </span>
+                                                    </c:when>
+                                                    <c:when test="${vinculo.tipoRelacion == 'SECUNDARIO'}">
+                                                        <span class="badge bg-info">
+                                                            <i class="fas fa-user me-1"></i>Secundario
+                                                        </span>
+                                                    </c:when>
+                                                    <c:when test="${vinculo.tipoRelacion == 'EMERGENCIA'}">
+                                                        <span class="badge bg-warning">
+                                                            <i class="fas fa-exclamation-triangle me-1"></i>Emergencia
+                                                        </span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span class="text-muted">No asignado</span>
+                                                        <span class="badge bg-light text-dark">
+                                                            <i class="fas fa-user me-1"></i>${vinculo.tipoRelacion}
+                                                        </span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
                                             <td>
                                                 <c:choose>
-                                                    <c:when test="${asignacion.estado == 'ACTIVA'}">
+                                                    <c:when test="${vinculo.activo}">
                                                         <span class="badge bg-success">
-                                                            <i class="fas fa-check-circle me-1"></i>Activa
-                                                        </span>
-                                                    </c:when>
-                                                    <c:when test="${asignacion.estado == 'FINALIZADA'}">
-                                                        <span class="badge bg-secondary">
-                                                            <i class="fas fa-times-circle me-1"></i>Finalizada
-                                                        </span>
-                                                    </c:when>
-                                                    <c:when test="${asignacion.estado == 'SUSPENDIDA'}">
-                                                        <span class="badge bg-warning">
-                                                            <i class="fas fa-pause-circle me-1"></i>Suspendida
+                                                            <i class="fas fa-check-circle me-1"></i>Activo
                                                         </span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span class="badge bg-light text-dark">${asignacion.estado}</span>
+                                                        <span class="badge bg-secondary">
+                                                            <i class="fas fa-times-circle me-1"></i>Inactivo
+                                                        </span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
                                             <td>
-                                                <c:if test="${not empty asignacion.fechaAsignacion}">
+                                                <c:if test="${not empty vinculo.fechaVinculacion}">
                                                     <small class="text-muted">
                                                         <i class="fas fa-calendar-alt me-1"></i>
-                                                        ${util:formatearFecha(asignacion.fechaAsignacion)}
+                                                        ${util:formatearFecha(vinculo.fechaVinculacion)}
                                                     </small>
                                                 </c:if>
                                             </td>
                                             <td>
-                                                <c:choose>
-                                                    <c:when test="${not empty asignacion.fechaFinalizacion}">
-                                                        <small class="text-muted">
-                                                            <i class="fas fa-calendar-times me-1"></i>
-                                                            ${util:formatearFecha(asignacion.fechaFinalizacion)}
-                                                        </small>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="text-muted">-</span>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                            <td>
                                                 <div class="btn-group" role="group">
-                                                    <a href="${pageContext.request.contextPath}/asignaciones?action=editar&id=${asignacion.id}" 
-                                                       class="btn btn-sm btn-outline-primary" title="Editar asignación">
+                                                    <a href="${pageContext.request.contextPath}/vinculos?action=editar&id=${vinculo.id}" 
+                                                       class="btn btn-sm btn-outline-primary" title="Editar vínculo">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                     
-                                                    <!-- Dropdown para cambiar estado -->
+                                                    <!-- Dropdown para activar/desactivar -->
                                                     <div class="btn-group" role="group">
                                                         <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" 
                                                                 data-bs-toggle="dropdown" data-bs-boundary="viewport" 
@@ -261,43 +268,33 @@
                                                             <i class="fas fa-exchange-alt"></i>
                                                         </button>
                                                         <ul class="dropdown-menu">
-                                                            <c:if test="${asignacion.estado != 'ACTIVA'}">
-                                                                <li>
-                                                                    <a class="dropdown-item" href="javascript:void(0)" 
-                                                                       data-id="${asignacion.id}" 
-                                                                       data-estado="ACTIVA"
-                                                                       onclick="cambiarEstado(this)">
-                                                                        <i class="fas fa-play text-success me-2"></i>Activar
-                                                                    </a>
-                                                                </li>
-                                                            </c:if>
-                                                            <c:if test="${asignacion.estado != 'SUSPENDIDA'}">
-                                                                <li>
-                                                                    <a class="dropdown-item" href="javascript:void(0)" 
-                                                                       data-id="${asignacion.id}" 
-                                                                       data-estado="SUSPENDIDA"
-                                                                       onclick="cambiarEstado(this)">
-                                                                        <i class="fas fa-pause text-warning me-2"></i>Suspender
-                                                                    </a>
-                                                                </li>
-                                                            </c:if>
-                                                            <c:if test="${asignacion.estado != 'FINALIZADA'}">
-                                                                <li>
-                                                                    <a class="dropdown-item" href="javascript:void(0)" 
-                                                                       data-id="${asignacion.id}" 
-                                                                       data-estado="FINALIZADA"
-                                                                       onclick="cambiarEstado(this)">
-                                                                        <i class="fas fa-stop text-danger me-2"></i>Finalizar
-                                                                    </a>
-                                                                </li>
-                                                            </c:if>
+                                                            <c:choose>
+                                                                <c:when test="${vinculo.activo}">
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="javascript:void(0)" 
+                                                                           data-id="${vinculo.id}" 
+                                                                           onclick="desactivarVinculo(this)">
+                                                                            <i class="fas fa-times-circle text-warning me-2"></i>Desactivar
+                                                                        </a>
+                                                                    </li>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="javascript:void(0)" 
+                                                                           data-id="${vinculo.id}" 
+                                                                           onclick="activarVinculo(this)">
+                                                                            <i class="fas fa-check-circle text-success me-2"></i>Activar
+                                                                        </a>
+                                                                    </li>
+                                                                </c:otherwise>
+                                                            </c:choose>
                                                         </ul>
                                                     </div>
                                                     
                                                     <c:if test="${sessionScope.usuario.rolId == 1}">
                                                         <button type="button" class="btn btn-sm btn-outline-danger" 
                                                                 title="Eliminar permanentemente"
-                                                                data-id="${asignacion.id}"
+                                                                data-id="${vinculo.id}"
                                                                 onclick="confirmarEliminacion(this)">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
@@ -312,11 +309,11 @@
                     </c:when>
                     <c:otherwise>
                         <div class="text-center py-5">
-                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No hay asignaciones registradas</h5>
-                            <p class="text-muted">Comienza creando una nueva asignación entre docente y estudiante.</p>
-                            <a href="${pageContext.request.contextPath}/asignaciones?action=agregar" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Crear primera asignación
+                            <i class="fas fa-user-friends fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No hay vínculos registrados</h5>
+                            <p class="text-muted">Comienza creando un nuevo vínculo entre estudiante y acompañante.</p>
+                            <a href="${pageContext.request.contextPath}/vinculos?action=agregar" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Crear primer vínculo
                             </a>
                         </div>
                     </c:otherwise>
@@ -352,84 +349,52 @@
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Función para cambiar estado de asignación
-function cambiarEstado(element) {
+// Función para activar vínculo
+function activarVinculo(element) {
     const id = element.getAttribute('data-id');
-    const nuevoEstado = element.getAttribute('data-estado');
-    const estados = {
-        'ACTIVA': { 
-            color: '#28a745', 
-            texto: 'activar', 
-            icono: 'success',
-            descripcion: 'La asignación estará activa y funcional.',
-            titulo: 'Activar Asignación',
-            pregunta: '¿Estás seguro de que deseas <strong>activar</strong> esta asignación?',
-            boton: 'Sí, activar'
-        },
-        'SUSPENDIDA': { 
-            color: '#ffc107', 
-            texto: 'suspender', 
-            icono: 'warning',
-            descripcion: 'La asignación se pausará temporalmente.',
-            titulo: 'Suspender Asignación',
-            pregunta: '¿Estás seguro de que deseas <strong>suspender</strong> esta asignación?',
-            boton: 'Sí, suspender'
-        },
-        'FINALIZADA': { 
-            color: '#dc3545', 
-            texto: 'finalizar', 
-            icono: 'info',
-            descripcion: 'La asignación se marcará como completada.',
-            titulo: 'Finalizar Asignación',
-            pregunta: '¿Estás seguro de que deseas <strong>finalizar</strong> esta asignación?',
-            boton: 'Sí, finalizar'
-        }
-    };
-    
-    const estado = estados[nuevoEstado];
     
     Swal.fire({
-        title: estado.titulo,
-        html: `<p>${estado.pregunta}</p>
-               <div class="alert alert-info mt-3">
+        title: 'Activar Vínculo',
+        html: `<p>¿Estás seguro de que deseas <strong>activar</strong> este vínculo?</p>
+               <div class="alert alert-success mt-3">
                    <i class="fas fa-info-circle me-2"></i>
-                   ${estado.descripcion}
+                   El vínculo estará activo y funcional.
                </div>`,
-        icon: estado.icono,
+        icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: estado.color,
+        confirmButtonColor: '#28a745',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: estado.boton,
+        confirmButtonText: 'Sí, activar',
         cancelButtonText: 'Cancelar',
         width: '400px'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Crear un formulario para enviar el cambio de estado
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '${pageContext.request.contextPath}/asignaciones';
-            
-            const actionInput = document.createElement('input');
-            actionInput.type = 'hidden';
-            actionInput.name = 'action';
-            actionInput.value = 'cambiarEstado';
-            
-            const idInput = document.createElement('input');
-            idInput.type = 'hidden';
-            idInput.name = 'id';
-            idInput.value = id;
-            
-            const estadoInput = document.createElement('input');
-            estadoInput.type = 'hidden';
-            estadoInput.name = 'nuevoEstado';
-            estadoInput.value = nuevoEstado;
-            
-            form.appendChild(actionInput);
-            form.appendChild(idInput);
-            form.appendChild(estadoInput);
-            
-            document.body.appendChild(form);
-            form.submit();
+            window.location.href = '${pageContext.request.contextPath}/vinculos?action=activar&id=' + id;
+        }
+    });
+}
+
+// Función para desactivar vínculo
+function desactivarVinculo(element) {
+    const id = element.getAttribute('data-id');
+    
+    Swal.fire({
+        title: 'Desactivar Vínculo',
+        html: `<p>¿Estás seguro de que deseas <strong>desactivar</strong> este vínculo?</p>
+               <div class="alert alert-warning mt-3">
+                   <i class="fas fa-info-circle me-2"></i>
+                   El vínculo se marcará como inactivo.
+               </div>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ffc107',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, desactivar',
+        cancelButtonText: 'Cancelar',
+        width: '400px'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '${pageContext.request.contextPath}/vinculos?action=eliminar&id=' + id;
         }
     });
 }
@@ -440,7 +405,7 @@ function confirmarEliminacion(button) {
     
     Swal.fire({
         title: '¡Atención!',
-        html: `<p>¿Estás seguro de que deseas <strong>eliminar permanentemente</strong> esta asignación?</p>
+        html: `<p>¿Estás seguro de que deseas <strong>eliminar permanentemente</strong> este vínculo?</p>
                <div class="alert alert-warning mt-3">
                    <i class="fas fa-exclamation-triangle me-2"></i>
                    <strong>Esta acción NO se puede deshacer.</strong>
@@ -454,7 +419,7 @@ function confirmarEliminacion(button) {
         width: '450px'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = '${pageContext.request.contextPath}/asignaciones?action=delete&id=' + id;
+            window.location.href = '${pageContext.request.contextPath}/vinculos?action=delete&id=' + id;
         }
     });
 }

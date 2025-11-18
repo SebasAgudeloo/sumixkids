@@ -57,7 +57,7 @@
                  style="height: 40px; width: auto; margin-right: 12px; border-radius: 8px;"/>
             SumixKids
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -73,8 +73,7 @@
                     </a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link active 
-                    dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                    <a class="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         📚 Académico
                     </a>
                     <ul class="dropdown-menu">
@@ -82,6 +81,7 @@
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/niveles"><i class="fas fa-signal me-2"></i>Niveles de Dificultad</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/asignaciones"><i class="fas fa-users me-2"></i>Asignaciones</a></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/vinculos"><i class="fas fa-user-friends me-2"></i>Vínculos</a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
@@ -97,22 +97,18 @@
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3" href="#" role="button" data-bs-toggle="dropdown">
-                        <c:choose>
-                            <c:when test="${sessionScope.usuario.rolId == 1}">
-                                <i class="fas fa-crown me-2"></i>
-                            </c:when>
-                            <c:when test="${sessionScope.usuario.rolId == 2}">
-                                <i class="fas fa-chalkboard-teacher me-2"></i>
-                            </c:when>
-                            <c:otherwise>
-                                <i class="fas fa-user me-2"></i>
-                            </c:otherwise>
-                        </c:choose>
+                    <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-crown me-2"></i>
                         <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                        <li>
+                            <h6 class="dropdown-item">👑 Administrador</h6>
+                        </li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/perfil"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/configuracion"><i class="fas fa-cog me-2"></i>Configuración</a></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/dispositivos_reconocidos"><i class="fa-solid fa-shield-halved me-2"></i>Dispositivos Reconocidos</a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout"><i class="fas fa-sign-out-alt me-2 text-danger"></i>Cerrar Sesión</a></li>
                     </ul>
                 </li>

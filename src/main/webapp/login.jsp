@@ -80,7 +80,7 @@
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Contraseña <span class="text-danger">*</span></label>
                                 <div class="position-relative">
-                                    <input type="password" name="password" class="form-control password-field" placeholder="••••••••" required />
+                                    <input type="password" name="password" class="form-control " placeholder="••••••••" required />
                                     <button class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 toggle-pass" type="button">Ver</button>
                                 </div>
                                 <div class="invalid-feedback">Ingresa tu contraseña.</div>

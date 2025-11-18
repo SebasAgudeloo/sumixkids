@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Página de saludo que sólo se muestra si el usuario ya inició sesión.
@@ -20,7 +19,7 @@ public class BienvenidaServlet extends HttpServlet {
     private final EstudianteDAO estudianteDAO = new EstudianteDAO();
     private final DocenteDAO docenteDAO = new DocenteDAO();
     private final AcompañanteDAO acompañanteDAO = new AcompañanteDAO();
-    private final EstudianteAcompañanteDAO estudianteAcompañanteDAO = new EstudianteAcompañanteDAO();
+    private final EstudianteAcompananteDAO estudianteAcompananteDAO = new EstudianteAcompananteDAO();
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -123,13 +122,11 @@ public class BienvenidaServlet extends HttpServlet {
         if (estudiante != null) {
             req.setAttribute("estudiante", estudiante);
             
-            // Cargar información de acompañantes
-            List<Acompañante> acompañantes = estudianteAcompañanteDAO.findAcompañantesByEstudianteId(estudiante.getId());
-            req.setAttribute("acompañantes", acompañantes);
-            
-            // Buscar acompañante principal
-            Acompañante acompañantePrincipal = estudianteAcompañanteDAO.findAcompañantePrincipal(estudiante.getId());
-            req.setAttribute("acompañantePrincipal", acompañantePrincipal);
+            // TODO: Implementar carga de acompañantes cuando los modelos estén listos
+            // List<Acompañante> acompañantes = estudianteAcompananteDAO.findAcompañantesByEstudianteId(estudiante.getId());
+            // req.setAttribute("acompañantes", acompañantes);
+            // Acompañante acompañantePrincipal = estudianteAcompananteDAO.findAcompañantePrincipal(estudiante.getId());
+            // req.setAttribute("acompañantePrincipal", acompañantePrincipal);
             
             System.out.println("✅ Info estudiante cargada: " + estudiante.getNumeroEstudiante() + 
                              " - Grado: " + estudiante.getGradoActual());
@@ -165,12 +162,11 @@ public class BienvenidaServlet extends HttpServlet {
         if (acompañante != null) {
             req.setAttribute("acompañante", acompañante);
             
-            // Cargar estudiantes bajo su cuidado
-            List<Estudiante> estudiantesACargo = estudianteAcompañanteDAO.findEstudiantesByAcompañanteId(acompañante.getId());
-            req.setAttribute("estudiantesACargo", estudiantesACargo);
+            // TODO: Implementar carga de estudiantes a cargo cuando los modelos estén listos
+            // List<Estudiante> estudiantesACargo = estudianteAcompananteDAO.findEstudiantesByAcompañanteId(acompañante.getId());
+            // req.setAttribute("estudiantesACargo", estudiantesACargo);
             
-            System.out.println("✅ Info acompañante cargada - Relación: " + acompañante.getRelacionEstudiante() + 
-                             " - Estudiantes a cargo: " + estudiantesACargo.size());
+            System.out.println("✅ Info acompañante cargada - Relación: " + acompañante.getRelacionEstudiante());
         } else {
             System.out.println("⚠️ No se encontró información de acompañante para usuario: " + usuario.getId());
         }

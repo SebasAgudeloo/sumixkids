@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Nueva Asignación · SumixKids</title>
+    <title>Nuevo Vínculo · SumixKids</title>
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
@@ -63,12 +63,28 @@
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-crown me-2"></i>
+                        <c:choose>
+                            <c:when test="${sessionScope.usuario.rolId == 1}">
+                                <i class="fas fa-crown me-2"></i>
+                            </c:when>
+                            <c:when test="${sessionScope.usuario.rolId == 2}">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>
+                            </c:when>
+                            <c:otherwise>
+                                <i class="fas fa-user me-2"></i>
+                            </c:otherwise>
+                        </c:choose>
                         <span class="fw-semibold">${sessionScope.usuario.nombreCorto}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
                         <li>
-                            <h6 class="dropdown-item">👑 Administrador</h6>
+                            <h6 class="dropdown-item">
+                                <c:choose>
+                                    <c:when test="${sessionScope.usuario.rolId == 1}">👑 Administrador</c:when>
+                                    <c:when test="${sessionScope.usuario.rolId == 2}">👨‍🏫 Docente</c:when>
+                                    <c:otherwise>👤 Usuario</c:otherwise>
+                                </c:choose>
+                            </h6>
                         </li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/perfil"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/configuracion"><i class="fas fa-cog me-2"></i>Configuración</a></li>
@@ -90,7 +106,7 @@
                 <div class="card shadow-lg border-0 rounded-4">
                     <div class="card-body p-4 p-md-5">
                         <h1 class="h3 mb-4 text-center fw-bold text-primary">
-                            <i class="fas fa-plus-circle me-2"></i>Nueva Asignación
+                            <i class="fas fa-plus-circle me-2"></i>Nuevo Vínculo Estudiante-Acompañante
                         </h1>
                         
                         <!-- Mensajes de error -->
@@ -102,118 +118,75 @@
                         </c:if>
                         
                         <!-- Formulario -->
-                        <form id="asignacionForm" method="post" action="${pageContext.request.contextPath}/asignaciones">
+                        <form id="vinculoForm" method="post" action="${pageContext.request.contextPath}/vinculos">
                             <input type="hidden" name="action" value="guardar">
-                            
-                            <!-- Selección de docente -->
-                            <div class="mb-3">
-                                <label for="idDocente" class="form-label fw-semibold">
-                                    <i class="fas fa-chalkboard-teacher me-1"></i>Docente <span class="text-danger">*</span>
-                                </label>
-                                <select class="form-select" id="idDocente" name="idDocente" required>
-                                    <option value="">Seleccionar docente...</option>
-                                    <c:forEach var="docente" items="${docentes}">
-                                        <option value="${docente.id}" ${asignacion != null && asignacion.idDocente == docente.id ? 'selected' : ''}>
-                                            ${docente.nombre}
-                                        </option>
-                                    </c:forEach>
-                                </select>
-                                <small class="form-text text-muted">
-                                    <i class="fas fa-info-circle me-1"></i>Selecciona el docente que será responsable del estudiante
-                                </small>
-                            </div>
                             
                             <!-- Selección de estudiante -->
                             <div class="mb-3">
-                                <label for="idEstudiante" class="form-label fw-semibold">
-                                    <i class="fas fa-graduation-cap me-1"></i>Estudiante <span class="text-danger">*</span>
+                                <label for="estudianteId" class="form-label fw-semibold">
+                                    <i class="fas fa-user-graduate me-1"></i>Estudiante <span class="text-danger">*</span>
                                 </label>
-                                <select class="form-select" id="idEstudiante" name="idEstudiante" required>
+                                <select class="form-select" id="estudianteId" name="estudianteId" required>
                                     <option value="">Seleccionar estudiante...</option>
                                     <c:forEach var="estudiante" items="${estudiantes}">
-                                        <option value="${estudiante.id}" ${asignacion != null && asignacion.idEstudiante == estudiante.id ? 'selected' : ''}
-                                                data-grado="${estudiante.grado}">
+                                        <option value="${estudiante.id}">
                                             ${estudiante.nombre}
-                                            <c:if test="${not empty estudiante.grado}"> (${estudiante.grado}°)</c:if>
                                         </option>
                                     </c:forEach>
                                 </select>
                                 <small class="form-text text-muted">
-                                    <i class="fas fa-info-circle me-1"></i>Selecciona el estudiante a asignar al docente
+                                    <i class="fas fa-info-circle me-1"></i>Selecciona el estudiante a vincular
                                 </small>
                             </div>
                             
-                            <!-- Selección de grado escolar -->
+                            <!-- Selección de acompañante -->
                             <div class="mb-3">
-                                <label for="idGradoEscolar" class="form-label fw-semibold">
-                                    <i class="fas fa-school me-1"></i>Grado Escolar
+                                <label for="acompananteId" class="form-label fw-semibold">
+                                    <i class="fas fa-user-shield me-1"></i>Acompañante (Padre/Tutor) <span class="text-danger">*</span>
                                 </label>
-                                <select class="form-select" id="idGradoEscolar" name="idGradoEscolar">
-                                    <option value="">Sin grado específico</option>
-                                    <c:forEach var="grado" items="${grados}">
-                                        <option value="${grado.id}" ${asignacion != null && asignacion.idGradoEscolar == grado.id ? 'selected' : ''}>
-                                            ${grado.nombre}
-                                            <c:if test="${not empty grado.descripcion}"> - ${grado.descripcion}</c:if>
+                                <select class="form-select" id="acompananteId" name="acompananteId" required>
+                                    <option value="">Seleccionar acompañante...</option>
+                                    <c:forEach var="acompanante" items="${acompanantes}">
+                                        <option value="${acompanante.id}">
+                                            ${acompanante.nombre}
                                         </option>
                                     </c:forEach>
                                 </select>
                                 <small class="form-text text-muted">
-                                    <i class="fas fa-info-circle me-1"></i>Opcional: Especifica el grado escolar para esta asignación
+                                    <i class="fas fa-info-circle me-1"></i>Selecciona el padre, madre o tutor responsable
                                 </small>
                             </div>
                             
-                            <!-- Fecha de asignación -->
-                            <div class="mb-3">
-                                <label for="fechaAsignacion" class="form-label fw-semibold">
-                                    <i class="fas fa-calendar-alt me-1"></i>Fecha de Asignación <span class="text-danger">*</span>
-                                </label>
-                                <input type="datetime-local" class="form-control" id="fechaAsignacion" name="fechaAsignacion" 
-                                       value="${asignacion != null ? asignacion.fechaAsignacion : ''}" required>
-                                <small class="form-text text-muted">
-                                    <i class="fas fa-info-circle me-1"></i>Solo se permite la fecha actual o fechas pasadas
-                                </small>
-                            </div>
-                            
-                            <!-- Estado -->
-                            <div class="mb-3">
-                                <label for="estado" class="form-label fw-semibold">
-                                    <i class="fas fa-info-circle me-1"></i>Estado <span class="text-danger">*</span>
-                                </label>
-                                <select class="form-select" id="estado" name="estado" required>
-                                    <option value="ACTIVA" ${asignacion == null || asignacion.estado == 'ACTIVA' ? 'selected' : ''}>
-                                        <i class="fas fa-check-circle"></i> Activa
-                                    </option>
-                                    <option value="SUSPENDIDA" ${asignacion != null && asignacion.estado == 'SUSPENDIDA' ? 'selected' : ''}>
-                                        <i class="fas fa-pause-circle"></i> Suspendida
-                                    </option>
-                                    <option value="FINALIZADA" ${asignacion != null && asignacion.estado == 'FINALIZADA' ? 'selected' : ''}>
-                                        <i class="fas fa-times-circle"></i> Finalizada
-                                    </option>
-                                </select>
-                                <small class="form-text text-muted">
-                                    <i class="fas fa-info-circle me-1"></i>Estado inicial de la asignación
-                                </small>
-                            </div>
-                            
-                            <!-- Observaciones -->
+                            <!-- Tipo de relación -->
                             <div class="mb-4">
-                                <label for="observaciones" class="form-label fw-semibold">
-                                    <i class="fas fa-sticky-note me-1"></i>Observaciones
+                                <label for="tipoRelacion" class="form-label fw-semibold">
+                                    <i class="fas fa-heart me-1"></i>Tipo de Relación <span class="text-danger">*</span>
                                 </label>
-                                <textarea class="form-control" id="observaciones" name="observaciones" rows="4" 
-                                          placeholder="Ingrese observaciones adicionales sobre esta asignación...">${asignacion != null ? asignacion.observaciones : ''}</textarea>
+                                <select class="form-select" id="tipoRelacion" name="tipoRelacion" required>
+                                    <option value="">Seleccionar tipo de relación...</option>
+                                    <option value="PRINCIPAL" selected>👨 Principal (Padre/Madre/Tutor)</option>
+                                    <option value="SECUNDARIO">👥 Secundario (Familiar cercano)</option>
+                                    <option value="EMERGENCIA">🚨 Emergencia (Contacto de emergencia)</option>
+                                </select>
                                 <small class="form-text text-muted">
-                                    <i class="fas fa-info-circle me-1"></i>Notas o comentarios adicionales sobre la asignación
+                                    <i class="fas fa-info-circle me-1"></i>Especifica el parentesco o tipo de relación
                                 </small>
+                            </div>
+                            
+                            <!-- Información adicional -->
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Nota:</strong> La fecha de vínculo se registrará automáticamente al momento de crear el vínculo.
+                                El vínculo se creará en estado <strong>Activo</strong> por defecto.
                             </div>
                             
                             <!-- Botones -->
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="${pageContext.request.contextPath}/asignaciones" class="btn btn-outline-secondary">
+                                <a href="${pageContext.request.contextPath}/vinculos" class="btn btn-outline-secondary">
                                     <i class="fas fa-arrow-left me-2"></i>Cancelar
                                 </a>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-2"></i>Guardar Asignación
+                                    <i class="fas fa-save me-2"></i>Crear Vínculo
                                 </button>
                             </div>
                         </form>
@@ -250,83 +223,45 @@
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Establecer fecha actual por defecto y restricciones
-document.addEventListener('DOMContentLoaded', function() {
-    const fechaAsignacion = document.getElementById('fechaAsignacion');
-    
-    // Obtener fecha y hora actual
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    const nowString = now.toISOString().slice(0, 16);
-    
-    // Establecer fecha actual como valor por defecto si no hay valor
-    if (!fechaAsignacion.value) {
-        fechaAsignacion.value = nowString;
-    }
-    
-    // Restringir fechas: solo permitir fecha actual o anteriores
-    fechaAsignacion.max = nowString;
-    
-    // Establecer fecha mínima (1 año hacia atrás)
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-    oneYearAgo.setMinutes(oneYearAgo.getMinutes() - oneYearAgo.getTimezoneOffset());
-    const minDate = oneYearAgo.toISOString().slice(0, 16);
-    
-    fechaAsignacion.min = minDate;
-});
-
 // Validación del formulario
-document.getElementById('asignacionForm').addEventListener('submit', function(e) {
-    const docente = document.getElementById('idDocente').value;
-    const estudiante = document.getElementById('idEstudiante').value;
-    const fechaAsignacion = document.getElementById('fechaAsignacion').value;
-    const estado = document.getElementById('estado').value;
-    
-    if (!docente) {
-        e.preventDefault();
-        alert('Por favor selecciona un docente');
-        document.getElementById('idDocente').focus();
-        return;
-    }
+document.getElementById('vinculoForm').addEventListener('submit', function(e) {
+    const estudiante = document.getElementById('estudianteId').value;
+    const acompanante = document.getElementById('acompananteId').value;
+    const tipoRelacion = document.getElementById('tipoRelacion').value;
     
     if (!estudiante) {
         e.preventDefault();
         alert('Por favor selecciona un estudiante');
-        document.getElementById('idEstudiante').focus();
+        document.getElementById('estudianteId').focus();
         return;
     }
     
-    if (!fechaAsignacion) {
+    if (!acompanante) {
         e.preventDefault();
-        alert('Por favor ingresa la fecha de asignación');
-        document.getElementById('fechaAsignacion').focus();
+        alert('Por favor selecciona un acompañante');
+        document.getElementById('acompananteId').focus();
         return;
     }
     
-    if (!estado) {
+    if (!tipoRelacion) {
         e.preventDefault();
-        alert('Por favor selecciona un estado');
-        document.getElementById('estado').focus();
+        alert('Por favor selecciona el tipo de relación');
+        document.getElementById('tipoRelacion').focus();
         return;
     }
     
-    // Validar que no se seleccionen fechas futuras
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    const nowString = now.toISOString().slice(0, 16);
-    
-    if (fechaAsignacion > nowString) {
+    // Validar que estudiante y acompañante no sean la misma persona
+    if (estudiante === acompanante) {
         e.preventDefault();
-        alert('No se pueden seleccionar fechas futuras para la asignación');
-        document.getElementById('fechaAsignacion').focus();
+        alert('El estudiante y el acompañante no pueden ser la misma persona');
+        document.getElementById('acompananteId').focus();
         return;
     }
 });
 
 // Auto-ocultar alertas después de 5 segundos
 setTimeout(() => {
-    document.querySelectorAll('.alert').forEach(alert => {
+    document.querySelectorAll('.alert:not(.alert-info)').forEach(alert => {
         const bsAlert = new bootstrap.Alert(alert);
         bsAlert.close();
     });
